@@ -241,12 +241,6 @@
         .hidden {
             display: none !important;
         }
-
-        .flex-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
     </style>
 </head>
 <body>
@@ -297,11 +291,6 @@
                     <strong>Grado 3:</strong> Dilatación de todos los cálices, parénquima preservado.<br>
                     <strong>Grado 4:</strong> Dilatación severa y adelgazamiento del parénquima cortical.
                 </p>
-            </div>
-
-            <div class="reference-card">
-                <strong style="color: var(--title-color); font-size: 0.85rem;">Cálculo de Volumen Elipsoide</strong>
-                <p style="margin-top: 4px; font-style: italic;">Volumen = Longitud × Ancho × AP × 0.524</p>
             </div>
         </div>
 
@@ -458,8 +447,17 @@
                 
                 <div id="vejigaPatolBlock" class="hidden" style="margin-top: 10px; border-left: 2px solid var(--border-color); padding-left: 10px; margin-bottom:10px;">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="vejigaEngrosada" onchange="updateReport()"> <span id="ui-chk-vejiga-wall">Pared engrosada / de esfuerzo</span>
+                        <input type="checkbox" id="vejigaEngrosada" onchange="updateReport()"> <span id="ui-chk-vejiga-wall">Pared engrosada / Vejiga de lucha</span>
                     </label><br>
+                    
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="vejigaDiverticulo" onchange="toggleSubSection('vejigaDivSubBlock'); updateReport()"> <span id="ui-chk-vejiga-div">Divertículos vesicales</span>
+                    </label>
+                    <div id="vejigaDivSubBlock" class="hidden sub-patho-section">
+                        <input type="text" id="vejigaDivTxt" placeholder="Localización, tamaño de los divertículos..." oninput="updateReport()" style="width:100%;">
+                    </div>
+                    <br>
+
                     <label class="checkbox-label">
                         <input type="checkbox" id="vejigaMasa" onchange="updateReport()"> <span id="ui-chk-vejiga-lesion">Lesión exofítica / Masa</span>
                     </label>
@@ -530,7 +528,6 @@
     </div>
 
     <script>
-        // Diccionario multiidioma para la interfaz y los informes dinámicos
         const langData = {
             ca: {
                 ui: {
@@ -556,7 +553,8 @@
                     chkRiSolid: "Lesió sòlida",
                     titleVejiga: "Vejiga Urinària",
                     chkVejigaPatol: "¿Troballes patològiques en bufeta?",
-                    chkVejigaWall: "Paret engreixada / d'esforç",
+                    chkVejigaWall: "Paret engreixada / Bufeta de lluita",
+                    chkVejigaDiv: "Diverticles vesicals",
                     chkVejigaLesion: "Lesió exofítica / Massa",
                     chkJets: "Jets ureterals presents bilateralment",
                     titleVolumenes: "Càlcul de Volums (Opcional):",
@@ -587,7 +585,8 @@
                     rdSolid: "Lesió sòlida renal dreta",
                     riSolid: "Lesió sòlida renal esquerre",
                     vejigaNormal: "Bufeta distesa, sense lesions.",
-                    vejigaEngrosada: "Bufeta de paret engreixada de forma difusa, compatible amb bufeta d'esforç.",
+                    vejigaEngrosada: "Bufeta de paret engreixada de forma difusa, compatible amb bufeta de lluita.",
+                    vejigaDiverticulo: "Presència de diverticles vesicals",
                     vejigaMasa: "Es sopespita lesió exofítica / massa a la paret vesical.",
                     jetsPresent: "Jets ureterals presents.",
                     jetsAbsent: "No es detecten clarament els jets ureterals en el moment de l'exploració.",
@@ -625,7 +624,8 @@
                     chkRiSolid: "Lesión sólida",
                     titleVejiga: "Vejiga Urinaria",
                     chkVejigaPatol: "¿Hallazgos patológicos en vejiga?",
-                    chkVejigaWall: "Pared engrosada / de esfuerzo",
+                    chkVejigaWall: "Pared engrosada / Vejiga de lucha",
+                    chkVejigaDiv: "Divertículos vesicales",
                     chkVejigaLesion: "Lesión exofítica / Masa",
                     chkJets: "Jets ureterales presentes bilateralmente",
                     titleVolumenes: "Cálculo de Volúmenes (Opcional):",
@@ -656,7 +656,8 @@
                     rdSolid: "Lesión sólida renal derecha",
                     riSolid: "Lesión sólida renal izquierda",
                     vejigaNormal: "Vejiga distendida, sin lesiones.",
-                    vejigaEngrosada: "Vejiga de paredes engrosadas de forma difusa, compatible con vejiga de esfuerzo.",
+                    vejigaEngrosada: "Vejiga de paredes engrosadas con signos de vejiga de lucha.",
+                    vejigaDiverticulo: "Evidencia de divertículos vesicales",
                     vejigaMasa: "Se sospecha lesión exofítica / masa en la pared vesical.",
                     jetsPresent: "Jets ureterales presentes.",
                     jetsAbsent: "No se detectan claramente los jets ureterales en el momento de la exploración.",
@@ -694,7 +695,8 @@
                     chkRiSolid: "Solid lesion",
                     titleVejiga: "Urinary Bladder",
                     chkVejigaPatol: "Abnormal findings in bladder?",
-                    chkVejigaWall: "Thickened / trabeculated wall",
+                    chkVejigaWall: "Thickened wall / Trabeculated bladder",
+                    chkVejigaDiv: "Bladder diverticula",
                     chkVejigaLesion: "Exophytic lesion / Mass",
                     chkJets: "Ureteral jets present bilaterally",
                     titleVolumenes: "Volume Calculation (Optional):",
@@ -725,7 +727,8 @@
                     rdSolid: "Right renal solid lesion",
                     riSolid: "Left renal solid lesion",
                     vejigaNormal: "Bladder distended, without lesions.",
-                    vejigaEngrosada: "Bladder wall diffusely thickened, compatible with a bladder of effort.",
+                    vejigaEngrosada: "Bladder wall thickened with signs of trabeculation (bladder of effort).",
+                    vejigaDiverticulo: "Evidence of bladder diverticula",
                     vejigaMasa: "Suspected exophytic lesion / mass on the bladder wall.",
                     jetsPresent: "Ureteral jets present.",
                     jetsAbsent: "Ureteral jets are not clearly detected during the examination.",
@@ -749,7 +752,6 @@
         function changeLanguage() {
             currentLang = document.getElementById('langSelect').value;
             
-            // Actualizar textos de la interfaz de usuario (UI)
             const ui = langData[currentLang].ui;
             document.getElementById('ui-main-title').innerText = ui.mainTitle;
             document.getElementById('ui-label-lang').innerText = ui.labelLang;
@@ -776,6 +778,7 @@
             document.getElementById('ui-title-vejiga').innerText = ui.titleVejiga;
             document.getElementById('ui-chk-vejiga-patol').innerText = ui.chkVejigaPatol;
             document.getElementById('ui-chk-vejiga-wall').innerText = ui.chkVejigaWall;
+            document.getElementById('ui-chk-vejiga-div').innerText = ui.chkVejigaDiv;
             document.getElementById('ui-chk-vejiga-lesion').innerText = ui.chkVejigaLesion;
             document.getElementById('ui-chk-jets').innerText = ui.chkJets;
             document.getElementById('ui-title-volumenes').innerText = ui.titleVolumenes;
@@ -788,7 +791,6 @@
             document.getElementById('ui-title-report').innerText = ui.titleReport;
             document.getElementById('ui-btn-copy').innerText = ui.btnCopy;
 
-            // Forzar actualización del informe redactado
             updateReport();
         }
 
@@ -869,7 +871,6 @@
             let base = longVal ? `${patolBase} (${longVal} cm)` : patolBase;
             let findings = [];
 
-            // 1. Litiasis + Calices
             if (document.getElementById(`${side}Litiasis`).checked) {
                 let locs = [];
                 if (document.getElementById(`${side}GCS`).checked) locs.push("GCS");
@@ -884,7 +885,6 @@
                 findings.push(`${litBasePhrase}${locStr}${detail}`);
             }
 
-            // 2. Quistes + Bosniak
             if (document.getElementById(`${side}Quiste`).checked) {
                 const bosniak = document.getElementById(`${side}Bosniak`).value;
                 const cystDetails = document.getElementById(`${side}QuisteTxt`).value;
@@ -893,7 +893,6 @@
                 findings.push(`${cystBasePhrase} ${bosniak}${detail}`);
             }
 
-            // 3. Lesiones sólidas
             if (document.getElementById(`${side}Solida`).checked) {
                 const solidDetails = document.getElementById(`${side}SolidaTxt`).value;
                 let detail = solidDetails ? `: ${solidDetails}` : "";
@@ -901,7 +900,6 @@
                 findings.push(`${solidBasePhrase}${detail}`);
             }
 
-            // 4. Ectasia
             if (document.getElementById(`${side}Ectasia`).checked) {
                 const grado = document.getElementById(`${side}EctasiaGrado`).value;
                 let ectBasePhrase = isRight ? r.rdEct : r.riEct;
@@ -915,11 +913,15 @@
             const r = langData[currentLang].report;
             let isPatological = false;
 
-            let txt = `${r.header} (15.07.2025 / 00:12:36)\n`;
+            // Obtener dinámicamente la fecha y hora del sistema actual
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            let txt = `${r.header} (${dateStr} / ${timeStr})\n`;
             txt += `${r.motivo}${document.getElementById('inputMotivo').value}\n\n`;
             txt += `${r.hallazgos}\n`;
 
-            // Evaluar bandera global de patología
             if (document.getElementById('rdPatologico').checked || 
                 document.getElementById('riPatologico').checked || 
                 document.getElementById('vejigaPatologica').checked || 
@@ -928,13 +930,9 @@
                 isPatological = true;
             }
 
-            // ---- RIÑÓN DERECHO ----
             txt += buildKidneyString('rd', currentLang, r);
-
-            // ---- RIÑÓN IZQUIERDO ----
             txt += buildKidneyString('ri', currentLang, r);
 
-            // ---- VÍA URINARIA GENERAL (Si no hay ectasia activa en ningún riñón)
             if (!document.getElementById('rdEctasia').checked && !document.getElementById('riEctasia').checked) {
                 txt += `- ${r.viaNoDilatada}\n`;
             }
@@ -956,19 +954,25 @@
             } else {
                 let vFindings = [];
                 if (document.getElementById('vejigaEngrosada').checked) vFindings.push(r.vejigaEngrosada);
+                
+                if (document.getElementById('vejigaDiverticulo').checked) {
+                    const divDetails = document.getElementById('vejigaDivTxt').value;
+                    let detailStr = divDetails ? ` (${divDetails})` : "";
+                    vFindings.push(`${r.vejigaDiverticulo}${detailStr}`);
+                }
+                
                 if (document.getElementById('vejigaMasa').checked) vFindings.push(r.vejigaMasa);
+                
                 let vTxt = vejigaParts.length > 0 ? ` (${vejigaParts.join(', ')})` : "";
-                txt += `- ${vFindings.join(' ') || 'Vejiga alterada'}${vTxt}\n`;
+                txt += `- ${vFindings.join('. ') || 'Vejiga alterada'}${vTxt}\n`;
             }
 
-            // ---- JETS ----
             if (document.getElementById('chkJets').checked) {
                 txt += `- ${r.jetsPresent}\n`;
             } else {
                 txt += `- ${r.jetsAbsent}\n`;
             }
 
-            // ---- PRÓSTATA ----
             let pTxt = `- ${r.prostataBase}`;
             if (volProstate !== null) {
                 pTxt += ` (${volProstate} cc/g)`;
@@ -980,14 +984,12 @@
             }
             txt += `${pTxt}\n`;
 
-            // ---- LÍQUIDO LIBRE ----
             if (document.getElementById('chkLiquido').checked) {
                 txt += `- ${r.conLiquido}\n`;
             } else {
                 txt += `- ${r.sinLiquido}\n`;
             }
 
-            // ---- CONCLUSIÓN ----
             txt += `\n${r.conclusion}\n`;
             if (isPatological) {
                 txt += r.conclPatol;
@@ -1014,7 +1016,6 @@
             }, 1200);
         }
 
-        // Inicializar la aplicación con el idioma y forzar el renderizado dinámico inicial
         window.onload = function() {
             changeLanguage();
         };
