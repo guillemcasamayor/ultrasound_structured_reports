@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Informe Estructurado - Ecografía Reno-Vesical</title>
+    <!-- Cargamos la fuente Ubuntu desde una CDN confiable -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --panel-bg: #f7f9fa;
+            --border-color: #d1d5db;
+            --accent-color: #0284c7;
+            --accent-text: #ffffff;
+            --title-color: #0f172a;
+            --input-bg: #ffffff;
+            --input-text: #111111;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --text-color: #e2e8f0;
+            --panel-bg: #111111;
+            --border-color: #334155;
+            --accent-color: #38bdf8;
+            --accent-text: #000000;
+            --title-color: #38bdf8;
+            --input-bg: #1e293b;
+            --input-text: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.2s, color 0.2s;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: var(--title-color);
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        select, input, textarea {
+            font-family: 'Ubuntu', sans-serif;
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            font-size: 0.9rem;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Diseño de 3 Columnas */
+        .col-left {
+            width: 23%;
+            border-right: 1px solid var(--border-color);
+            background-color: var(--panel-bg);
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .col-center {
+            width: 45%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .col-right {
+            width: 32%;
+            border-left: 1px solid var(--border-color);
+            background-color: var(--panel-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            color: var(--title-color);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 4px;
+            font-weight: 500;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            margin: 12px 0 6px 0;
+            color: var(--title-color);
+            font-weight: 500;
+        }
+
+        .section-block {
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(128, 128, 128, 0.03);
+            border-radius: 6px;
+            border: 1px solid rgba(128, 128, 128, 0.1);
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 5px;
+            user-select: none;
+        }
+
+        .checkbox-label input {
+            cursor: pointer;
+        }
+
+        /* Panel de texto dinámico */
+        .report-box {
+            flex: 1;
+            width: 100%;
+            resize: none;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .btn-copy {
+            background-color: var(--accent-color);
+            color: var(--accent-text);
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-copy:hover {
+            opacity: 0.9;
+        }
+
+        /* Material de soporte (Columna Izquierda) */
+        .reference-card {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+        }
+
+        .reference-card table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+
+        .reference-card th, .reference-card td {
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            text-align: left;
+        }
+
+        .reference-card th {
+            background-color: var(--panel-bg);
+            font-weight: 500;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="ui-main-title">Módulo de Informe Estructurado: Ecografía Reno-Vesical</h1>
+        <div class="controls">
+            <div>
+                <label for="langSelect" id="ui-label-lang" style="font-size: 0.85rem; margin-right: 5px;">Idioma:</label>
+                <select id="langSelect" onchange="changeLanguage()">
+                    <option value="ca">Català</option>
+                    <option value="es" selected>Castellano</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            <div>
+                <label for="themeSelect" id="ui-label-theme" style="font-size: 0.85rem; margin-right: 5px;">Tema:</label>
+                <select id="themeSelect" onchange="changeTheme()">
+                    <option value="light">Claro / White</option>
+                    <option value="dark">Oscuro / Black</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- COLUMNA IZQUIERDA: Herramientas de soporte y referencia médica -->
+        <div class="col-left">
+            <h2 id="ui-title-support">Soporte y Referencia</h2>
+            
+            <div class="reference-card">
+                <strong style="color: var(--title-color); font-size: 0.85rem;">Clasificación Bosniak (Quistes Renales)</strong>
+                <table>
+                    <tr><th>I</th><td>Simple. Benigno (0%)</td></tr>
+                    <tr><th>II</th><td>Tabiques finos, calcificación mínima</td></tr>
+                    <tr><th>IIF</th><td>Múltiples tabiques, mínimo realce (Seguimiento)</td></tr>
+                    <tr><th>III</th><td>Paredes/tabiques gruesos o irregulares (Quirúrgico)</td></tr>
+                    <tr><th>IV</th><td>Componente sólido nodular (Maligno 85-100%)</td></tr>
+                </table>
+            </div>
+
+            <div class="reference-card">
+                <strong style="color: var(--title-color); font-size: 0.85rem;">Gradación de Hidronefrosis</strong>
+                <p style="margin-top: 4px; line-height: 1.3;">
+                    <strong>Grado 0:</strong> Sin dilatación.<br>
+                    <strong>Grado 1:</strong> Dilatación solo de pelvis renal.<br>
+                    <strong>Grado 2:</strong> Dilatación de pelvis y cálices mayores.<br>
+                    <strong>Grado 3:</strong> Dilatación de todos los cálices, parénquima preservado.<br>
+                    <strong>Grado 4:</strong> Dilatación severa y adelgazamiento del parénquima cortical.
+                </p>
+            </div>
+
+            <div class="reference-card">
+                <strong style="color: var(--title-color); font-size: 0.85rem;">Cálculo de Volumen Elipsoide</strong>
+                <p style="margin-top: 4px; font-style: italic;">Volumen = Longitud × Ancho × AP × 0.524</p>
+            </div>
+        </div>
+
+        <!-- COLUMNA CENTRAL: Entrada de Datos / Configuración -->
+        <div class="col-center">
+            <h2 id="ui-title-inputs">Datos Clínicos y Exploración</h2>
+            
+            <!-- Datos Generales -->
+            <div class="section-block">
+                <div class="input-group">
+                    <label id="ui-label-motivo" for="inputMotivo">Motivo de la solicitud:</label>
+                    <input type="text" id="inputMotivo" value="Sospecha de cólico renal" oninput="updateReport()">
+                </div>
+            </div>
+
+            <!-- RIÑÓN DERECHO -->
+            <div class="section-block">
+                <h3 id="ui-title-rd">Riñón Derecho</h3>
+                <div class="grid-inputs">
+                    <div class="input-group">
+                        <label id="ui-label-rd-long" for="rdLong">Longitud (cm)</label>
+                        <input type="number" id="rdLong" step="0.1" placeholder="10.5" oninput="updateReport()">
+                    </div>
+                </div>
+                <div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rdPatologico" onchange="toggleSubSection('rdPatolBlock'); updateReport();">
+                        <span id="ui-chk-rd-patol" style="font-weight: 500; color: #b91c1c;">¿Hallazgos patológicos?</span>
+                    </label>
+                </div>
+                
+                <div id="rdPatolBlock" class="hidden" style="margin-top: 10px; border-left: 2px solid var(--border-color); padding-left: 10px;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rdLitiasis" onchange="updateReport()"> <span id="ui-chk-rd-lit">Litiasis</span>
+                    </label><br>
+                    <div class="grid-inputs" style="margin-top:5px;">
+                        <input type="text" id="rdLitTxt" placeholder="Tamaño y localización..." oninput="updateReport()" style="width:100%; grid-column: span 2;">
+                    </div>
+                    
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rdEctasia" onchange="updateReport()"> <span id="ui-chk-rd-ect">Ectasia / Hidronefrosis</span>
+                    </label>
+                    <select id="rdEctasiaGrado" onchange="updateReport()" style="margin-left:10px; padding:3px;">
+                        <option value="G1">Grado I (Leve)</option>
+                        <option value="G2">Grado II (Moderada)</option>
+                        <option value="G3">Grado III (Severa)</option>
+                        <option value="G4">Grado IV (Atrofia)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- RIÑÓN IZQUIERDO -->
+            <div class="section-block">
+                <h3 id="ui-title-ri">Riñón Izquierdo</h3>
+                <div class="grid-inputs">
+                    <div class="input-group">
+                        <label id="ui-label-ri-long" for="riLong">Longitud (cm)</label>
+                        <input type="number" id="riLong" step="0.1" placeholder="10.8" oninput="updateReport()">
+                    </div>
+                </div>
+                <div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="riPatologico" onchange="toggleSubSection('riPatolBlock'); updateReport();">
+                        <span id="ui-chk-ri-patol" style="font-weight: 500; color: #b91c1c;">¿Hallazgos patológicos?</span>
+                    </label>
+                </div>
+                
+                <div id="riPatolBlock" class="hidden" style="margin-top: 10px; border-left: 2px solid var(--border-color); padding-left: 10px;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="riLitiasis" onchange="updateReport()"> <span id="ui-chk-ri-lit">Litiasis</span>
+                    </label><br>
+                    <div class="grid-inputs" style="margin-top:5px;">
+                        <input type="text" id="riLitTxt" placeholder="Tamaño y localización..." oninput="updateReport()" style="width:100%; grid-column: span 2;">
+                    </div>
+                    
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="riEctasia" onchange="updateReport()"> <span id="ui-chk-ri-ect">Ectasia / Hidronefrosis</span>
+                    </label>
+                    <select id="riEctasiaGrado" onchange="updateReport()" style="margin-left:10px; padding:3px;">
+                        <option value="G1">Grado I (Leve)</option>
+                        <option value="G2">Grado II (Moderada)</option>
+                        <option value="G3">Grado III (Severa)</option>
+                        <option value="G4">Grative IV (Atrofia)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- VEJIGA -->
+            <div class="section-block">
+                <h3 id="ui-title-vejiga">Vejiga Urinaria</h3>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vejigaPatologica" onchange="toggleSubSection('vejigaPatolBlock'); updateReport();">
+                    <span id="ui-chk-vejiga-patol" style="font-weight: 500; color: #b91c1c;">¿Hallazgos patológicos en vejiga?</span>
+                </label>
+                
+                <div id="vejigaPatolBlock" class="hidden" style="margin-top: 10px; border-left: 2px solid var(--border-color); padding-left: 10px; margin-bottom:10px;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="vejigaEngrosada" onchange="updateReport()"> <span id="ui-chk-vejiga-wall">Pared engrosada / de esfuerzo</span>
+                    </label><br>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="vejigaMasa" onchange="updateReport()"> <span id="ui-chk-vejiga-lesion">Lesión exofítica / Masa</span>
+                    </label>
+                </div>
+
+                <div class="checkbox-label" style="margin-bottom: 10px; display:block;">
+                    <input type="checkbox" id="chkJets" checked onchange="updateReport()"> <span id="ui-chk-jets">Jets ureterales presentes bilateralmente</span>
+                </div>
+
+                <h4 id="ui-title-volumenes" style="font-size:0.85rem; margin-top:10px; margin-bottom:5px; font-weight:500;">Cálculo de Volúmenes (Opcional):</h4>
+                <div class="grid-inputs">
+                    <div class="input-group">
+                        <label id="ui-label-vpre" style="font-size:0.75rem;">Pre-miccional L×A×AP</label>
+                        <div style="display:flex; gap:2px;">
+                            <input type="number" id="vPreL" placeholder="L" style="width:33%; padding:4px;" oninput="calculateVolumes()">
+                            <input type="number" id="vPreA" placeholder="A" style="width:33%; padding:4px;" oninput="calculateVolumes()">
+                            <input type="number" id="vPreAP" placeholder="AP" style="width:33%; padding:4px;" oninput="calculateVolumes()">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label id="ui-label-vpost" style="font-size:0.75rem;">Post-miccional L×A×AP</label>
+                        <div style="display:flex; gap:2px;">
+                            <input type="number" id="vPostL" placeholder="L" style="width:33%; padding:4px;" oninput="calculateVolumes()">
+                            <input type="number" id="vPostA" placeholder="A" style="width:33%; padding:4px;" oninput="calculateVolumes()">
+                            <input type="number" id="vPostAP" placeholder="AP" style="width:33%; padding:4px;" oninput="calculateVolumes()">
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 5px;">
+                    <span id="ui-res-pre">Vol. Pre: - ml</span> | <span id="ui-res-post">Vol. Post: - ml</span>
+                </div>
+            </div>
+
+            <!-- PRÓSTATA -->
+            <div class="section-block">
+                <h3 id="ui-title-prostata">Próstata</h3>
+                <div class="grid-inputs">
+                    <div class="input-group">
+                        <label id="ui-label-p-dims">Dimensiones (L × A × AP en cm)</label>
+                        <div style="display:flex; gap:4px;">
+                            <input type="number" id="pL" placeholder="L" style="width:33%;" oninput="calculateProstate()">
+                            <input type="number" id="pA" placeholder="A" style="width:33%;" oninput="calculateProstate()">
+                            <input type="number" id="pAP" placeholder="AP" style="width:33%;" oninput="calculateProstate()">
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 5px; margin-bottom: 8px;">
+                    <span id="ui-res-p">Vol. Próstata: - cc/g</span>
+                </div>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="pHeterogenea" onchange="updateReport()"> <span id="ui-chk-p-het">Estructura heterogénea (Adenoma / Calcificaciones)</span>
+                </label>
+            </div>
+
+            <!-- OTROS -->
+            <div class="section-block">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="chkLiquido" onchange="updateReport()"> <span id="ui-chk-liq">Presencia de líquido libre intraabdominal</span>
+                </label>
+            </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: Salida del informe generado en tiempo real -->
+        <div class="col-right">
+            <h2 id="ui-title-report">Informe Generado</h2>
+            <textarea id="reportOutput" class="report-box" readonly></textarea>
+            <button class="btn-copy" onclick="copyReport()" id="ui-btn-copy">Copiar al Portapapeles</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Diccionario multiidioma para la interfaz y los informes dinámicos
+        const langData = {
+            ca: {
+                ui: {
+                    mainTitle: "Mòdul d'Informe Estructurat: Ecografia Reno-Vesical",
+                    labelLang: "Idioma:",
+                    labelTheme: "Tema:",
+                    titleSupport: "Suport i Referència",
+                    titleInputs: "Dades Clíniques i Exploració",
+                    labelMotivo: "Motiu de la sol·licitud:",
+                    titleRD: "Ronyó Dret",
+                    labelRdLong: "Longitud (cm)",
+                    chkRdPatol: "¿Troballes patològiques?",
+                    chkRdLit: "Litiasi",
+                    chkRdEct: "Ectàsia / Hidronefrosi",
+                    titleRI: "Ronyó Esquerre",
+                    labelRiLong: "Longitud (cm)",
+                    chkRiPatol: "¿Troballes patològiques?",
+                    chkRiLit: "Litiasi",
+                    chkRiEct: "Ectàsia / Hidronefrosi",
+                    titleVejiga: "Vejiga Urinària",
+                    chkVejigaPatol: "¿Troballes patològiques en bufeta?",
+                    chkVejigaWall: "Paret engreixada / d'esforç",
+                    chkVejigaLesion: "Lesió exofítica / Massa",
+                    chkJets: "Jets ureterals presents bilateralment",
+                    titleVolumenes: "Càlcul de Volums (Opcional):",
+                    labelVpre: "Pre-miccional L×A×AP",
+                    labelVpost: "Post-miccional L×A×AP",
+                    titleProstata: "Pròstata",
+                    labelPDims: "Dimensions (L × A × AP en cm)",
+                    chkPHet: "Estructura heterogènia (Adenoma / Calcificacions)",
+                    chkLiq: "Presència de líquid lliure intraabdominal",
+                    titleReport: "Informe Generat",
+                    btnCopy: "Copiar al Portapapers"
+                },
+                report: {
+                    header: "Ecografia d'aparell urinari (renal-bufeta-pròstata)",
+                    motivo: "Motiu de sol·licitud: ",
+                    hallazgos: "TROBALLES:",
+                    rdNormal: "Ronyó dret de mida i morfologia normal, amb adequada diferenciació cortico-medul·lar, sense evidència de litiasi ni lesions sòlides.",
+                    riNormal: "Ronyó esquerre de mida i morfologia normal, amb adequada diferenciació cortico-medul·lar, sense evidència de litiasi ni lesions sòlides.",
+                    rdPatolBase: "Ronyó dret de mida conservada",
+                    riPatolBase: "Ronyó esquerre de mida conservada",
+                    viaNoDilatada: "Via urinària no dilatada.",
+                    rdEct: "Ectàsia de la via urinària dreta",
+                    riEct: "Ectàsia de la via urinària esquerra",
+                    rdLit: "Evidència de litiasi renal dreta: ",
+                    riLit: "Evidència de litiasi renal esquerra: ",
+                    vejigaNormal: "Bufeta distesa, sense lesions.",
+                    vejigaEngrosada: "Bufeta de paret engreixada de forma difusa, compatible amb bufeta d'esforç.",
+                    vejigaMasa: "Es sopespita lesió exofítica / massa a la paret vesical.",
+                    jetsPresent: "Jets ureterals presents.",
+                    jetsAbsent: "No es detecten clarament els jets ureterals en el moment de l'exploració.",
+                    prostataBase: "Pròstata",
+                    prostataNormal: " de volum i ecoestructura normal.",
+                    prostataHet: " amb estructura heterogènia (compatible amb adenoma / calcificacions).",
+                    sinLiquido: "Sense líquid lliure intraabdominal.",
+                    conLiquido: "Presència de líquid lliure intraabdominal.",
+                    conclusion: "CONCLUSIÓ:",
+                    conclNormal: "Sense troballes significatives.",
+                    conclPatol: "Troballes patològiques descrites anteriorment (veure cos de l'informe)."
+                }
+            },
+            es: {
+                ui: {
+                    mainTitle: "Módulo de Informe Estructurado: Ecografía Reno-Vesical",
+                    labelLang: "Idioma:",
+                    labelTheme: "Tema:",
+                    titleSupport: "Soporte y Referencia",
+                    titleInputs: "Datos Clínicos y Exploración",
+                    labelMotivo: "Motivo de la solicitud:",
+                    titleRD: "Riñón Derecho",
+                    labelRdLong: "Longitud (cm)",
+                    chkRdPatol: "¿Hallazgos patológicos?",
+                    chkRdLit: "Litiasis",
+                    chkRdEct: "Ectasia / Hidronefrosis",
+                    titleRI: "Riñón Izquierdo",
+                    labelRiLong: "Longitud (cm)",
+                    chkRiPatol: "¿Hallazgos patológicos?",
+                    chkRiLit: "Litiasis",
+                    chkRiEct: "Ectasia / Hidronefrosis",
+                    titleVejiga: "Vejiga Urinaria",
+                    chkVejigaPatol: "¿Hallazgos patológicos en vejiga?",
+                    chkVejigaWall: "Pared engrosada / de esfuerzo",
+                    chkVejigaLesion: "Lesión exofítica / Masa",
+                    chkJets: "Jets ureterales presentes bilateralmente",
+                    titleVolumenes: "Cálculo de Volúmenes (Opcional):",
+                    labelVpre: "Pre-miccional L×A×AP",
+                    labelVpost: "Post-miccional L×A×AP",
+                    titleProstata: "Próstata",
+                    labelPDims: "Dimensiones (L × A × AP en cm)",
+                    chkPHet: "Estructura heterogénea (Adenoma / Calcificaciones)",
+                    chkLiq: "Presencia de líquido libre intraabdominal",
+                    titleReport: "Informe Generado",
+                    btnCopy: "Copiar al Portapapeles"
+                },
+                report: {
+                    header: "Ecografía de aparato urinario (renal-vejiga-próstata)",
+                    motivo: "Motivo de solicitud: ",
+                    hallazgos: "HALLAZGOS:",
+                    rdNormal: "Riñón derecho de tamaño y morfología normal, con adecuada diferenciación córtico-medular, sin evidencia de litiasis ni lesiones sólidas.",
+                    riNormal: "Riñón izquierdo de tamaño y morfología normal, con adecuada diferenciación córtico-medular, sin evidencia de litiasis ni lesiones sólidas.",
+                    rdPatolBase: "Riñón derecho de morfología conservada",
+                    riPatolBase: "Riñón izquierdo de morfología conservada",
+                    viaNoDilatada: "Vía urinaria no dilatada.",
+                    rdEct: "Ectasia de la vía urinaria derecha",
+                    riEct: "Ectasia de la vía urinaria izquierda",
+                    rdLit: "Evidencia de litiasis renal derecha: ",
+                    riLit: "Evidencia de litiasis renal izquierda: ",
+                    vejigaNormal: "Vejiga distendida, sin lesiones.",
+                    vejigaEngrosada: "Vejiga de paredes engrosadas de forma difusa, compatible con vejiga de esfuerzo.",
+                    vejigaMasa: "Se sospecha lesión exofítica / masa en la pared vesical.",
+                    jetsPresent: "Jets ureterales presentes.",
+                    jetsAbsent: "No se detectan claramente los jets ureterales en el momento de la exploración.",
+                    prostataBase: "Próstata",
+                    prostataNormal: " de volumen y ecoestructura normal.",
+                    prostataHet: " con estructura heterogénea (compatible con adenoma / calcificaciones).",
+                    sinLiquido: "Sin líquido libre intraabdominal.",
+                    conLiquido: "Presencia de líquido libre intraabdominal.",
+                    conclusion: "CONCLUSIÓN:",
+                    conclNormal: "Sin hallazgos significativos.",
+                    conclPatol: "Hallazgos patológicos descritos anteriormente (ver cuerpo del informe)."
+                }
+            },
+            en: {
+                ui: {
+                    mainTitle: "Structured Reporting Module: Renal and Bladder Ultrasound",
+                    labelLang: "Language:",
+                    labelTheme: "Theme:",
+                    titleSupport: "Support & Reference",
+                    titleInputs: "Clinical Data & Examination",
+                    labelMotivo: "Indication:",
+                    titleRD: "Right Kidney",
+                    labelRdLong: "Length (cm)",
+                    chkRdPatol: "Abnormal findings?",
+                    chkRdLit: "Lithiasis",
+                    chkRdEct: "Ectasia / Hydronefrosis",
+                    titleRI: "Left Kidney",
+                    labelRiLong: "Length (cm)",
+                    chkRiPatol: "Abnormal findings?",
+                    chkRiLit: "Lithiasis",
+                    chkRiEct: "Ectasia / Hydronefrosis",
+                    titleVejiga: "Urinary Bladder",
+                    chkVejigaPatol: "Abnormal findings in bladder?",
+                    chkVejigaWall: "Thickened / trabeculated wall",
+                    chkVejigaLesion: "Exophytic lesion / Mass",
+                    chkJets: "Ureteral jets present bilaterally",
+                    titleVolumenes: "Volume Calculation (Optional):",
+                    labelVpre: "Pre-void L×W×AP",
+                    labelVpost: "Post-void L×W×AP",
+                    titleProstata: "Prostate",
+                    labelPDims: "Dimensions (L × W × AP in cm)",
+                    chkPHet: "Heterogeneous structure (Adenoma / Calcifications)",
+                    chkLiq: "Free intraabdominal fluid present",
+                    titleReport: "Generated Report",
+                    btnCopy: "Copy to Clipboard"
+                },
+                report: {
+                    header: "Urinary tract ultrasound (renal-bladder-prostate)",
+                    motivo: "Indication: ",
+                    hallazgos: "FINDINGS:",
+                    rdNormal: "Right kidney of normal size and morphology, with adequate cortico-medullary differentiation, no evidence of lithiasis or solid lesions.",
+                    riNormal: "Left kidney of normal size and morphology, with adequate cortico-medullary differentiation, no evidence of lithiasis or solid lesions.",
+                    rdPatolBase: "Right kidney with preserved morphology",
+                    riPatolBase: "Left kidney with preserved morphology",
+                    viaNoDilatada: "Urinary tract not dilated.",
+                    rdEct: "Ectasia of the right urinary tract",
+                    riEct: "Ectasia of the left urinary tract",
+                    rdLit: "Evidence of right renal lithiasis: ",
+                    riLit: "Evidence of left renal lithiasis: ",
+                    vejigaNormal: "Bladder distended, without lesions.",
+                    vejigaEngrosada: "Bladder wall diffusely thickened, compatible with a bladder of effort.",
+                    vejigaMasa: "Suspected exophytic lesion / mass on the bladder wall.",
+                    jetsPresent: "Ureteral jets present.",
+                    jetsAbsent: "Ureteral jets are not clearly detected during the examination.",
+                    prostataBase: "Prostate",
+                    prostataNormal: " with normal volume and echoarchitecture.",
+                    prostataHet: " with heterogeneous structure (compatible with adenoma / calcifications).",
+                    sinLiquido: "No free intraabdominal fluid.",
+                    conLiquido: "Presence of free intraabdominal fluid.",
+                    conclusion: "CONCLUSION:",
+                    conclNormal: "No significant findings.",
+                    conclPatol: "Abnormal findings described above (see body of the report)."
+                }
+            }
+        };
+
+        let currentLang = 'es';
+        let volPre = null;
+        let volPost = null;
+        let volProstate = null;
+
+        function changeLanguage() {
+            currentLang = document.getElementById('langSelect').value;
+            
+            // Actualizar textos de la interfaz de usuario (UI)
+            const ui = langData[currentLang].ui;
+            document.getElementById('ui-main-title').innerText = ui.mainTitle;
+            document.getElementById('ui-label-lang').innerText = ui.labelLang;
+            document.getElementById('ui-label-theme').innerText = ui.labelTheme;
+            document.getElementById('ui-title-support').innerText = ui.titleSupport;
+            document.getElementById('ui-title-inputs').innerText = ui.titleInputs;
+            document.getElementById('ui-label-motivo').innerText = ui.labelMotivo;
+            document.getElementById('ui-title-rd').innerText = ui.titleRD;
+            document.getElementById('ui-label-rd-long').innerText = ui.labelRdLong;
+            document.getElementById('ui-chk-rd-patol').innerText = ui.chkRdPatol;
+            document.getElementById('ui-chk-rd-lit').innerText = ui.chkRdLit;
+            document.getElementById('ui-chk-rd-ect').innerText = ui.chkRdEct;
+            document.getElementById('ui-title-ri').innerText = ui.titleRI;
+            document.getElementById('ui-label-ri-long').innerText = ui.labelRiLong;
+            document.getElementById('ui-chk-ri-patol').innerText = ui.chkRiPatol;
+            document.getElementById('ui-chk-ri-lit').innerText = ui.chkRiLit;
+            document.getElementById('ui-chk-ri-ect').innerText = ui.chkRiEct;
+            document.getElementById('ui-title-vejiga').innerText = ui.titleVejiga;
+            document.getElementById('ui-chk-vejiga-patol').innerText = ui.chkVejigaPatol;
+            document.getElementById('ui-chk-vejiga-wall').innerText = ui.chkVejigaWall;
+            document.getElementById('ui-chk-vejiga-lesion').innerText = ui.chkVejigaLesion;
+            document.getElementById('ui-chk-jets').innerText = ui.chkJets;
+            document.getElementById('ui-title-volumenes').innerText = ui.titleVolumenes;
+            document.getElementById('ui-label-vpre').innerText = ui.labelVpre;
+            document.getElementById('ui-label-vpost').innerText = ui.labelVpost;
+            document.getElementById('ui-title-prostata').innerText = ui.titleProstata;
+            document.getElementById('ui-label-p-dims').innerText = ui.labelPDims;
+            document.getElementById('ui-chk-p-het').innerText = ui.chkPHet;
+            document.getElementById('ui-chk-liq').innerText = ui.chkLiq;
+            document.getElementById('ui-title-report').innerText = ui.titleReport;
+            document.getElementById('ui-btn-copy').innerText = ui.btnCopy;
+
+            // Forzar actualización del informe redactado
+            updateReport();
+        }
+
+        function changeTheme() {
+            const theme = document.getElementById('themeSelect').value;
+            if (theme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            } else {
+                document.body.removeAttribute('data-theme');
+            }
+        }
+
+        function toggleSubSection(blockId) {
+            const block = document.getElementById(blockId);
+            if (block.classList.contains('hidden')) {
+                block.classList.remove('hidden');
+            } else {
+                block.classList.add('hidden');
+            }
+        }
+
+        function calculateVolumes() {
+            const preL = parseFloat(document.getElementById('vPreL').value);
+            const preA = parseFloat(document.getElementById('vPreA').value);
+            const preAP = parseFloat(document.getElementById('vPreAP').value);
+            
+            if (!isNaN(preL) && !isNaN(preA) && !isNaN(preAP)) {
+                volPre = Math.round(preL * preA * preAP * 0.524);
+                document.getElementById('ui-res-pre').innerText = `Vol. Pre: ${volPre} ml`;
+            } else {
+                volPre = null;
+                document.getElementById('ui-res-pre').innerText = `Vol. Pre: - ml`;
+            }
+
+            const postL = parseFloat(document.getElementById('vPostL').value);
+            const postA = parseFloat(document.getElementById('vPostA').value);
+            const postAP = parseFloat(document.getElementById('vPostAP').value);
+            
+            if (!isNaN(postL) && !isNaN(postA) && !isNaN(postAP)) {
+                volPost = Math.round(postL * postA * postAP * 0.524);
+                document.getElementById('ui-res-post').innerText = `Vol. Post: ${volPost} ml`;
+            } else {
+                volPost = null;
+                document.getElementById('ui-res-post').innerText = `Vol. Post: - ml`;
+            }
+
+            updateReport();
+        }
+
+        function calculateProstate() {
+            const pL = parseFloat(document.getElementById('pL').value);
+            const pA = parseFloat(document.getElementById('pA').value);
+            const pAP = parseFloat(document.getElementById('pAP').value);
+            
+            if (!isNaN(pL) && !isNaN(pA) && !isNaN(pAP)) {
+                volProstate = Math.round(pL * pA * pAP * 0.524);
+                document.getElementById('ui-res-p').innerText = `Vol. Próstata: ${volProstate} cc/g`;
+            } else {
+                volProstate = null;
+                document.getElementById('ui-res-p').innerText = `Vol. Próstata: - cc/g`;
+            }
+
+            updateReport();
+        }
+
+        function updateReport() {
+            const r = langData[currentLang].report;
+            let isPatological = false;
+
+            // Obtener fecha/hora actual simulada
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('es-ES');
+            const timeStr = now.toLocaleTimeString('es-ES');
+
+            let txt = `${r.header} (${dateStr} / ${timeStr})
+`;
+            txt += `${r.motivo}${document.getElementById('inputMotivo').value}
+
+`;
+            txt += `${r.hallazgos}
+`;
+
+            // ---- RIÑÓN DERECHO ----
+            const rdLong = document.getElementById('rdLong').value;
+            const rdIsPatol = document.getElementById('rdPatológico').checked;
+            
+            if (!rdIsPatol) {
+                let sizeTxt = rdLong ? ` (${rdLong} cm)` : "";
+                txt += `- ${r.rdNormal}${sizeTxt}
+`;
+            } else {
+                isPatological = true;
+                let base = rdLong ? `${r.rdPatolBase} (${rdLong} cm)` : r.rdPatolBase;
+                let findings = [];
+                if (document.getElementById('rdLitiasis').checked) {
+                    const extra = document.getElementById('rdLitTxt').value;
+                    findings.push(`${r.rdLit}${extra || "sin especificar tamaño"}`);
+                }
+                if (document.getElementById('rdEctasia').checked) {
+                    const grado = document.getElementById('rdEctasiaGrado').value;
+                    findings.push(`${r.rdEct} [${grado}]`);
+                }
+                txt += `- ${base}. Hallazgos: ${findings.join(', ') || 'Ninguno seleccionado'}.
+`;
+            }
+
+            // ---- RIÑÓN IZQUIERDO ----
+            const riLong = document.getElementById('riLong').value;
+            const riIsPatol = document.getElementById('riPatológico').checked;
+            
+            if (!riIsPatol) {
+                let sizeTxt = riLong ? ` (${riLong} cm)` : "";
+                txt += `- ${r.riNormal}${sizeTxt}
+`;
+            } else {
+                isPatological = true;
+                let base = riLong ? `${r.riPatolBase} (${riLong} cm)` : r.riPatolBase;
+                let findings = [];
+                if (document.getElementById('riLitiasis').checked) {
+                    const extra = document.getElementById('riLitTxt').value;
+                    findings.push(`${r.riLit}${extra || "sin especificar tamaño"}`);
+                }
+                if (document.getElementById('riEctasia').checked) {
+                    const grado = document.getElementById('riEctasiaGrado').value;
+                    findings.push(`${r.riEct} [${grado}]`);
+                }
+                txt += `- ${base}. Hallazgos: ${findings.join(', ') || 'Ninguno seleccionado'}.
+`;
+            }
+
+            // ---- VÍA URINARIA GENERAL (Si no hay ectasia detectada)
+            if (!document.getElementById('rdEctasia').checked && !document.getElementById('riEctasia').checked) {
+                txt += `- ${r.viaNoDilatada}
+`;
+            }
+
+            // ---- VEJIGA URINARIA ----
+            const vejigaIsPatol = document.getElementById('vejigaPatologica').checked;
+            let vejigaParts = [];
+            
+            if (volPre !== null) {
+                vejigaParts.push(currentLang === 'en' ? `Pre-void volume: ${volPre} ml` : `Volumen pre-miccional: ${volPre} ml`);
+            }
+            if (volPost !== null) {
+                vejigaParts.push(currentLang === 'en' ? `Post-void volume: ${volPost} ml` : `Volumen post-miccional: ${volPost} ml`);
+            }
+
+            if (!vejigaIsPatol) {
+                let vTxt = vejigaParts.length > 0 ? ` (${vejigaParts.join(', ')})` : "";
+                txt += `- ${r.vejigaNormal}${vTxt}
+`;
+            } else {
+                isPatological = true;
+                let vFindings = [];
+                if (document.getElementById('vejigaEngrosada').checked) vFindings.push(r.vejigaEngrosada);
+                if (document.getElementById('vejigaMasa').checked) vFindings.push(r.vejigaMasa);
+                let vTxt = vejigaParts.length > 0 ? ` (${vejigaParts.join(', ')})` : "";
+                txt += `- ${vFindings.join(' ') || 'Vejiga alterada'}${vTxt}
+`;
+            }
+
+            // ---- JETS ----
+            if (document.getElementById('chkJets').checked) {
+                txt += `- ${r.jetsPresent}
+`;
+            } else {
+                txt += `- ${r.jetsAbsent}
+`;
+            }
+
+            // ---- PRÓSTATA ----
+            let pTxt = `- ${r.prostataBase}`;
+            if (volProstate !== null) {
+                pTxt += ` (${volProstate} cc/g)`;
+            }
+            if (document.getElementById('pHeterogenea').checked) {
+                isPatological = true;
+                pTxt += r.prostataHet;
+            } else {
+                pTxt += r.prostataNormal;
+            }
+            txt += `${pTxt}
+`;
+
+            // ---- LÍQUIDO LIBRE ----
+            if (document.getElementById('chkLiquido').checked) {
+                isPatological = true;
+                txt += `- ${r.conLiquido}
+`;
+            } else {
+                txt += `- ${r.sinLiquido}
+`;
+            }
+
+            // ---- CONCLUSIÓ / CONCLUSIÓN ----
+            txt += `
+${r.conclusion}
+`;
+            if (isPatological) {
+                txt += r.conclPatol;
+            } else {
+                txt += r.conclNormal;
+            }
+
+            document.getElementById('reportOutput').value = txt;
+        }
+
+        function copyReport() {
+            const copyText = document.getElementById("reportOutput");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // Para móviles
+            navigator.clipboard.writeText(copyText.value);
+            
+            // Efecto visual rápido en el botón
+            const btn = document.getElementById('ui-btn-copy');
+            const originalText = btn.innerText;
+            btn.innerText = currentLang === 'en' ? 'Copied!' : (currentLang === 'ca' ? 'Copiat!' : '¡Copiado!');
+            btn.style.backgroundColor = '#16a34a';
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.backgroundColor = 'var(--accent-color)';
+            }, 1200);
+        }
+
+        // Inicializar la aplicación con el idioma y el reporte por defecto
+        changeLanguage();
+    </script>
+</body>
+</html>
