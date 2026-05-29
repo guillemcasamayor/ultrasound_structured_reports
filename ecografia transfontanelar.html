@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Informe Estructurado - Ecografía Transfontanelar V3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --accent-color: #0066cc;
+            --border-color: #cccccc;
+            --card-bg: #f9f9f9;
+            --highlight-bg: #e6f2ff;
+            --highlight-border: #0066cc;
+            --font-family: 'Ubuntu', sans-serif;
+            --info-color: #555555;
+        }
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --accent-color: #3399ff;
+            --border-color: #444444;
+            --card-bg: #111111;
+            --highlight-bg: #002244;
+            --highlight-border: #3399ff;
+            --info-color: #aaaaaa;
+        }
+        * { box-sizing: border-box; font-family: var(--font-family); transition: background-color 0.15s, color 0.15s; }
+        body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 8px; margin-bottom: 12px; flex-shrink: 0; }
+        h1 { margin: 0; font-size: 20px; color: var(--accent-color); }
+        .controls-top { display: flex; gap: 15px; align-items: center; }
+        select, input, textarea { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 4px; font-size: 13px; }
+        .container { display: flex; gap: 15px; flex: 1; height: calc(100vh - 70px); overflow: hidden; }
+        .column-left { flex: 1.15; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        .input-scroll-area { flex: 1; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+        .output-fixed-area { flex-shrink: 0; background-color: var(--card-bg); border: 2px solid var(--accent-color); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px; max-height: 310px; }
+        .output-fixed-area textarea { width: 100%; height: 130px; resize: none; font-family: monospace; font-size: 12px; line-height: 1.4; }
+        .column-right { flex: 0.85; display: flex; flex-direction: column; height: 100%; }
+        .section-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; }
+        .section-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; border-left: 4px solid var(--accent-color); padding-left: 8px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .item-row { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color); cursor: pointer; margin-bottom: 5px; user-select: none; }
+        .item-header-flex { display: flex; align-items: flex-start; gap: 10px; }
+        .item-row:hover { border-color: var(--accent-color); }
+        .item-row.selected { background-color: var(--highlight-bg); border-color: var(--highlight-border); }
+        .item-row.selected .item-text { font-weight: 500; }
+        .item-row input[type="checkbox"], .item-row input[type="radio"] { margin-top: 3px; transform: scale(1.05); cursor: pointer; }
+        .item-text { flex: 1; line-height: 1.3; font-size: 13.5px; }
+        .details-box { display: none; width: 100%; margin-top: 4px; padding: 4px 8px; border: 1px solid var(--accent-color); border-radius: 4px; background-color: var(--bg-color); color: var(--text-color); font-size: 12px; }
+        .item-row.selected .details-box { display: block; }
+        .measurement-container { margin-top: 10px; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-color); }
+        .measurement-row-grid { display: grid; grid-template-columns: 140px 90px 1fr; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .measurement-row-grid label { font-size: 12.5px; font-weight: 500; }
+        .normality-reference { font-size: 11px; color: var(--info-color); font-style: italic; }
+        .doppler-auto-badge { display: inline-block; padding: 2px 6px; font-size: 11px; font-weight: 700; border-radius: 3px; margin-left: 10px; }
+        .badge-normal { background-color: #d4edda; color: #155724; }
+        .badge-elevated { background-color: #f8d7da; color: #721c24; }
+        .badge-decreased { background-color: #fff3cd; color: #856404; }
+        .button-group { display: flex; gap: 10px; }
+        button { background-color: var(--accent-color); color: #ffffff; border: none; padding: 8px 14px; border-radius: 4px; font-weight: 500; cursor: pointer; font-size: 13px; }
+        button:hover { opacity: 0.9; }
+        button.btn-secondary { background-color: transparent; color: var(--text-color); border: 1px solid var(--border-color); }
+        .pdf-container { flex: 1; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; background-color: #525659; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .sub-group-title { font-weight: 700; margin: 8px 0 4px 0; font-size: 12.5px; color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div><h1 id="main-title">Informe Estructurado: Ecografía Transfontanelar</h1></div>
+    <div class="controls-top">
+        <div>
+            <label for="lang-select" style="font-weight:500; margin-right:5px;">Idioma:</label>
+            <select id="lang-select" onchange="changeLanguage()">
+                <option value="es" selected>Castellano</option>
+                <option value="ca">Català</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <div>
+            <label for="theme-select" style="font-weight:500; margin-right:5px;">Modo:</label>
+            <select id="theme-select" onchange="changeTheme()">
+                <option value="light">Claro</option>
+                <option value="dark">Oscuro</option>
+            </select>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="column-left">
+        <div class="input-scroll-area">
+            <!-- 1. DATOS CLÍNICOS -->
+            <div class="section-card">
+                <div class="section-title" id="t-sec-clinical">Datos Clínicos e Indicación</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label id="lbl-eg">Edad Gestacional (sem):</label>
+                        <input type="number" id="input-eg" min="20" max="42" placeholder="ej. 28">
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-ec">Edad Corregida / Actual:</label>
+                        <input type="text" id="input-ec" placeholder="ej. 2 semanas">
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-top: 8px;">
+                    <div class="form-group">
+                        <label id="lbl-indic">Indicación:</label>
+                        <select id="select-indic">
+                            <option value="cribado" id="opt-ind-cribado">Cribado de prematuridad</option>
+                            <option value="ehi" id="opt-ind-ehi">Encefalopatía Hipóxico-Isquémica (EHI)</option>
+                            <option value="torch" id="opt-ind-torch">Sospecha de infección congénita (TORCH)</option>
+                            <option value="macrocefalia" id="opt-ind-macro">Macrocefalia / Crecimiento de perímetro craneal</option>
+                            <option value="clinica" id="opt-ind-clinica">Sintomatología neurológica (convulsiones, hipotonía)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-ventana">Calidad de Ventana:</label>
+                        <select id="select-ventana">
+                            <option value="buena" id="opt-v-buena">Buena</option>
+                            <option value="regular" id="opt-v-regular">Regular (fontanela pequeña)</option>
+                            <option value="mala" id="opt-v-mala">Mala ventana</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. LÍNEA MEDIA, EXTRAAXIAL Y PARÉNQUIMA -->
+            <div class="section-card">
+                <div class="section-title" id="t-sec-paren">Línea Media, Estructuras y Parénquima</div>
+                <div class="sub-group-title" id="sub-lm">Línea Media y Espacio Extraaxial (Múltiple elección):</div>
+                
+                <div class="item-row selected" onclick="toggleCheckboxRow(this, 'chk-lm-normal')">
+                    <div class="item-header-flex">
+                        <input type="checkbox" id="chk-lm-normal" checked onclick="eStop(event); handleLmNormalLogic(this)">
+                        <div class="item-text" id="opt-lm-normal">Línea media centrada y espacios extraaxiales normales.</div>
+                    </div>
+                </div>
+                <div class="item-row" onclick="toggleCheckboxRow(this, 'chk-lm-desv')">
+                    <div class="item-header-flex">
+                        <input type="checkbox" id="chk-lm-desv" onclick="eStop(event); handleLmPatLogic(this)">
+                        <div class="item-text" id="opt-lm-desv">Desviación de la línea media estructural.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-lm-desv" placeholder="Especificar dirección y mm de desviación..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleCheckboxRow(this, 'chk-lm-col')">
+                    <div class="item-header-flex">
+                        <input type="checkbox" id="chk-lm-col" onclick="eStop(event); handleLmPatLogic(this)">
+                        <div class="item-text" id="opt-lm-col">Aumento del espacio subaracnoideo / colección extraaxial.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-lm-col" placeholder="Especificar localización, grosor, ecogenicidad..." onclick="eStop(event)">
+                </div>
+
+                <!-- CUERPO CALLOSO -->
+                <div class="sub-group-title" id="sub-cc">Cuerpo Calloso:</div>
+                <div class="item-row selected" onclick="toggleRadioRow(this, 'rad-cc')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-cc" value="normal" checked onclick="eStop(event)">
+                        <div class="item-text" id="opt-cc-normal">Cuerpo calloso morfológicamente normal, completamente desarrollado.</div>
+                    </div>
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-cc')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-cc" value="disgenesia" onclick="eStop(event)">
+                        <div class="item-text" id="opt-cc-disg">Disgenesia / Hipoplasia del cuerpo calloso.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-cc-disg" placeholder="Especificar porciones afectadas..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-cc')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-cc" value="agenesia" onclick="eStop(event)">
+                        <div class="item-text" id="opt-cc-agen">Agenesia completa del cuerpo calloso.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-cc-agen" placeholder="Especificar hallazgos asociados..." onclick="eStop(event)">
+                </div>
+
+                <!-- PARENQUIMA -->
+                <div class="sub-group-title" id="sub-paren">Parénquima y Maduración Cortical:</div>
+                <div class="item-row selected" onclick="toggleRadioRow(this, 'rad-paren')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-paren" value="normal" checked onclick="eStop(event)">
+                        <div class="item-text" id="opt-p-normal">Ecogenicidad y patrón de surcos normales para la edad gestacional.</div>
+                    </div>
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-paren')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-paren" value="leuco_difuso" onclick="eStop(event)">
+                        <div class="item-text" id="opt-p-leuco">Aumento difuso de ecogenicidad periventricular (Flares / congestión).</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-p-leuco" placeholder="Especificar simetría, localización..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-paren')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-paren" value="leuco_quistica" onclick="eStop(event)">
+                        <div class="item-text" id="opt-p-quistica">Leucomalacia periventricular quística (necrosis focal).</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-p-quistica" placeholder="Especificar tamaño y número de cavitaciones..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-paren')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-paren" value="ganglios" onclick="eStop(event)">
+                        <div class="item-text" id="opt-p-ganglios">Hiperecogenicidad focal/difusa en ganglios de la base / tálamos.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-p-ganglios" placeholder="Especificar patrones o simetría..." onclick="eStop(event)">
+                </div>
+            </div>
+
+            <!-- 3. SISTEMA VENTRICULAR -->
+            <div class="section-card">
+                <div class="section-title" id="t-sec-ventr">Sistema Ventricular y Mediciones</div>
+                <div class="item-row selected" onclick="toggleRadioRow(this, 'rad-vmorph')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-vmorph" value="normal" checked onclick="eStop(event)">
+                        <div class="item-text" id="opt-vm-normal">Ventrículos simétricos de tamaño normal. Plexos de contornos regulares.</div>
+                    </div>
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-vmorph')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-vmorph" value="asimetria" onclick="eStop(event)">
+                        <div class="item-text" id="opt-vm-asid">Asimetría ventricular fisiológica sin dilatación.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-vm-asid" placeholder="Especificar ventrículo predominante..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-vmorph')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-vmorph" value="dilat_leve" onclick="eStop(event)">
+                        <div class="item-text" id="opt-vm-leve">Dilatación ventricular leve.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-vm-leve" placeholder="Detalles de la dilatación focal o global..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-vmorph')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-vmorph" value="dilat_mod_grave" onclick="eStop(event)">
+                        <div class="item-text" id="opt-vm-mod">Dilatación ventricular moderada / grave.</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-vm-mod" placeholder="Especificar redondeamiento de astas..." onclick="eStop(event)">
+                </div>
+
+                <div class="measurement-container">
+                    <strong style="display:block; margin-bottom:8px; font-size:13px;" id="t-mediciones">Mediciones Especiales y Límites de Normalidad:</strong>
+                    <div class="measurement-row-grid">
+                        <label id="lbl-m-levene">Índice de Levene:</label>
+                        <input type="number" step="0.1" id="med-levene" placeholder="mm">
+                        <span class="normality-reference" id="ref-levene">Normal: &lt; Percentil 95 (~1-2 mm por encima de línea interhemisférica).</span>
+                    </div>
+                    <div class="measurement-row-grid">
+                        <label id="lbl-m-evans">Índice de Evans:</label>
+                        <input type="number" step="0.01" id="med-evans" placeholder="ratio">
+                        <span class="normality-reference" id="ref-evans">Normal: &lt; 0.30</span>
+                    </div>
+                    <div class="measurement-row-grid">
+                        <label id="lbl-m-too">Dist. Tálamo-Occipital:</label>
+                        <input type="number" step="0.1" id="med-too" placeholder="mm">
+                        <span class="normality-reference" id="ref-too">Normal: &lt; 16 mm (Cribado de colpocefalia).</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. PAPILE HIV -->
+            <div class="section-card">
+                <div class="section-title" id="t-sec-hiv">Hemorragia de la Matriz Germinal / HIV</div>
+                <div class="item-row selected" onclick="toggleRadioRow(this, 'rad-papile')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-papile" value="grado0" checked onclick="eStop(event)">
+                        <div class="item-text" id="opt-p0">Sin evidencia de hemorragia intraventricular (Grado 0)</div>
+                    </div>
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-papile')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-papile" value="grado1" onclick="eStop(event)">
+                        <div class="item-text" id="opt-p1">Grado I: Hemorragia subependimaria en la matriz germinal</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-p1" placeholder="Especificar si es unilateral/bilateral..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-papile')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-papile" value="grado2" onclick="eStop(event)">
+                        <div class="item-text" id="opt-p2">Grado II: Hemorragia intraventricular sin dilatación ventricular</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-p2" placeholder="Especificar porcentaje de ocupación..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-papile')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-papile" value="grado3" onclick="eStop(event)">
+                        <div class="item-text" id="opt-p3">Grado III: Hemorragia intraventricular con dilatación de ventrículos laterales</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-p3" placeholder="Especificar si asocia coágulos extensos..." onclick="eStop(event)">
+                </div>
+                <div class="item-row" onclick="toggleRadioRow(this, 'rad-papile')">
+                    <div class="item-header-flex">
+                        <input type="radio" name="rad-papile" value="grado4" onclick="eStop(event)">
+                        <div class="item-text" id="opt-p4">Grado IV: Hemorragia intraventricular con infarto hemorrágico parenquimatós venoso</div>
+                    </div>
+                    <input type="text" class="details-box" id="txt-p4" placeholder="Especificar localización del infarto venoso..." onclick="eStop(event)">
+                </div>
+            </div>
+
+            <!-- 5. DOPPLER INTELIGENTE -->
+            <div class="section-card">
+                <div class="section-title" id="t-sec-doppler">Valoración Doppler Transfontanelar Inteligente</div>
+                <div class="item-row" onclick="toggleCheckboxRow(this, 'chk-doppler'); toggleArea('chk-doppler', 'doppler-sub-content')">
+                    <div class="item-header-flex">
+                        <input type="checkbox" id="chk-doppler" onclick="eStop(event); toggleArea('chk-doppler', 'doppler-sub-content')">
+                        <div class="item-text" id="title-doppler" style="font-weight:700;">Estudio Doppler Dinámico (Arteria Pericallosa / ACM)</div>
+                    </div>
+                </div>
+                <div id="doppler-sub-content" style="display:none; margin-top:10px; padding-left:15px; border-left:2px dashed var(--border-color);">
+                    <div class="measurement-row-grid" style="grid-template-columns: 180px 100px 1fr;">
+                        <label id="lbl-d-ir">Índice de Resistencia (IR):</label>
+                        <input type="number" step="0.01" id="doppler-ir" placeholder="ej. 0.70" oninput="analyzeDopplerIR()">
+                        <span id="ir-analysis-badge" class="doppler-auto-badge"></span>
+                    </div>
+                    <span class="normality-reference" style="display:block; margin-bottom:5px;">Límites: Normal: 0.60 - 0.80 | Elevado: &gt; 0.80 | Disminuido: &lt; 0.60</span>
+                </div>
+            </div>
+
+            <!-- 6. SENOS VENOSOS -->
+            <div class="section-card">
+                <div class="section-title" id="t-sec-senos">Valoración de Senos Venosos (Opcional)</div>
+                <div class="item-row" onclick="toggleCheckboxRow(this, 'chk-senos'); toggleArea('chk-senos', 'senos-sub-content')">
+                    <div class="item-header-flex">
+                        <input type="checkbox" id="chk-senos" onclick="eStop(event); toggleArea('chk-senos', 'senos-sub-content')">
+                        <div class="item-text" id="title-senos" style="font-weight:700;">Estudio de Permeabilidad Venosa</div>
+                    </div>
+                </div>
+                <div id="senos-sub-content" style="display:none; margin-top:10px; padding-left:15px; border-left:2px dashed var(--border-color);">
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <div class="item-row selected" onclick="toggleRadioRow(this, 'rad-senos-desc')">
+                            <div class="item-header-flex">
+                                <input type="radio" name="rad-senos-desc" value="normal" checked onclick="eStop(event)">
+                                <div class="item-text" id="opt-s-normal">Senos venosos durales permeables, con flujo normal.</div>
+                            </div>
+                        </div>
+                        <div class="item-row" onclick="toggleRadioRow(this, 'rad-senos-desc')">
+                            <div class="item-header-flex">
+                                <input type="radio" name="rad-senos-desc" value="sospecha" onclick="eStop(event)">
+                                <div class="item-text" id="opt-s-sospecha">Defecto de llenado / ausencia de señal sugerente de trombosis.</div>
+                            </div>
+                            <input type="text" class="details-box" id="txt-senos-sospecha" placeholder="Especificar seno dural afecto..." onclick="eStop(event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. CONCLUSIÓN PERSONALIZADA -->
+            <div class="section-card">
+                <div class="section-title" id="lbl-custom-conclusion-title">Conclusión Personalizada del Radiólogo (Texto Libre)</div>
+                <textarea id="txt-custom-conclusion" style="width:100%; height:55px; font-size:13px;" placeholder="Escribe aquí consideraciones finales o recomendaciones de seguimiento..."></textarea>
+            </div>
+        </div>
+
+        <!-- RECUADRO FIJO DE INFORME GENERADO -->
+        <div class="output-fixed-area">
+            <div class="section-title" id="t-sec-output" style="margin-bottom:3px;">Informe Estructurado Generado</div>
+            <textarea id="output-text" readonly></textarea>
+            <div class="button-group">
+                <button id="btn-copy" onclick="copyToClipboard()">Copiar al Portapapeles</button>
+                <button id="btn-reset" class="btn-secondary" onclick="resetModule()">Reiniciar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: PDF -->
+    <div class="column-right">
+        <div class="pdf-container">
+            <iframe src="https://piper.espacio-seram.com/index.php/seram/article/view/10551/9017"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    const translations = {
+        es: {
+            title: "Informe Estructurado: Ecografía Transfontanelar",
+            sec_clinical: "Datos Clínicos e Indicación",
+            lbl_eg: "Edad Gestacional (sem):",
+            lbl_ec: "Edad Corregida / Actual:",
+            lbl_indic: "Indicación:",
+            opt_ind_cribado: "Cribado de prematuridad",
+            opt_ind_ehi: "Encefalopatía Hipóxico-Isquémica (EHI)",
+            opt_ind_torch: "Sospecha de infección congénita (TORCH)",
+            opt_ind_macro: "Macrocefalia / Crecimiento de perímetro craneal",
+            opt_ind_clinica: "Sintomatología neurológica (convulsiones, hipotonía)",
+            lbl_ventana: "Calidad de Ventana:",
+            opt_v_buena: "Buena",
+            opt_v_regular: "Regular (fontanela pequeña)",
+            opt_v_mala: "Mala ventana",
+            sec_paren: "Línea Media, Estructuras y Parénquima",
+            sub_lm: "Línea Media y Espacio Extraaxial (Múltiple elección):",
+            opt_lm_normal: "Línea media centrada y espacios extraaxiales normales.",
+            opt_lm_desv: "Desviación de la línea media estructural.",
+            opt_lm_col: "Aumento del espacio subaracnoideo / colección extraaxial.",
+            sub_cc: "Cuerpo Calloso:",
+            opt_cc_normal: "Cuerpo calloso morfológicamente normal, completamente desarrollado.",
+            opt_cc_disg: "Disgenesia / Hipoplasia del cuerpo calloso.",
+            opt_cc_agen: "Agenesia completa del cuerpo calloso.",
+            sub_paren: "Parénquima y Maduración Cortical:",
+            opt_p_normal: "Ecogenicidad y patrón de surcos normales para la edad gestacional.",
+            opt_p_leuco: "Aumento difuso de ecogenicidad periventricular (Flares / congestión).",
+            opt_p_quistica: "Leucomalacia periventricular quística (necrosis focal).",
+            opt_p_ganglios: "Hiperecogenicidad focal/difusa en ganglios de la base / tálamos.",
+            sec_ventr: "Sistema Ventricular y Mediciones",
+            opt_vm_normal: "Ventrículos simétricos de tamaño normal. Plexos de contornos regulares.",
+            opt_vm_asid: "Asimetría ventricular fisiológica sin dilatación.",
+            opt_vm_leve: "Dilatación ventricular leve.",
+            opt_vm_mod: "Dilatación ventricular moderada / grave.",
+            t_mediciones: "Mediciones Especiales y Límites de Normalidad:",
+            lbl_m_levene: "Índice de Levene:",
+            lbl_m_evans: "Índice de Evans:",
+            lbl_m_too: "Dist. Tálamo-Occipital:",
+            sec_hiv: "Hemorragia de la Matriz Germinal / HIV",
+            opt_p0: "Sin evidencia de hemorragia intraventricular (Grado 0)",
+            opt_p1: "Grado I: Hemorragia subependimaria en la matriz germinal",
+            opt_p2: "Grado II: Hemorragia intraventricular sin dilatación ventricular",
+            opt_p3: "Grado III: Hemorragia intraventricular con dilatación de ventrículos laterales",
+            opt_p4: "Grado IV: Hemorragia intraventricular con infarto hemorrágico parenquimatós venoso",
+            sec_doppler: "Valoración Doppler Transfontanelar Inteligente",
+            title_doppler: "Estudio Doppler Dinámico (Arteria Pericallosa / ACM)",
+            lbl_d_ir: "Índice de Resistencia (IR):",
+            t_sec_senos: "Valoración de Senos Venosos (Opcional)",
+            title_senos: "Estudio de Permeabilidad Venosa",
+            opt_s_normal: "Senos venosos durales permeables, con flujo normal.",
+            opt_s_sospecha: "Defecto de llenado / ausencia de señal sugerente de trombosis.",
+            sec_output: "Informe Estructurado Generado",
+            lbl_custom_conclusion_title: "Conclusión Personalizada del Radiólogo (Texto Libre)",
+            btn_copy: "Copiar al Portapapeles",
+            btn_reset: "Reiniciar",
+            badge_normal: "NORMAL",
+            badge_elevated: "ELEVADO",
+            badge_decreased: "DISMINUIDO"
+        },
+        ca: {
+            title: "Informe Estructurat: Ecografia Transfontanellar",
+            sec_clinical: "Dades Clíniques i Indicació",
+            lbl_eg: "Edat Gestacional (sem):",
+            lbl_ec: "Edat Corregida / Actual:",
+            lbl_indic: "Indicació:",
+            opt_ind_cribado: "Cribratge de prematuritat",
+            opt_ind_ehi: "Encefalopatia Hipòxico-Isquèmica (EHI)",
+            opt_ind_torch: "Sospita d'infecció congènita (TORCH)",
+            opt_ind_macro: "Macrocefàlia / Creixement de perímetre cranial",
+            opt_ind_clinica: "Simptomatologia neurològica (convulsions, hipotonia)",
+            lbl_ventana: "Qualitat de la Finestra:",
+            opt_v_buena: "Bona",
+            opt_v_regular: "Regular (fontanella petita)",
+            opt_v_mala: "Mala finestra",
+            sec_paren: "Línia Mitjana, Estructures i Parènquima",
+            sub_lm: "Línia Mitjana i Espai Extraaxial (Múltiple elecció):",
+            opt_lm_normal: "Línia mitjana centrada i espais extraaxials normals.",
+            opt_lm_desv: "Desviació de la línia mitjana estructural.",
+            opt_lm_col: "Augment de l'espai subaracnoidal / col·lecció extraaxial.",
+            sub_cc: "Cos Callós:",
+            opt_cc_normal: "Cos callós morfològicament normal, completament desenvolupat.",
+            opt_cc_disg: "Disgènesia / Hipoplàsia del cos callós.",
+            opt_cc_agen: "Agènesi completa del cos callós.",
+            sub_paren: "Parènquima i Maduració Cortical:",
+            opt_p_normal: "Ecogenicitat i patró de barres i girs normals per a l'edat gestacional.",
+            opt_p_leuco: "Augment difús de l'ecogenicitat periventricular (Flares / congestió).",
+            opt_p_quistica: "Leucomalàcia periventricular quística (necrosi focal).",
+            opt_p_ganglios: "Hiperecogenicitat focal/difusa en ganglis de la base / tàlems.",
+            sec_ventr: "Sistema Ventricular i Mesures",
+            opt_vm_normal: "Ventricles simètrics de mida normal. Plexes de contorns regulars.",
+            opt_vm_asid: "Asimetria ventricular fisiològica sense dilatació.",
+            opt_vm_leve: "Dilatació ventricular lleu.",
+            opt_vm_mod: "Dilatació ventricular moderada / greu.",
+            t_mediciones: "Mesures Especials i Límits de Normalitat:",
+            lbl_m_levene: "Índex de Levene:",
+            lbl_m_evans: "Índex d'Evans:",
+            lbl_m_too: "Dist. Tàlem-Occipital:",
+            sec_hiv: "Hemorràgia de la Matriu Germinal / HIV",
+            opt_p0: "Sense evidència d'hemorràgia intraventricular (Grau 0)",
+            opt_p1: "Grau I: Hemorràgia subependimària a la matriu germinal",
+            opt_p2: "Grau II: Hemorràgia intraventricular sense dilatació ventricular",
+            opt_p3: "Grau III: Hemorràgia intraventricular amb dilatació de ventricles laterals",
+            opt_p4: "Grau IV: Hemorràgia intraventricular amb infart hemorràgic parenquimatós venós",
+            sec_doppler: "Valoració Doppler Transfontanellar Intel·ligent",
+            title_doppler: "Estudi Doppler Dinàmic (Artèria Pericallosa / ACM)",
+            lbl_d_ir: "Índex de Resistència (IR):",
+            t_sec_senos: "Valoració de Sins Venosos (Opcional)",
+            title_senos: "Estudi de Permeabilitat Venosa",
+            opt_s_normal: "Sins venosos durals permeables, amb flux normal.",
+            opt_s_sospecha: "Defecte d'ompliment / absència de senyal suggerent de trombosi.",
+            sec_output: "Informe Estructurat Generat",
+            lbl_custom_conclusion_title: "Conclusió Personalitzada del Radiòleg (Text Lliure)",
+            btn_copy: "Copiar al Portapapers",
+            btn_reset: "Reiniciar",
+            badge_normal: "NORMAL",
+            badge_elevated: "ELEVAT",
+            badge_decreased: "DISMINUÏT"
+        },
+        en: {
+            title: "Structured Report: Transfontanellar Ultrasound",
+            sec_clinical: "Clinical Data & Indication",
+            lbl_eg: "Gestational Age (weeks):",
+            lbl_ec: "Corrected / Current Age:",
+            lbl_indic: "Indication:",
+            opt_ind_cribado: "Prematurity screening",
+            opt_ind_ehi: "Hypoxic-Ischemic Encephalopathy (HIE)",
+            opt_ind_torch: "Suspected congenital infection (TORCH)",
+            opt_ind_macro: "Macrocephaly / Head circumference growth",
+            opt_ind_clinica: "Neurological symptoms (seizures, hypotonia)",
+            lbl_ventana: "Window Quality:",
+            opt_v_buena: "Good",
+            opt_v_regular: "Fair (small fontanelle)",
+            opt_v_mala: "Poor window",
+            sec_paren: "Midline, Structures & Parenchyma",
+            sub_lm: "Midline & Extra-axial Space (Multiple choice):",
+            opt_lm_normal: "Midline centered and normal extra-axial spaces.",
+            opt_lm_desv: "Structural midline shift.",
+            opt_lm_col: "Increased subarachnoid space / extra-axial collection.",
+            sub_cc: "Corpus Callosum:",
+            opt_cc_normal: "Morphologically normal corpus callosum, fully developed.",
+            opt_cc_disg: "Corpus callosum dysgenesis / hypoplasia.",
+            opt_cc_agen: "Complete agenesis of the corpus callosum.",
+            sub_paren: "Parenchyma & Cortical Maturation:",
+            opt_p_normal: "Normal echogenicity and sulcation pattern for gestational age.",
+            opt_p_leuco: "Diffuse increased periventricular echogenicity (Flares / congestion).",
+            opt_p_quistica: "Cystic periventricular leukomalacia (focal necrosis).",
+            opt_p_ganglios: "Focal/diffuse hyperechogenicity in basal ganglia / thalami.",
+            sec_ventr: "Ventricular System & Measurements",
+            opt_vm_normal: "Symmetrical ventricles of normal size. Smooth choroid plexus contours.",
+            opt_vm_asid: "Physiological ventricular asymmetry without dilatation.",
+            opt_vm_leve: "Mild ventricular dilatation.",
+            opt_vm_mod: "Moderate / severe ventricular dilatation.",
+            t_mediciones: "Special Measurements & Normality Limits:",
+            lbl_m_levene: "Levene Index:",
+            lbl_m_evans: "Evans Index:",
+            lbl_m_too: "Thalamo-Occipital Distance:",
+            sec_hiv: "Germinal Matrix Hemorrhage / IVH",
+            opt_p0: "No evidence of intraventricular hemorrhage (Grade 0)",
+            opt_p1: "Grade I: Subependymal germinal matrix hemorrhage",
+            opt_p2: "Grade II: Intraventricular hemorrhage without ventricular dilatation",
+            opt_p3: "Grade III: Intraventricular hemorrhage with ventricular dilatation",
+            opt_p4: "Grade IV: Intraventricular hemorrhage with venous parenchymal hemorrhagic infarction",
+            sec_doppler: "Intelligent Transfontanellar Doppler Assessment",
+            title_doppler: "Dynamic Doppler Study (Pericallosal Artery / MCA)",
+            lbl_d_ir: "Resistive Index (RI):",
+            t_sec_senos: "Venous Sinuses Evaluation (Optional)",
+            title_senos: "Venous Patency Study",
+            opt_s_normal: "Dural venous sinuses patent, with normal flow profile.",
+            opt_s_sospecha: "Filling defect / absent signal suggestive of thrombosis.",
+            sec_output: "Generated Structured Report",
+            lbl_custom_conclusion_title: "Radiologist's Custom Conclusion (Free Text)",
+            btn_copy: "Copy to Clipboard",
+            btn_reset: "Reset",
+            badge_normal: "NORMAL",
+            badge_elevated: "ELEVATED",
+            badge_decreased: "DECREASED"
+        }
+    };
+
+    function eStop(e) { e.stopPropagation(); }
+
+    function toggleCheckboxRow(row, checkboxId) {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+            row.classList.toggle('selected', checkbox.checked);
+            if (checkboxId === 'chk-lm-normal' && checkbox.checked) {
+                document.getElementById('chk-lm-desv').checked = false;
+                document.getElementById('chk-lm-desv').closest('.item-row').classList.remove('selected');
+                document.getElementById('chk-lm-col').checked = false;
+                document.getElementById('chk-lm-col').closest('.item-row').classList.remove('selected');
+            } else if ((checkboxId === 'chk-lm-desv' || checkboxId === 'chk-lm-col') && checkbox.checked) {
+                document.getElementById('chk-lm-normal').checked = false;
+                document.getElementById('chk-lm-normal').closest('.item-row').classList.remove('selected');
+            }
+        }
+        generateReport();
+    }
+
+    function handleLmNormalLogic(cb) {
+        if(cb.checked) {
+            document.getElementById('chk-lm-desv').checked = false;
+            document.getElementById('chk-lm-desv').closest('.item-row').classList.remove('selected');
+            document.getElementById('chk-lm-col').checked = false;
+            document.getElementById('chk-lm-col').closest('.item-row').classList.remove('selected');
+        }
+        cb.closest('.item-row').classList.toggle('selected', cb.checked);
+        generateReport();
+    }
+
+    function handleLmPatLogic(cb) {
+        if(cb.checked) {
+            document.getElementById('chk-lm-normal').checked = false;
+            document.getElementById('chk-lm-normal').closest('.item-row').classList.remove('selected');
+        }
+        cb.closest('.item-row').classList.toggle('selected', cb.checked);
+        generateReport();
+    }
+
+    function toggleRadioRow(row, radioName) {
+        const radio = row.querySelector(`input[name="${radioName}"]`);
+        if (radio) {
+            radio.checked = true;
+            document.querySelectorAll(`input[name="${radioName}"]`).forEach(r => {
+                r.closest('.item-row').classList.remove('selected');
+            });
+            row.classList.add('selected');
+        }
+        generateReport();
+    }
+
+    function toggleArea(chkId, targetId) {
+        const chk = document.getElementById(chkId).checked;
+        document.getElementById(targetId).style.display = chk ? 'block' : 'none';
+        generateReport();
+    }
+
+    function analyzeDopplerIR() {
+        const irInput = document.getElementById('doppler-ir').value;
+        const badge = document.getElementById('ir-analysis-badge');
+        const lang = document.getElementById('lang-select').value;
+        const t = translations[lang];
+        if (!irInput || isNaN(irInput)) { badge.className = "doppler-auto-badge"; badge.innerText = ""; return; }
+        const ir = parseFloat(irInput);
+        if (ir >= 0.60 && ir <= 0.80) { badge.className = "doppler-auto-badge badge-normal"; badge.innerText = t.badge_normal; }
+        else if (ir > 0.80) { badge.className = "doppler-auto-badge badge-elevated"; badge.innerText = t.badge_elevated; }
+        else if (ir < 0.60) { badge.className = "doppler-auto-badge badge-decreased"; badge.innerText = t.badge_decreased; }
+        generateReport();
+    }
+
+    document.querySelectorAll('input, select, textarea').forEach(element => {
+        element.addEventListener('input', generateReport);
+        element.addEventListener('change', generateReport);
+    });
+
+    function changeTheme() {
+        const theme = document.getElementById('theme-select').value;
+        if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        else document.documentElement.removeAttribute('data-theme');
+    }
+
+    function changeLanguage() {
+        const lang = document.getElementById('lang-select').value;
+        const t = translations[lang];
+        document.getElementById('main-title').innerText = t.title;
+        document.getElementById('t-sec-clinical').innerText = t.sec_clinical;
+        document.getElementById('lbl-eg').innerText = t.lbl_eg;
+        document.getElementById('lbl-ec').innerText = t.lbl_ec;
+        document.getElementById('lbl-indic').innerText = t.lbl_indic;
+        document.getElementById('opt-ind-cribado').innerText = t.opt_ind_cribado;
+        document.getElementById('opt-ind-ehi').innerText = t.opt_ind_ehi;
+        document.getElementById('opt-ind-torch').innerText = t.opt_ind_torch;
+        document.getElementById('opt-ind-macro').innerText = t.opt_ind_macro;
+        document.getElementById('opt-ind-clinica').innerText = t.opt_ind_clinica;
+        document.getElementById('lbl-ventana').innerText = t.lbl_ventana;
+        document.getElementById('opt-v-buena').innerText = t.opt_v_buena;
+        document.getElementById('opt-v-regular').innerText = t.opt_v_regular;
+        document.getElementById('opt-v-mala').innerText = t.opt_v_mala;
+        document.getElementById('t-sec-paren').innerText = t.sec_paren;
+        document.getElementById('sub-lm').innerText = t.sub_lm;
+        document.getElementById('opt-lm-normal').innerText = t.opt_lm_normal;
+        document.getElementById('opt-lm-desv').innerText = t.opt_lm_desv;
+        document.getElementById('opt-lm-col').innerText = t.opt_lm_col;
+        document.getElementById('sub-cc').innerText = t.sub_cc;
+        document.getElementById('opt-cc-normal').innerText = t.opt_cc_normal;
+        document.getElementById('opt-cc-disg').innerText = t.opt_cc_disg;
+        document.getElementById('opt-cc-agen').innerText = t.opt_cc_agen;
+        document.getElementById('sub-paren').innerText = t.sub_paren;
+        document.getElementById('opt-p-normal').innerText = t.opt_p_normal;
+        document.getElementById('opt-p-leuco').innerText = t.opt_p_leuco;
+        document.getElementById('opt-p-quistica').innerText = t.opt_p_quistica;
+        document.getElementById('opt-p-ganglios').innerText = t.opt_p_ganglios;
+        document.getElementById('t-sec-ventr').innerText = t.sec_ventr;
+        document.getElementById('opt-vm-normal').innerText = t.opt_vm_normal;
+        document.getElementById('opt-vm-asid').innerText = t.opt_vm_asid;
+        document.getElementById('opt-vm-leve').innerText = t.opt_vm_leve;
+        document.getElementById('opt-vm-mod').innerText = t.opt_vm_mod;
+        document.getElementById('t-mediciones').innerText = t.t_mediciones;
+        document.getElementById('lbl-m-levene').innerText = t.lbl_m_levene;
+        document.getElementById('lbl-m-evans').innerText = t.lbl_m_evans;
+        document.getElementById('lbl-m-too').innerText = t.lbl_m_too;
+        document.getElementById('t-sec-hiv').innerText = t.sec_hiv;
+        document.getElementById('opt-p0').innerText = t.opt_p0;
+        document.getElementById('opt-p1').innerText = t.opt_p1;
+        document.getElementById('opt-p2').innerText = t.opt_p2;
+        document.getElementById('opt-p3').innerText = t.opt_p3;
+        document.getElementById('opt-p4').innerText = t.opt_p4;
+        document.getElementById('t-sec-doppler').innerText = t.sec_doppler;
+        document.getElementById('title-doppler').innerText = t.title_doppler;
+        document.getElementById('lbl-d-ir').innerText = t.lbl_d_ir;
+        document.getElementById('t-sec-senos').innerText = t.t_sec_senos;
+        document.getElementById('title-senos').innerText = t.title_senos;
+        document.getElementById('opt-s-normal').innerText = t.opt_s_normal;
+        document.getElementById('opt-s-sospecha').innerText = t.opt_s_sospecha;
+        document.getElementById('lbl-custom-conclusion-title').innerText = t.lbl_custom_conclusion_title;
+        document.getElementById('t-sec-output').innerText = t.sec_output;
+        document.getElementById('btn-copy').innerText = t.btn_copy;
+        document.getElementById('btn-reset').innerText = t.btn_reset;
+        analyzeDopplerIR();
+    }
+
+    function generateReport() {
+        const lang = document.getElementById('lang-select').value;
+        const eg = document.getElementById('input-eg').value;
+        const ec = document.getElementById('input-ec').value;
+        const indicVal = document.getElementById('select-indic').value;
+        const ventanaVal = document.getElementById('select-ventana').value;
+        const valLevene = document.getElementById('med-levene').value;
+        const valEvans = document.getElementById('med-evans').value;
+        const valToo = document.getElementById('med-too').value;
+        const chmLmNormal = document.getElementById('chk-lm-normal').checked;
+        const chmLmDesv = document.getElementById('chk-lm-desv').checked;
+        const chmLmCol = document.getElementById('chk-lm-col').checked;
+        const tLmDesv = document.getElementById('txt-lm-desv').value;
+        const tLmCol = document.getElementById('txt-lm-col').value;
+        const radCc = document.querySelector('input[name="rad-cc"]:checked').value;
+        const tCcDisg = document.getElementById('txt-cc-disg').value;
+        const tCcAgen = document.getElementById('txt-cc-agen').value;
+        const radParen = document.querySelector('input[name="rad-paren"]:checked').value;
+        const tPLeuco = document.getElementById('txt-p-leuco').value;
+        const tPQuistica = document.getElementById('txt-p-quistica').value;
+        const tPGanglios = document.getElementById('txt-p-ganglios').value;
+        const radV_morph = document.querySelector('input[name="rad-vmorph"]:checked').value;
+        const tVmAsid = document.getElementById('txt-vm-asid').value;
+        const tVmLeve = document.getElementById('txt-vm-leve').value;
+        const tVmMod = document.getElementById('txt-vm-mod').value;
+        const radPapile = document.querySelector('input[name="rad-papile"]:checked').value;
+        const tP1 = document.getElementById('txt-p1').value;
+        const tP2 = document.getElementById('txt-p2').value;
+        const tP3 = document.getElementById('txt-p3').value;
+        const tP4 = document.getElementById('txt-p4').value;
+        const chkDoppler = document.getElementById('chk-doppler').checked;
+        const valIr = document.getElementById('doppler-ir').value;
+        const chkSenos = document.getElementById('chk-senos').checked;
+        const radSenosDesc = document.querySelector('input[name="rad-senos-desc"]:checked').value;
+        const tSenos = document.getElementById('txt-senos-sospecha').value;
+        const customConclusion = document.getElementById('txt-custom-conclusion').value;
+
+        let txt = "";
+        if (lang === "es") {
+            txt += "ECOGRAFÍA TRANSFONTANELAR (NEUROSONOGRAFÍA NEONATAL)\n";
+            txt += "========================================================\n\n";
+            txt += `Datos clínicos: EG al nacer: ${eg ? eg + ' semanas' : 'No constada'}. Edad corregida: ${ec ? ec : 'No constada'}.\n`;
+            let indText = "Cribado / control evolutivo.";
+            if (indicVal === "ehi") indText = "Encefalopatía Hipóxico-Isquémica (EHI).";
+            if (indicVal === "torch") indText = "Sospecha de infección congénita (TORCH).";
+            if (indicVal === "macrocefalia") indText = "Macrocefalia / Crecimiento del perímetro craneal.";
+            if (indicVal === "clinica") indText = "Sintomatología neurológica clínica.";
+            txt += `Indicación: ${indText}\n`;
+            txt += `Calidad de ventana acústica: Fontanela ${ventanaVal}.\n\n`;
+            txt += "HALLAZGOS MORFOLÓGICOS:\n";
+            if (chmLmNormal) txt += "- Línea media centrada. Espacio extraaxial subaracnoideo e interhemisférico de amplitud normal.\n";
+            else {
+                if (chmLmDesv) txt += `- Desviación de la línea media estructural. ${tLmDesv ? '[' + tLmDesv + ']' : ''}\n`;
+                if (chmLmCol) txt += `- Aumento del espacio extraaxial subaracnoideo / presencia de colección líquida. ${tLmCol ? '[' + tLmCol + ']' : ''}\n`;
+            }
+            if (radCc === "normal") txt += "- Cuerpo calloso completamente desarrollado, de morfología normal.\n";
+            if (radCc === "disgenesia") txt += `- Signos de disgenesia / hipoplasia parcial del cuerpo calloso. ${tCcDisg ? '[' + tCcDisg + ']' : ''}\n`;
+            if (radCc === "agenesia") txt += `- Agenesia completa del cuerpo calloso. ${tCcAgen ? '[' + tCcAgen + ']' : ''}\n`;
+            if (radParen === "normal") txt += "- Parénquima cerebral con diferenciación sustancia blanca/gris conservada y patrón de giros normal.\n";
+            if (radParen === "leuco_difuso") txt += `- Aumento difuso de la ecogenicidad periventricular (Flares). ${tPLeuco ? '[' + tPLeuco + ']' : ''}\n`;
+            if (radParen === "leuco_quistica") txt += `- Múltiples cavitaciones quísticas periventriculares (Leucomalacia). ${tPQuistica ? '[' + tPQuistica + ']' : ''}\n`;
+            if (radParen === "ganglios") txt += `- Hiperecogenicidad focal/difusa en ganglios de la base o tálamos. ${tPGanglios ? '[' + tPGanglios + ']' : ''}\n`;
+            if (radV_morph === "normal") txt += "- Sistema ventricular simétrico y de tamaño normal.\n";
+            if (radV_morph === "asimetria") txt += `- Asimetría ventricular fisiológica sin dilatación significativa. ${tVmAsid ? '[' + tVmAsid + ']' : ''}\n`;
+            if (radV_morph === "dilat_leve") txt += `- Dilatación ventricular lateral leve. ${tVmLeve ? '[' + tVmLeve + ']' : ''}\n`;
+            if (radV_morph === "dilat_mod_grave") txt += `- Dilatación ventricular moderada-grave con redondeamiento de astas. ${tVmMod ? '[' + tVmMod + ']' : ''}\n`;
+            if (valLevene || valEvans || valToo) {
+                txt += " Medidas ventriculares reales y relación de normalidad:\n";
+                if (valLevene) txt += `   * Índice de Levene: ${valLevene} mm (Normal: < Percentil 95).\n`;
+                if (valEvans) txt += `   * Índice de Evans: ${valEvans} (Normal: < 0.30).\n`;
+                if (valToo) txt += `   * Distancia Tálamo-Occipital: ${valToo} mm (Normal: < 16 mm).\n`;
+            }
+            txt += "\nCLASIFICACIÓN DE HEMORRAGIA INTRAVENTRICULAR (PAPILE):\n";
+            if (radPapile === "grado0") txt += "- Grado 0: Sin evidencia de hemorragia subependimaria ni intraventricular.\n";
+            if (radPapile === "grado1") txt += `- Grado I: Hemorragia de la matriz germinal subependimaria. ${tP1 ? '[' + tP1 + ']' : ''}\n`;
+            if (radPapile === "grado2") txt += `- Grado II: Hemorragia intraventricular sin dilatación. ${tP2 ? '[' + tP2 + ']' : ''}\n`;
+            if (radPapile === "grado3") txt += `- Grado III: Hemorragia intraventricular con dilatación asociada. ${tP3 ? '[' + tP3 + ']' : ''}\n`;
+            if (radPapile === "grado4") txt += `- Grado IV: Hemorragia intraventricular con infarto hemorrágico parenquimatoso venoso. ${tP4 ? '[' + tP4 + ']' : ''}\n`;
+            if (chkDoppler) {
+                txt += "\nESTUDIO DOPPLER TRANSFONTANELAR AUTOMATIZADO:\n";
+                if (valIr) {
+                    const ir = parseFloat(valIr);
+                    let irDesc = "Dentro de los límites de la normalidad (0.60 - 0.80).";
+                    if (ir > 0.80) irDesc = "ELEVADO (> 0.80), sugestivo de hipertensión intracraneal.";
+                    if (ir < 0.60) irDesc = "DISMINUIDO (< 0.60), sugestivo de pérdida de autorregulación o lujo de perfusión.";
+                    txt += `   * Índice de Resistencia (IR): ${valIr} -> Parámetro ${irDesc}\n`;
+                }
+            }
+            if (chkSenos) {
+                txt += "\nVALORACIÓN DE SENOS VENOSOS INTRACRANEALES:\n";
+                if (radSenosDesc === "normal") txt += "- Senos durales permeables con flujo normal.\n";
+                if (radSenosDesc === "sospecha") txt += `- Defecto de llenado compatible con sospecha de Trombosis Venosa. ${tSenos ? '[' + tSenos + ']' : ''}\n`;
+            }
+            txt += "\nCONCLUSIÓN:\n";
+            if (customConclusion.trim() !== "") txt += customConclusion;
+            else {
+                if (radPapile === "grado0" && radParen === "normal" && radV_morph === "normal" && radCc === "normal" && chmLmNormal) txt += "Estudio ecográfico transfontanelar normal para la edad gestacional corregida.";
+                else txt += "Estudio ecográfico transfontanelar con hallazgos patológicos descritos arriba.";
+            }
+        } else if (lang === "ca") {
+            txt += "ECOGRAFIA TRANSFONTANELLAR (NEUROSONOGRAFIA NEONATAL)\n";
+            txt += "========================================================\n\n";
+            txt += `Dades clíniques: EG al néixer: ${eg ? eg + ' setmanes' : 'No constada'}. Edat corregida: ${ec ? ec : 'No constada'}.\n`;
+            txt += "TROBALLES MORFOLÒGIQUES:\n";
+            if (chmLmNormal) txt += "- Línia mitjana centrada i espais extraaxials normals.\n";
+            else {
+                if (chmLmDesv) txt += `- Desviació de la línia mitjana estructural. ${tLmDesv ? '[' + tLmDesv + ']' : ''}\n`;
+                if (chmLmCol) txt += `- Augment de l'espai extraaxial subaracnoidal / col·lecció líquida. ${tLmCol ? '[' + tLmCol + ']' : ''}\n`;
+            }
+            if (radCc === "normal") txt += "- Cos callós completament desenvolupat, normal per a l'edat gestacional.\n";
+            if (radCc === "disgenesia") txt += `- Signes de disgènesia / hipoplàsia parcial del cos callós. ${tCcDisg ? '[' + tCcDisg + ']' : ''}\n`;
+            if (radCc === "agenesia") txt += `- Agènesi completa del cos callós. ${tCcAgen ? '[' + tCcAgen + ']' : ''}\n`;
+            if (radParen === "normal") txt += "- Parènquima cerebral amb diferenciació substància blanca/grisa conservada.\n";
+            if (radParen === "leuco_difuso") txt += `- Augment difús de l'ecogenicitat periventricular (Flares).\ ${tPLeuco ? '[' + tPLeuco + ']' : ''}\n`;
+            if (radParen === "leuco_quistica") txt += `- Múltiples cavitacions quístiques compatibles amb Leucomalàcia. ${tPQuistica ? '[' + tPQuistica + ']' : ''}\n`;
+            if (radV_morph === "normal") txt += "- Sistema ventricular simètric i de mida normal.\n";
+            if (radV_morph === "asimetria") txt += `- Asimetria ventricular fisiològica. ${tVmAsid ? '[' + tVmAsid + ']' : ''}\n`;
+            if (radV_morph === "dilat_leve") txt += `- Dilatació ventricular lateral lleu. ${tVmLeve ? '[' + tVmLeve + ']' : ''}\n`;
+            if (radV_morph === "dilat_mod_grave") txt += `- Dilatació ventricular moderada-grau. ${tVmMod ? '[' + tVmMod + ']' : ''}\n`;
+            if (valLevene || valEvans || valToo) {
+                txt += " Mesures ventriculars i normalitat:\n";
+                if (valLevene) txt += `   * Índex de Levene: ${valLevene} mm.\n`;
+                if (valEvans) txt += `   * Índex d'Evans: ${valEvans}.\n`;
+                if (valToo) txt += `   * Distància Tàlem-Occipital: ${valToo} mm.\n`;
+            }
+            txt += "\nCLASSIFICACIÓ D'HEMORRÀGIA INTRAVENTRICULAR (PAPILE):\n";
+            if (radPapile === "grado0") txt += "- Grau 0: Sense evidència d'hemorràgia subependimària ni intraventricular.\n";
+            if (radPapile === "grado1") txt += `- Grau I: Hemorràgia de la matriu germinal subependimària. ${tP1 ? '[' + tP1 + ']' : ''}\n`;
+            if (radPapile === "grado2") txt += `- Grau II: Hemorràgia intraventricular sense dilatació. ${tP2 ? '[' + tP2 + ']' : ''}\n`;
+            if (radPapile === "grado3") txt += `- Grau III: Hemorràgia intraventricular amb dilatació. ${tP3 ? '[' + tP3 + ']' : ''}\n`;
+            if (radPapile === "grado4") txt += `- Grau IV: Hemorràgia intraventricular amb infart hemorràgic parenquimatós venós. ${tP4 ? '[' + tP4 + ']' : ''}\n`;
+            if (chkDoppler && valIr) {
+                const ir = parseFloat(valIr);
+                let irDesc = "Dins dels límits normals.";
+                if (ir > 0.80) irDesc = "ELEVAT (> 0.80), sopesa hipertensió intracranial.";
+                if (ir < 0.60) irDesc = "DISMINUÏT (< 0.60), suggerent de luxe de perfusió.";
+                txt += `   * Índex de Resistència (IR): ${valIr} -> ${irDesc}\n`;
+            }
+            if (chkSenos) txt += `- Sospita de Trombosi Venosa dural. ${tSenos ? '[' + tSenos + ']' : ''}\n`;
+            txt += "\nCONCLUSIÓ:\n";
+            if (customConclusion.trim() !== "") txt += customConclusion;
+            else txt += "Estudi ecogràfic transfontanelar amb les troballes descrites.";
+        } else {
+            txt += "TRANSFONTANELLAR ULTRASOUND (NEONATAL NEUROSONOGRAPHY)\n";
+            txt += "========================================================\n\n";
+            txt += `Clinical Data: GA at birth: ${eg ? eg + ' weeks' : 'Not specified'}. Corrected age: ${ec ? ec : 'Not specified'}.\n`;
+            txt += "MORPHOLOGICAL FINDINGS:\n";
+            if (chmLmNormal) txt += "- Midline centered. Normal extra-axial spaces.\n";
+            else {
+                if (chmLmDesv) txt += `- Structural midline shift. ${tLmDesv ? '[' + tLmDesv + ']' : ''}\n`;
+                if (chmLmCol) txt += `- Increased extra-axial space. ${tLmCol ? '[' + tLmCol + ']' : ''}\n`;
+            }
+            if (radCc === "normal") txt += "- Corpus callosum fully developed and within normal limits.\n";
+            if (radCc === "disgenesia") txt += `- Corpus callosum dysgenesis. ${tCcDisg ? '[' + tCcDisg + ']' : ''}\n`;
+            if (radCc === "agenesia") txt += `- Complete agenesis of the corpus callosum. ${tCcAgen ? '[' + tCcAgen + ']' : ''}\n`;
+            if (radParen === "normal") txt += "- Cerebral parenchyma with preserved white/gray matter differentiation.\n";
+            if (radParen === "leuco_difuso") txt += `- Diffuse increased periventricular echogenicity (flares). ${tPLeuco ? '[' + tPLeuco + ']' : ''}\n`;
+            if (radParen === "leuco_quistica") txt += `- Multiple periventricular cystic lesions (Cystic PVL). ${tPQuistica ? '[' + tPQuistica + ']' : ''}\n`;
+            if (radV_morph === "normal") txt += "- Symmetric ventricular system of normal size.\n";
+            if (radV_morph === "asimetria") txt += `- Physiological ventricular asymmetry. ${tVmAsid ? '[' + tVmAsid + ']' : ''}\n`;
+            if (radV_morph === "dilat_leve") txt += `- Mild lateral ventricular dilatation. ${tVmLeve ? '[' + tVmLeve + ']' : ''}\n`;
+            if (radV_morph === "dilat_mod_grave") txt += `- Moderate-to-severe ventricular dilatation. ${tVmMod ? '[' + tVmMod + ']' : ''}\n`;
+            if (valLevene || valEvans || valToo) {
+                txt += " Ventricular measurements and references:\n";
+                if (valLevene) txt += `   * Levene Index: ${valLevene} mm (Normal: < P95).\n`;
+                if (valEvans) txt += `   * Evans Index: ${valEvans} (Normal: < 0.30).\n`;
+                if (valToo) txt += `   * Thalamo-Occipital Distance: ${valToo} mm (Normal: < 16 mm).\n`;
+            }
+            txt += "\nINTRAVENTRICULAR HEMORRHAGE CLASSIFICATION (PAPILE):\n";
+            if (radPapile === "grado0") txt += "- Grade 0: No subependymal or intraventricular hemorrhage.\n";
+            if (radPapile === "grado1") txt += `- Grade I: Subependymal germinal matrix hemorrhage. ${tP1 ? '[' + tP1 + ']' : ''}\n`;
+            if (radPapile === "grado2") txt += `- Grade II: Intraventricular hemorrhage without ventricular dilatation. ${tP2 ? '[' + tP2 + ']' : ''}\n`;
+            if (radPapile === "grado3") txt += `- Grade III: Intraventricular hemorrhage with associated lateral ventricular dilatation. ${tP3 ? '[' + tP3 + ']' : ''}\n`;
+            if (radPapile === "grado4") txt += `- Grade IV: Intraventricular hemorrhage with venous parenchymal hemorrhagic infarction. ${tP4 ? '[' + tP4 + ']' : ''}\n`;
+            if (chkDoppler && valIr) {
+                const ir = parseFloat(valIr);
+                let irDesc = "Within normal limits (0.60 - 0.80).";
+                if (ir > 0.80) irDesc = "ELEVATED (> 0.80), suggestive of increased intracranial pressure.";
+                if (ir < 0.60) irDesc = "DECREASED (< 0.60), suggestive of hyperemic luxury perfusion.";
+                txt += `   * Resistive Index (RI): ${valIr} -> Parameter is ${irDesc}\n`;
+            }
+            txt += "\nCONCLUSION:\n";
+            if (customConclusion.trim() !== "") txt += customConclusion;
+            else txt += "Transfontanellar ultrasound study with findings detailed above.";
+        }
+        document.getElementById('output-text').value = txt;
+    }
+
+    function copyToClipboard() {
+        const textarea = document.getElementById('output-text');
+        textarea.select();
+        document.execCommand('copy');
+        alert('Copiado al portapapeles');
+    }
+
+    function resetModule() {
+        document.getElementById('input-eg').value = "";
+        document.getElementById('input-ec').value = "";
+        document.getElementById('med-levene').value = "";
+        document.getElementById('med-evans').value = "";
+        document.getElementById('med-too').value = "";
+        document.getElementById('doppler-ir').value = "";
+        document.getElementById('txt-custom-conclusion').value = "";
+        document.querySelectorAll('.details-box').forEach(box => box.value = "");
+        document.getElementById('chk-lm-normal').checked = true;
+        document.getElementById('chk-lm-desv').checked = false;
+        document.getElementById('chk-lm-col').checked = false;
+        document.querySelector('input[name="rad-cc"][value="normal"]').checked = true;
+        document.querySelector('input[name="rad-paren"][value="normal"]').checked = true;
+        document.querySelector('input[name="rad-vmorph"][value="normal"]').checked = true;
+        document.querySelector('input[name="rad-papile"][value="grado0"]').checked = true;
+        document.getElementById('chk-doppler').checked = false;
+        toggleArea('chk-doppler', 'doppler-sub-content');
+        document.getElementById('chk-senos').checked = false;
+        toggleArea('chk-senos', 'senos-sub-content');
+        document.querySelectorAll('.item-row').forEach(row => {
+            const rInput = row.querySelector('input[type="radio"]');
+            const cInput = row.querySelector('input[type="checkbox"]');
+            if (rInput) row.classList.toggle('selected', rInput.checked);
+            if (cInput) row.classList.toggle('selected', cInput.checked);
+        });
+        analyzeDopplerIR();
+    }
+</script>
+</body>
+</html>
