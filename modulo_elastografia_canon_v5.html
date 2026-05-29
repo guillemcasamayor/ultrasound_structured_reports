@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Informe Estructurado - Canon Medical Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --accent-color: #0056b3;
+            --border-color: #cccccc;
+            --card-bg: #f8f9fa;
+            --button-bg: #0056b3;
+            --button-text: #ffffff;
+            --badge-ok: #28a745;
+            --badge-error: #dc3545;
+            --badge-warning: #ffc107;
+            --badge-warning-text: #000000;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --accent-color: #3b82f6;
+            --border-color: #444444;
+            --card-bg: #111111;
+            --button-bg: #3b82f6;
+            --button-text: #ffffff;
+            --badge-ok: #198754;
+            --badge-error: #dc3545;
+            --badge-warning: #ffc107;
+            --badge-warning-text: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .controls-top {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        select, input, textarea {
+            font-family: 'Ubuntu', sans-serif;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .main-container {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .column-left, .column-right {
+            display: table-cell;
+            vertical-align: top;
+            width: 50%;
+        }
+
+        .column-left {
+            padding-right: 15px;
+        }
+
+        .column-right {
+            padding-left: 15px;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .form-col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .form-col:first-child {
+            padding-right: 10px;
+        }
+
+        .form-col:last-child {
+            padding-left: 10px;
+        }
+
+        .form-col input, .form-col select {
+            width: 100%;
+        }
+
+        .indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .badge-ok { background-color: var(--badge-ok); color: white; }
+        .badge-error { background-color: var(--badge-error); color: white; }
+        .badge-warning { background-color: var(--badge-warning); color: var(--badge-warning-text); }
+
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        table.info-table th, table.info-table td {
+            border: 1px solid var(--border-color);
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        table.info-table th {
+            background-color: var(--card-bg);
+            font-weight: 500;
+        }
+
+        .output-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        textarea.report-box {
+            width: 100%;
+            height: 250px;
+            resize: vertical;
+            font-family: 'Ubuntu', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .btn-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-family: 'Ubuntu', sans-serif;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: opacity 0.2s;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .alert-toast {
+            display: none;
+            background-color: var(--badge-ok);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-weight: 500;
+            z-index: 1000;
+        }
+
+        details.image-details {
+            margin-top: 15px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px;
+        }
+
+        details.image-details summary {
+            font-weight: bold;
+            color: var(--accent-color);
+            cursor: pointer;
+            outline: none;
+            padding: 4px;
+            font-size: 13px;
+        }
+
+        .reference-image-container {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .canon-screenshot {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-top: 5px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="main-title">Módulo de Informe Estructurado - Elastografía y ATI (Canon)</h1>
+        <div class="controls-top">
+            <select id="lang-selector" onchange="changeLanguage()">
+                <option value="es" selected>Castellano</option>
+                <option value="ca">Català</option>
+                <option value="en">English</option>
+            </select>
+            <select id="theme-selector" onchange="changeTheme()">
+                <option value="light" selected>Modo Claro</option>
+                <option value="dark">Modo Oscuro</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="column-left">
+            <div class="card">
+                <h2 id="section-data-title">Introducción de Datos</h2>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label id="lbl-patient-id" for="patient-id">ID Paciente / NHC:</label>
+                            <input type="text" id="patient-id" placeholder="Opcional..." oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label id="lbl-operator" for="operator">Radiólogo/a:</label>
+                            <input type="text" id="operator" placeholder="Iniciales o nombre..." oninput="updateReport()">
+                        </div>
+                    </div>
+                </div>
+
+                <h3 id="sub-swe-title" style="color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 3px; margin-bottom: 12px;">2D-SWE (Rigidez Hepática)</h3>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label id="lbl-swe-median" for="swe-median">Mediana de Rigidez (kPa):</label>
+                            <input type="number" id="swe-median" step="0.1" min="0" placeholder="Ej: 6.2" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label id="lbl-swe-iqrm" for="swe-iqrm">IQR / Mediana (Valor absoluto, ej: 0.13):</label>
+                            <input type="number" id="swe-iqrm" step="0.01" min="0" max="2" placeholder="Ej: 0.13" oninput="updateReport()">
+                            <div id="swe-quality-badge" class="indicator" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label id="lbl-swe-aq" for="swe-aq">Adquisiciones Válidas:</label>
+                            <input type="number" id="swe-aq" min="0" value="5" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        &nbsp;
+                    </div>
+                </div>
+
+                <h3 id="sub-ati-title" style="color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 3px; margin-bottom: 12px;">ATI (Atenuación Hepática / Esteatosis)</h3>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label id="lbl-ati-median" for="ati-median">Coeficiente de Atenuación (dB/cm/MHz):</label>
+                            <input type="number" id="ati-median" step="0.01" min="0" placeholder="Ej: 0.68" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label id="lbl-ati-r2" for="ati-r2">Coeficiente R² medio (Opcional):</label>
+                            <input type="number" id="ati-r2" step="0.01" min="0" max="1" placeholder="Ej: 0.94" oninput="updateReport()">
+                            <div id="ati-quality-badge" class="indicator" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 id="sub-bmode-title" style="color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 3px; margin-bottom: 12px;">Ecografía Modo B y Doppler</h3>
+                <div class="form-group">
+                    <label id="lbl-bmode-morph" for="bmode-morph">Morfología hepática y contornos:</label>
+                    <select id="bmode-morph" onchange="updateReport()">
+                        <option value="normal" selected>Normales, ecoestructura homogénea</option>
+                        <option value="altered">Contornos lobulados / irregularidad de superficie sugestiva de hepatopatía crónica</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="lbl-bmode-portal" for="bmode-portal">Eje esplenoportar y signos de hipertensión portal:</label>
+                    <select id="bmode-portal" onchange="updateReport()">
+                        <option value="normal" selected>Eje esplenoportal permeable de calibre normal, flujo hepatópeto</option>
+                        <option value="ht" >Signos indirectos de hipertensión portal (esplenomegalia / dilatación portal / flujo invertido)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="column-right">
+            <div class="card">
+                <h2 id="guide-main-title">Guía de Soporte Técnico y de Calidad (Canon)</h2>
+                
+                <h3 id="guide-sec1-title">1. Requisitos del Procedimiento</h3>
+                <ul>
+                    <li id="guide-sec1-li1"><strong>Ayuno:</strong> Mínimo de 4-6 horas (fundamental para evitar flujos portales posprandiales que elevan la rigidez).</li>
+                    <li id="guide-sec1-li2"><strong>Posición:</strong> Decúbito supino o ligero decúbito lateral izquierdo (<30°), con el brazo derecho extendido sobre la cabeza.</li>
+                    <li id="guide-sec1-li3"><strong>Ubicación del ROI:</strong> Abordaje intercostal, segmentos hepáticos derechos (V, VII u VIII), evitando grandes vasos y a 1.5 - 2 cm de la cápsula hepática.</li>
+                    <li id="guide-sec1-li4"><strong>Apnea:</strong> Suspensión respiratoria en espiración pasiva y relajada. Evitar Valsalva.</li>
+                </ul>
+
+                <h3 id="guide-sec2-title">2. Criterios de Calidad Técnicos</h3>
+                <ul>
+                    <li id="guide-sec2-li1"><strong>2D-SWE:</strong> Número de adquisiciones válidas ≥ 5. El cociente IQR/Mediana debe ser <strong>≤ 0.30</strong> en valor absoluto.</li>
+                    <li id="guide-sec2-li2"><strong>ATI:</strong> Se evalúa mediante el mapa de coeficientes. Si está disponible en pantalla, el parámetro ideal es un <strong>R² ≥ 0.90</strong>.</li>
+                </ul>
+
+                <h3 id="guide-sec3-title">3. Puntos de Corte e Interpretación</h3>
+                <strong id="tbl-swe-header">Rigidez Hepática (2D-SWE - Regla de los 4 de la SRU):</strong>
+                <table class="info-table">
+                    <thead>
+                        <tr><th>Valor (kPa)</th><th id="th-swe-interp">Interpretación Clínica</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>&lt; 5 kPa</td><td id="td-swe-1">Normal / Ausencia de fibrosis significativa</td></tr>
+                        <tr><td>5 - 9 kPa</td><td id="td-swe-2">Baja probabilidad de cACLD (Hepatopatía Crónica Avanzada Compensada)</td></tr>
+                        <tr><td>9 - 13 kPa</td><td id="td-swe-3">Zona gris / Sugestivo de cACLD (correlacionar clínicamente)</td></tr>
+                        <tr><td>&gt; 13 kPa</td><td id="td-swe-4">Alta probabilidad de cACLD (Fibrosis avanzada / Cirrosis)</td></tr>
+                    </tbody>
+                </table>
+
+                <br>
+                <strong id="tbl-ati-header">Atenuación Hepática (ATI Canon para Esteatosis / MASLD):</strong>
+                <table class="info-table">
+                    <thead>
+                        <tr><th>Valor (dB/cm/MHz)</th><th id="th-ati-interp">Grado de Esteatosis</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>&lt; 0.63</td><td id="td-ati-1">Grado 0 (Sin esteatosis significativa)</td></tr>
+                        <tr><td>0.63 - 0.70</td><td id="td-ati-2">Grado 1 (Esteatosis Leve)</td></tr>
+                        <tr><td>0.70 - 0.77</td><td id="td-ati-3">Grado 2 (Esteatosis Moderada)</td></tr>
+                        <tr><td>&gt; 0.77</td><td id="td-ati-4">Grado 3 (Esteatosis Grave)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="guide-img-title" style="margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 10px;">Referencia Interfaz de Usuario Canon</h3>
+                
+                <details class="image-details">
+                    <summary id="lbl-img-swe">▸ Ver ejemplo de pantalla: Elastografía (IQR/Med absoluto)</summary>
+                    <div class="reference-image-container">
+                        <img src="https://i.postimg.cc/pT5j14nS/Elastografia.png" alt="Pantalla Elastografía Canon" class="canon-screenshot">
+                    </div>
+                </details>
+
+                <details class="image-details">
+                    <summary id="lbl-img-ati">▸ Ver ejemplo de pantalla: ATI (Atenuación y R²)</summary>
+                    <div class="reference-image-container">
+                        <img src="https://i.postimg.cc/B6PFwk1Y/ATI.png" alt="Pantalla ATI Canon" class="canon-screenshot">
+                    </div>
+                </details>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="output-section">
+        <h2 id="report-section-title">Informe Estructurado Generado</h2>
+        <textarea id="report-output" class="report-box" readonly placeholder="Introduzca datos para autogenerar el informe..."></textarea>
+        <div class="btn-container">
+            <button class="btn-secondary" id="btn-reset" onclick="resetForm()">Reiniciar Módulo</button>
+            <button class="btn-primary" id="btn-copy" onclick="copyToClipboard()">Copiar al Portapapeles</button>
+        </div>
+    </div>
+
+    <div id="toast" class="alert-toast">¡Informe copiado con éxito!</div>
+
+    <script>
+        const translations = {
+            es: {
+                mainTitle: "Módulo de Informe Estructurado - Elastografía y ATI (Canon)",
+                sectionDataTitle: "Introducción de Datos",
+                patientId: "ID Paciente / NHC:",
+                operator: "Radiólogo/a:",
+                sweTitle: "2D-SWE (Rigidez Hepática)",
+                sweMedian: "Mediana de Rigidez (kPa):",
+                sweIqrm: "IQR / Mediana (Valor absoluto, ej: 0.13):",
+                sweAq: "Adquisiciones Válidas:",
+                atiTitle: "ATI (Atenuación Hepática / Esteatosis)",
+                atiMedian: "Coeficiente de Atenuación (dB/cm/MHz):",
+                atiR2: "Coeficiente R² medio (Opcional):",
+                bmodeTitle: "Ecografía Modo B y Doppler",
+                bmodeMorph: "Morfología hepática y contornos:",
+                bmodePortal: "Eje esplenoportar y signos de hipertensión portal:",
+                morphNormal: "Normales, ecoestructura homogénea",
+                morphAltered: "Contornos lobulados / irregularidad de superficie sugestiva de hepatopatía crónica",
+                portalNormal: "Eje esplenoportal permeable de calibre normal, flujo hepatópeto",
+                portalHt: "Signos indirectos de hipertensión portal (esplenomegalia / dilatación portal / flujo invertido)",
+                guideMainTitle: "Guía de Soporte Técnico y de Calidad (Canon)",
+                guideSec1Title: "1. Requisitos del Procedimiento",
+                guideSec1Li1: "<strong>Ayuno:</strong> Mínimo de 4-6 horas (fundamental para evitar flujos portales posprandiales que elevan la rigidez).",
+                guideSec1Li2: "<strong>Posición:</strong> Decúbito supino o ligero decúbito lateral izquierdo (<30°), con el brazo derecho extendido sobre la cabeza.",
+                guideSec1Li3: "<strong>Ubicación del ROI:</strong> Abordaje intercostal, segmentos hepáticos derechos (V, VII u VIII), evitando grandes vasos y a 1.5 - 2 cm de la cápsula hepática.",
+                guideSec1Li4: "<strong>Apnea:</strong> Suspensión respiratoria en espiración pasiva y relajada. Evitar Valsalva.",
+                guideSec2Title: "2. Criterios de Calidad Técnicos",
+                guideSec2Li1: "<strong>2D-SWE:</strong> Número de adquisiciones válidas ≥ 5. El cociente IQR/Mediana debe ser <strong>≤ 0.30</strong> en valor absoluto.",
+                guideSec2Li2: "<strong>ATI:</strong> Se evalúa mediante el mapa de coeficientes. Si está disponible en pantalla, el parámetro ideal es un <strong>R² ≥ 0.90</strong>.",
+                guideSec3Title: "3. Puntos de Corte e Interpretación",
+                tblSweHeader: "Rigidez Hepática (2D-SWE - Regla de los 4 de la SRU):",
+                thSweInterp: "Interpretación Clínica",
+                tdSwe1: "Normal / Ausencia de fibrosis significativa",
+                tdSwe2: "Baja probabilidad de cACLD (Hepatopatía Crónica Avanzada Compensada)",
+                tdSwe3: "Zona gris / Sugestivo de cACLD (correlacionar clínicamente)",
+                tdSwe4: "Alta probabilidad de cACLD (Fibrosis avanzada / Cirrosis)",
+                tblAtiHeader: "Atenuación Hepática (ATI Canon para Esteatosis / MASLD):",
+                thAtiInterp: "Grado de Esteatosis",
+                tdAti1: "Grado 0 (Sin esteatosis significativa)",
+                tdAti2: "Grado 1 (Esteatosis Leve)",
+                tdAti3: "Grado 2 (Esteatosis Moderada)",
+                tdAti4: "Grado 3 (Esteatosis Grave)",
+                reportSectionTitle: "Informe Estructurado Generado",
+                btnReset: "Reiniciar Módulo",
+                btnCopy: "Copiar al Portapapeles",
+                toastTxt: "¡Informe copiado con éxito!",
+                lblImgSwe: "▸ Ver ejemplo de pantalla: Elastografía (IQR/Med absoluto)",
+                lblImgAti: "▸ Ver ejemplo de pantalla: ATI (Atenuación y R²)",
+                guideImgTitle: "Referencia Interfaz de Usuario Canon",
+                
+                repHeader: "INFORME DE ECOGRAFÍA HEPÁTICA CUANTITATIVA (2D-SWE y ATI)
+=======================================================",
+                repPatient: "ID Paciente: ",
+                repOperator: "Radiólogo/a: ",
+                repTechniqueTitle: "
+TÉCNICA Y PROTOCOLO DE ESTUDIO:",
+                repTechniqueBody: "Estudio realizado en equipo ecográfico Canon (Aplio i-series) mediante abordaje intercostal derecho en segmentos hepáticos posteriores, garantizando ayuno previo >4 horas, posición en decúbito supino con brazo extendido y apnea espiratoria relajada.",
+                repSweTitle: "
+ELASTOGRAFÍA HEPÁTICA BIPROPORCIONAL (2D-SWE):",
+                repAtiTitle: "
+CUANTIFICACIÓN DE ATENUACIÓN HEPÁTICA (ATI):",
+                repBmodeTitle: "
+ECOGRAFÍA MODO B Y DOPPLER ASOCIADOS:",
+                repConclTitle: "
+CONCLUSIÓN:",
+                repReliable: "FIABLE",
+                repNotReliable: "NO FIABLE (supera umbrales de variabilidad de control de calidad)",
+                repOptionalAtiQuality: "MEDICIÓN TRANSFERIDA A PACS (Coeficiente R² no disponible en estático, se asume criterio visual de mapa homogéneo)",
+                repSweResults: " - Mediana de rigidez hepática: {median} kPa
+ - Variabilidad (IQR/Mediana): {iqrm} (valor absoluto)
+ - Número de muestras válidas: {aq}
+ - Control de calidad técnica: {quality}",
+                repAtiResults: " - Coeficiente de atenuación medio: {median} dB/cm/MHz
+ - Coeficiente de determinación técnica (R² medio): {r2}
+ - Control de calidad técnica: {quality}",
+                
+                sweInterp1: "Valores de rigidez dentro de la normalidad (<5 kPa). Ausencia de datos de fibrosis hepática significativa.",
+                sweInterp2: "Rigidez hepática entre 5-9 kPa. Baja probabilidad de hepatopatía crónica avanzada compensada (cACLD).",
+                sweInterp3: "Rigidez hepática en zona gris (9-13 kPa). Hallazgos sugestivos de hepatopatía crónica avanzada compensada (cACLD) con necesidad de correlación clínica o analítica.",
+                sweInterp4: "Rigidez hepática elevada (>13 kPa). Alta probabilidad de hepatopatía crónica avanzada compensada (cACLD) / fibrosis avanzada-cirrosis.",
+                sweInterpInvalid: "Estudio elastográfico de baja fiabilidad técnica (IQR/M absoluto > 0.30 o mediciones insuficientes). No es posible realizar una gradación segura.",
+                
+                atiInterp0: "Coeficiente de atenuación normal (<0.63 dB/cm/MHz). Ausencia de esteatosis hepática significativa (Grado 0).",
+                atiInterp1: "Coeficiente de atenuación discretamente elevado (0.63-0.70 dB/cm/MHz), compatible con esteatosis hepática leve (Grado 1).",
+                atiInterp2: "Coeficiente de atenuación moderadamente elevado (0.70-0.77 dB/cm/MHz), compatible con esteatosis hepática moderada (Grado 2).",
+                atiInterp3: "Coeficiente de atenuación marcadamente elevado (>0.77 dB/cm/MHz), compatible con esteatosis hepática grave (Grado 3).",
+                atiInterpInvalid: "Cuantificación de atenuación (ATI) no fiable técnicamente debido a un coeficiente R² inferior a 0.90 en la consola.",
+                
+                conclFibrosis: " - Estadificación de Rigidez (SRU): ",
+                conclEsteatosis: " - Cuantificación de Esteatosis (ATI Canon): "
+            },
+            ca: {
+                mainTitle: "Mòdul d'Informe Estructurat - Elastografia i ATI (Canon)",
+                sectionDataTitle: "Introducció de Dades",
+                patientId: "ID Pacient / NHC:",
+                operator: "Radiòleg/oga:",
+                sweTitle: "2D-SWE (Rigidesa Hepàtica)",
+                sweMedian: "Mediana de Rigidesa (kPa):",
+                sweIqrm: "IQR / Mediana (Valor absolut, ex: 0.13):",
+                sweAq: "Adquisicions Vàlides:",
+                atiTitle: "ATI (Atenuació Hepàtica / Esteatosi)",
+                atiMedian: "Coeficient d'Atenuació (dB/cm/MHz):",
+                atiR2: "Coeficient R² mitjà (Opcional):",
+                bmodeTitle: "Ecografia Mode B i Doppler",
+                bmodeMorph: "Morfologia hepàtica i contornos:",
+                bmodePortal: "Eix esplenoportal i signes d'hipertensió portal:",
+                morphNormal: "Normals, ecoestructura homogènia",
+                morphAltered: "Contorns lobulats / irregularitat de superfície suggestiva d'hepatopatia crònica",
+                portalNormal: "Eix esplenoportal permeable de calibre normal, flux hepatòpet",
+                portalHt: "Signes indirectes d'hipertensió portal (esplenomegàlia / dilatació portal / flux invertit)",
+                guideMainTitle: "Guia de Suport Tècnic i de Qualitat (Canon)",
+                guideSec1Title: "1. Requisits del Procediment",
+                guideSec1Li1: "<strong>Ajuni:</strong> Mínim de 4-6 hores (fonamental para evitar fluxos portals postprandials que elevan la rigidesa).",
+                guideSec1Li2: "<strong>Posició:</strong> Decúbit supí o lleuger decúbit lateral esquerre (<30°), amb el braç dret extès sobre el cap.",
+                guideSec1Li3: "<strong>Ubicació del ROI:</strong> Abordatge intercostal, segments hepàtics drets (V, VII o VIII), evitant grans vasos i a 1.5 - 2 cm de la càpsula hepàtica.",
+                guideSec1Li4: "<strong>Apnea:</strong> Suspensió respiratòria en expiració passiva i relaxada. Evitar Valsalva.",
+                guideSec2Title: "2. Criteris de Qualitat Tècnics",
+                guideSec2Li1: "<strong>2D-SWE:</strong> Nombre d'adquisicions vàlides ≥ 5. El quocient IQR/Mediana ha de ser <strong>≤ 0.30</strong> en valor absolut.",
+                guideSec2Li2: "<strong>ATI:</strong> S'avalua mitjançant el mapa de coeficients. Si està disponible a la pantalla, el paràmetre ideal és un <strong>R² ≥ 0.90</strong>.",
+                guideSec3Title: "3. Punts de Tall i Interpretació",
+                tblSweHeader: "Rigidesa Hepàtica (2D-SWE - Regla dels 4 de la SRU):",
+                thSweInterp: "Interpretació Clínica",
+                tdSwe1: "Normal / Absència de fibrosi significativa",
+                tdSwe2: "Baixa probabilitat de cACLD (Hepatopatia Crònica Avançada Compensada)",
+                tdSwe3: "Zona grisa / Suggestiu de cACLD (correlacionar clínicament)",
+                tdSwe4: "Alta probabilitat de cACLD (Fibrosi avançada / Cirrosi)",
+                tblAtiHeader: "Atenuació Hepàtica (ATI Canon per a Esteatosi / MASLD):",
+                thAtiInterp: "Grau d'Esteatosi",
+                tdAti1: "Grau 0 (Sense esteatosi significativa)",
+                tdAti2: "Grau 1 (Esteatosi Lleu)",
+                tdAti3: "Grau 2 (Esteatosi Moderada)",
+                tdAti4: "Grau 3 (Esteatosi Greu)",
+                reportSectionTitle: "Informe Estructurat Generat",
+                btnReset: "Reiniciar Mòdul",
+                btnCopy: "Copiar al Portapapers",
+                toastTxt: "Informe copiat amb èxit!",
+                lblImgSwe: "▸ Veure exemple de pantalla: Elastografia (IQR/Med absolut)",
+                lblImgAti: "▸ Veure exemple de pantalla: ATI (Atenuació i coeficient R²)",
+                guideImgTitle: "Referència Interfície d'Usuari Canon",
+                
+                repHeader: "INFORME D'ECOGRAFIA HEPÀTICA QUANTITATIVA (2D-SWE i ATI)
+=======================================================",
+                repPatient: "ID Pacient: ",
+                repOperator: "Radiòleg/oga: ",
+                repTechniqueTitle: "
+TÈCNICA I PROTOCOL D'ESTUDI:",
+                repTechniqueBody: "Estudi realitzat en equip ecogràfic Canon (Aplio i-series) mitjançant abordatge intercostal dret en segments hepàtics posteriors, garantint ajuni previ >4 hores, posició en decúbit supí amb braç extès i apnea respiratòria relaxada.",
+                repSweTitle: "
+ELASTOGRAFIA HEPÀTICA BIPROPORCIONAL (2D-SWE):",
+                repAtiTitle: "
+CUANTIFICACIÓ D'ATENUACIÓ HEPÀTICA (ATI):",
+                repBmodeTitle: "
+ECOGRAFIA MODE B I DOPPLER ASSOCIATS:",
+                repConclTitle: "
+CONCLUSIÓ:",
+                repReliable: "FIABLE",
+                repNotReliable: "NO FIABLE (supera els llindars de variabilitat de control de qualitat)",
+                repOptionalAtiQuality: "MESURAMENT TRANSFERIT A PACS (Coeficient R² no disponible en estàtic, s'assumeix criteri visual de mapa homogeni)",
+                repSweResults: " - Mediana de rigidesa hepàtica: {median} kPa
+ - Variabilitat (IQR/Mediana): {iqrm} (valor absolut)
+ - Nombre de mostres vàlides: {aq}
+ - Control de qualitat tècnica: {quality}",
+                repAtiResults: " - Coeficient d'atenuació mitjà: {median} dB/cm/MHz
+ - Coeficient de determinació tècnica (R² mitjà): {r2}
+ - Control de qualitat tècnica: {quality}",
+                
+                sweInterp1: "Valors de rigidesa dins de la normalitat (<5 kPa). Absència de dades de fibrosi hepàtica significativa.",
+                sweInterp2: "Rigidesa hepàtica entre 5-9 kPa. Baixa probabilitat d'hepatopatia crònica avançada compensada (cACLD).",
+                sweInterp3: "Rigidesa hepàtica en zona grisa (9-13 kPa). Troballes suggestives d'hepatopatia crònica avançada compensada (cACLD) amb necessitat de correllació clínica o analítica.",
+                sweInterp4: "Rigidesa hepàtica elevada (>13 kPa). Alta probabilitat d'hepatopatia crònica avançada compensada (cACLD) / fibrosi avançada-cirrosi.",
+                sweInterpInvalid: "Estudi elastogràfic de baixa fiabilitat tècnica (IQR/M absolut > 0.30 o amidaments suficients). No és possible realizar una gradació segura.",
+                
+                atiInterp0: "Coeficient d'atenuació normal (<0.63 dB/cm/MHz). Absència d'esteatosi hepàtica significativa (Grau 0).",
+                atiInterp1: "Coeficient d'atenuació lleument elevat (0.63-0.70 dB/cm/MHz), compatible amb esteatosi hepàtica lleu (Grau 1).",
+                atiInterp2: "Coeficient d'atenuació moderadament elevat (0.70-0.77 dB/cm/MHz), compatible amb esteatosi hepàtica moderada (Grau 2).",
+                atiInterp3: "Coeficient d'atenuació marcadament elevat (>0.77 dB/cm/MHz), compatible com a esteatosi hepàtica greu (Grau 3).",
+                atiInterpInvalid: "Quantificació d'atenuació (ATI) no fiable tècnicament a causa d'un coeficient R² inferior a 0.90 a la consola.",
+                
+                conclFibrosis: " - Estadiatge de Rigidesa (SRU): ",
+                conclEsteatosis: " - Quantificació d'Esteatosi (ATI Canon): "
+            },
+            en: {
+                mainTitle: "Structured Reporting Module - Liver Elastography & ATI (Canon)",
+                sectionDataTitle: "Data Input",
+                patientId: "Patient ID / Chart:",
+                operator: "Radiologist:",
+                sweTitle: "2D-SWE (Liver Stiffness)",
+                sweMedian: "Stiffness Median (kPa):",
+                sweIqrm: "IQR / Median (Absolute value, e.g. 0.13):",
+                sweAq: "Valid Acquisitions:",
+                atiTitle: "ATI (Liver Attenuation / Steatosis)",
+                atiMedian: "Attenuation Coefficient (dB/cm/MHz):",
+                atiR2: "Mean R² Coefficient (Optional):",
+                bmodeTitle: "B-Mode Ultrasound & Doppler",
+                bmodeMorph: "Liver morphology and contours:",
+                bmodePortal: "Splenoportar axis and portal hypertension signs:",
+                morphNormal: "Normal, homogeneous echoarchitecture",
+                morphAltered: "Lobulated contours / surface irregularity suggestive of chronic liver disease",
+                portalNormal: "Patent splenoportar axis of normal caliber, hepatopetal flow",
+                portalHt: "Indirect signs of portal hypertension (splenomegaly / portal dilatation / reversed flow)",
+                guideMainTitle: "Technical & Quality Support Guide (Canon)",
+                guideSec1Title: "1. Procedure Requirements",
+                guideSec1Li1: "<strong>Fasting:</strong> Minimum 4-6 hours (essential to avoid postprandial portal flow that falsely increases stiffness).",
+                guideSec1Li2: "<strong>Positioning:</strong> Supine or slight left lateral decubitus (<30°), with the right arm extended above the head.",
+                guideSec1Li3: "<strong>ROI Placement:</strong> Intercostal approach, right liver segments (V, VII, or VIII), avoiding large vessels and 1.5 - 2 cm below the liver capsule.",
+                guideSec1Li4: "<strong>Breath-hold:</strong> Respiratory suspension in passive and relaxed expiration. Avoid Valsalva maneuver.",
+                guideSec2Title: "2. Technical Quality Criteria",
+                guideSec2Li1: "<strong>2D-SWE:</strong> Number of valid acquisitions ≥ 5. IQR/Median ratio must be <strong>≤ 0.30</strong> in absolute value.",
+                guideSec2Li2: "<strong>ATI:</strong> Evaluated through the attenuation coefficient map. If available on screen, the ideal parameter is <strong>R² ≥ 0.90</strong>.",
+                guideSec3Title: "3. Cut-off Points & Interpretation",
+                tblSweHeader: "Liver Stiffness (2D-SWE - SRU Rule of 4):",
+                thSweInterp: "Clinical Interpretation",
+                tdSwe1: "Normal / Absence of significant fibrosis",
+                tdSwe2: "Low probability of cACLD (Compensated Advanced Chronic Liver Disease)",
+                tdSwe3: "Grey zone / Suggestive of cACLD (clinical correlation needed)",
+                tdSwe4: "High probability of cACLD (Advanced fibrosis / Cirrhosis)",
+                tblAtiHeader: "Liver Attenuation (Canon ATI for Steatosis / MASLD):",
+                thAtiInterp: "Steatosis Grade",
+                tdAti1: "Grade 0 (No significant steatosis)",
+                tdAti2: "Grade 1 (Mild Steatosis)",
+                tdAti3: "Grade 2 (Moderate Steatosis)",
+                tdAti4: "Grade 3 (Severe Steatosis)",
+                reportSectionTitle: "Generated Structured Report",
+                btnReset: "Reset Module",
+                btnCopy: "Copy to Clipboard",
+                toastTxt: "Report copied successfully!",
+                lblImgSwe: "▸ See screen example: Elastography (Absolute IQR/Med)",
+                lblImgAti: "▸ See screen example: ATI (Attenuation and R²)",
+                guideImgTitle: "Canon User Interface Reference",
+                
+                repHeader: "QUANTITATIVE LIVER ULTRASOUND REPORT (2D-SWE & ATI)
+=======================================================",
+                repPatient: "Patient ID: ",
+                repOperator: "Radiologist: ",
+                repTechniqueTitle: "
+TECHNIQUE AND STUDY PROTOCOL:",
+                repTechniqueBody: "Real-time quantitative ultrasound examination performed on a Canon equipment (Aplio i-series) using a right intercostal approach in posterior liver segments. Prior fasting >4 hours, supine positioning with extended right arm, and relaxed expiratory breath-hold were guaranteed.",
+                repSweTitle: "
+2D SHEAR WAVE ELASTOGRAPHY (2D-SWE):",
+                repAtiTitle: "
+ATTENUATION IMAGING LIVER QUANTIFICATION (ATI):",
+                repBmodeTitle: "
+ASSOCIATED B-MODE ULTRASOUND & DOPPLER:",
+                repConclTitle: "
+CONCLUSION:",
+                repReliable: "RELIABLE",
+                repNotReliable: "UNRELIABLE (exceeds quality control variability thresholds)",
+                repOptionalAtiQuality: "MEASUREMENT TRANSFERRED TO PACS (R² coefficient not available on static images, visual criteria of homogeneous map is assumed)",
+                repSweResults: " - Liver stiffness median: {median} kPa
+ - Variability (IQR/Median): {iqrm} (absolute value)
+ - Number of valid samples: {aq}
+ - Technical quality control: {quality}",
+                repAtiResults: " - Mean attenuation coefficient: {median} dB/cm/MHz
+ - Technical determination coefficient (mean R²): {r2}
+ - Technical quality control: {quality}",
+                
+                sweInterp1: "Stiffness values within normal limits (<5 kPa). No evidence of significant liver fibrosis.",
+                sweInterp2: "Liver stiffness between 5-9 kPa. Low probability of compensated advanced chronic liver disease (cACLD).",
+                sweInterp3: "Liver stiffness in grey zone (9-13 kPa). Findings suggestive of compensated advanced chronic liver disease (cACLD); clinical or laboratory correlation is recommended.",
+                sweInterp4: "Elevated liver stiffness (>13 kPa). High probability of compensated advanced chronic liver disease (cACLD) / advanced fibrosis-cirrhosis.",
+                sweInterpInvalid: "Elastography study with low technical reliability (Absolute IQR/M > 0.30 or insufficient measurements). Safe staging cannot be performed.",
+                
+                atiInterp0: "Normal attenuation coefficient (<0.63 dB/cm/MHz). Absence of significant hepatic steatosis (Grade 0).",
+                atiInterp1: "Slightly elevated attenuation coefficient (0.63-0.70 dB/cm/MHz), compatible with mild hepatic steatosis (Grade 1).",
+                atiInterp2: "Moderately elevated attenuation coefficient (0.70-0.77 dB/cm/MHz), compatible with moderate hepatic steatosis (Grade 2).",
+                atiInterp3: "Markedly elevated attenuation coefficient (>0.77 dB/cm/MHz), compatible with severe hepatic steatosis (Grade 3).",
+                atiInterpInvalid: "Attenuation quantification (ATI) technically unreliable due to a mean R² coefficient below 0.90 on live console.",
+                
+                conclFibrosis: " - Stiffness Staging (SRU): ",
+                conclEsteatosis: " - Steatosis Quantification (Canon ATI): "
+            }
+        };
+
+        function changeTheme() {
+            const theme = document.getElementById('theme-selector').value;
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById('lang-selector').value;
+            const t = translations[lang];
+
+            document.getElementById('main-title').innerText = t.mainTitle;
+            document.getElementById('section-data-title').innerText = t.sectionDataTitle;
+            document.getElementById('lbl-patient-id').innerText = t.patientId;
+            document.getElementById('lbl-operator').innerText = t.operator;
+            document.getElementById('sub-swe-title').innerText = t.sweTitle;
+            document.getElementById('lbl-swe-median').innerText = t.sweMedian;
+            document.getElementById('lbl-swe-iqrm').innerText = t.sweIqrm;
+            document.getElementById('lbl-swe-aq').innerText = t.sweAq;
+            document.getElementById('sub-ati-title').innerText = t.atiTitle;
+            document.getElementById('lbl-ati-median').innerText = t.atiMedian;
+            document.getElementById('lbl-ati-r2').innerText = t.atiR2;
+            document.getElementById('sub-bmode-title').innerText = t.bmodeTitle;
+            document.getElementById('lbl-bmode-morph').innerText = t.bmodeMorph;
+            document.getElementById('lbl-bmode-portal').innerText = t.bmodePortal;
+            
+            const mSelect = document.getElementById('bmode-morph');
+            mSelect.options[0].text = t.morphNormal;
+            mSelect.options[1].text = t.morphAltered;
+            
+            const pSelect = document.getElementById('bmode-portal');
+            pSelect.options[0].text = t.portalNormal;
+            pSelect.options[1].text = t.portalHt;
+
+            document.getElementById('guide-main-title').innerText = t.guideMainTitle;
+            document.getElementById('guide-sec1-title').innerText = t.guideSec1Title;
+            document.getElementById('guide-sec1-li1').innerHTML = t.guideSec1Li1;
+            document.getElementById('guide-sec1-li2').innerHTML = t.guideSec1Li2;
+            document.getElementById('guide-sec1-li3').innerHTML = t.guideSec1Li3;
+            document.getElementById('guide-sec1-li4').innerHTML = t.guideSec1Li4;
+            document.getElementById('guide-sec2-title').innerText = t.guideSec2Title;
+            document.getElementById('guide-sec2-li1').innerHTML = t.guideSec2Li1;
+            document.getElementById('guide-sec2-li2').innerHTML = t.guideSec2Li2;
+            document.getElementById('guide-sec3-title').innerText = t.guideSec3Title;
+            
+            // CORRECCIÓN CLAVE: IDs correctamente alineados con el HTML
+            document.getElementById('td-swe-1').innerText = t.tdSwe1;
+            document.getElementById('td-swe-2').innerText = t.tdSwe2;
+            document.getElementById('td-swe-3').innerText = t.tdSwe3;
+            document.getElementById('td-swe-4').innerText = t.tdSwe4;
+            
+            document.getElementById('td-ati-1').innerText = t.tdAti1;
+            document.getElementById('td-ati-2').innerText = t.tdAti2;
+            document.getElementById('td-ati-3').innerText = t.tdAti3;
+            document.getElementById('td-ati-4').innerText = t.tdAti4;
+
+            document.getElementById('report-section-title').innerText = t.reportSectionTitle;
+            document.getElementById('btn-reset').innerText = t.btnReset;
+            document.getElementById('btn-copy').innerText = t.btnCopy;
+            
+            document.getElementById('lbl-img-swe').innerText = t.lblImgSwe;
+            document.getElementById('lbl-img-ati').innerText = t.lblImgAti;
+            document.getElementById('guide-img-title').innerText = t.guideImgTitle;
+
+            updateReport();
+        }
+
+        function updateReport() {
+            const lang = document.getElementById('lang-selector').value;
+            const t = translations[lang];
+
+            const patientId = document.getElementById('patient-id').value || "---";
+            const operator = document.getElementById('operator').value || "---";
+            
+            const sweMedianVal = parseFloat(document.getElementById('swe-median').value);
+            const sweIqrmVal = parseFloat(document.getElementById('swe-iqrm').value);
+            const sweAqVal = parseInt(document.getElementById('swe-aq').value);
+            
+            const atiMedianVal = parseFloat(document.getElementById('ati-median').value);
+            const atiR2Input = document.getElementById('ati-r2').value;
+            const atiR2Val = atiR2Input === "" ? null : parseFloat(atiR2Input);
+            
+            const bmodeMorph = document.getElementById('bmode-morph').value;
+            const bmodePortal = document.getElementById('bmode-portal').value;
+
+            // Control SWE
+            let sweIsReliable = true;
+            let sweQualityText = t.repReliable;
+            const badgeSwe = document.getElementById('swe-quality-badge');
+            
+            if (!isNaN(sweIqrmVal)) {
+                if (sweIqrmVal > 0.30 || sweAqVal < 5) {
+                    sweIsReliable = false;
+                    sweQualityText = t.repNotReliable;
+                    badgeSwe.className = "indicator badge-error";
+                    badgeSwe.innerText = "No Fiable / Unreliable";
+                    badgeSwe.style.display = "inline-block";
+                } else {
+                    badgeSwe.className = "indicator badge-ok";
+                    badgeSwe.innerText = "Calidad OK / Reliable";
+                    badgeSwe.style.display = "inline-block";
+                }
+            } else {
+                badgeSwe.style.display = "none";
+            }
+
+            let sweInterpretation = "---";
+            let conclSwe = "---";
+            if (!isNaN(sweMedianVal)) {
+                if (!sweIsReliable) {
+                    sweInterpretation = t.sweInterpInvalid;
+                    conclSwe = "Estudio SWE no fiable / Unreliable SWE study";
+                } else if (sweMedianVal < 5.0) {
+                    sweInterpretation = t.sweInterp1;
+                    conclSwe = "Normal (< 5 kPa)";
+                } else if (sweMedianVal >= 5.0 && sweMedianVal <= 9.0) {
+                    sweInterpretation = t.sweInterp2;
+                    conclSwe = "Baja probabilidad de cACLD (5-9 kPa) / Low probability of cACLD";
+                } else if (sweMedianVal > 9.0 && sweMedianVal <= 13.0) {
+                    sweInterpretation = t.sweInterp3;
+                    conclSwe = "Sugerente de cACLD / Zona Gris (9-13 kPa)";
+                } else if (sweMedianVal > 13.0) {
+                    sweInterpretation = t.sweInterp4;
+                    conclSwe = "Alta probabilidad de cACLD / Cirrosis (> 13 kPa)";
+                }
+            }
+
+            // Control ATI
+            let atiIsReliable = true;
+            let atiQualityText = t.repReliable;
+            const badgeAti = document.getElementById('ati-quality-badge');
+
+            if (atiR2Val !== null && !isNaN(atiR2Val)) {
+                if (atiR2Val < 0.90) {
+                    atiIsReliable = false;
+                    atiQualityText = t.repNotReliable;
+                    badgeAti.className = "indicator badge-error";
+                    badgeAti.innerText = "R² Bajo / Unreliable";
+                    badgeAti.style.display = "inline-block";
+                } else {
+                    badgeAti.className = "indicator badge-ok";
+                    badgeAti.innerText = "R² OK (≥0.90)";
+                    badgeAti.style.display = "inline-block";
+                }
+            } else {
+                atiQualityText = t.repOptionalAtiQuality;
+                badgeAti.className = "indicator badge-warning";
+                badgeAti.innerText = "PACS (Sin R²)";
+                badgeAti.style.display = "inline-block";
+            }
+
+            let atiInterpretation = "---";
+            let conclAti = "---";
+            if (!isNaN(atiMedianVal)) {
+                if (!atiIsReliable) {
+                    atiInterpretation = t.atiInterpInvalid;
+                    conclAti = "Estudio ATI no fiable por R² / Unreliable ATI study";
+                } else if (atiMedianVal < 0.63) {
+                    atiInterpretation = t.atiInterp0;
+                    conclAti = "S0 - Sin esteatosis significativa / No significant steatosis";
+                } else if (atiMedianVal >= 0.63 && atiMedianVal <= 0.70) {
+                    atiInterpretation = t.atiInterp1;
+                    conclAti = "S1 - Esteatosis hepática leve / Mild steatosis";
+                } else if (atiMedianVal > 0.70 && atiMedianVal <= 0.77) {
+                    atiInterpretation = t.atiInterp2;
+                    conclAti = "S2 - Esteatosis hepática moderada / Moderate steatosis";
+                } else if (atiMedianVal > 0.77) {
+                    atiInterpretation = t.atiInterp3;
+                    conclAti = "S3 - Esteatosis hepática grave / Severe steatosis";
+                }
+            }
+
+            let txtMorph = (bmodeMorph === 'normal') ? t.morphNormal : t.morphAltered;
+            let txtPortal = (bmodePortal === 'normal') ? t.portalNormal : t.portalHt;
+
+            let txtSweResults = "---";
+            if (!isNaN(sweMedianVal)) {
+                txtSweResults = t.repSweResults
+                    .replace("{median}", sweMedianVal)
+                    .replace("{iqrm}", isNaN(sweIqrmVal) ? "---" : sweIqrmVal)
+                    .replace("{aq}", sweAqVal)
+                    .replace("{quality}", sweQualityText);
+            }
+
+            let txtAtiResults = "---";
+            if (!isNaN(atiMedianVal)) {
+                txtAtiResults = t.repAtiResults
+                    .replace("{median}", atiMedianVal)
+                    .replace("{r2}", (atiR2Val === null) ? "No disponible (PACS)" : atiR2Val)
+                    .replace("{quality}", atiQualityText);
+            }
+
+            let reportText = `${t.repHeader}
+`;
+            reportText += `${t.repPatient}${patientId}
+`;
+            reportText += `${t.repOperator}${operator}
+`;
+            reportText += `-------------------------------------------------------
+`;
+            reportText += `${t.repTechniqueTitle}
+${t.repTechniqueBody}
+`;
+            reportText += `${t.repSweTitle}
+${txtSweResults}
+ -> Interpretación: ${sweInterpretation}
+`;
+            reportText += `${t.repAtiTitle}
+${txtAtiResults}
+ -> Interpretación: ${atiInterpretation}
+`;
+            reportText += `${t.repBmodeTitle}
+ - Morfología: ${txtMorph}
+ - Hemodinámica: ${txtPortal}
+`;
+            reportText += `-------------------------------------------------------
+`;
+            reportText += `${t.repConclTitle}
+`;
+            if (!isNaN(sweMedianVal)) reportText += `${t.conclFibrosis}${conclSwe}
+`;
+            if (!isNaN(atiMedianVal)) reportText += `${t.conclEsteatosis}${conclAti}
+`;
+
+            if (bmodeMorph === 'altered' || bmodePortal === 'ht') {
+                if (lang === 'es') reportText += " - Hallazgos ecográficos asociados sugerentes de hepatopatía estructural crónicamente establecida / hipertensión portal.
+";
+                if (lang === 'ca') reportText += " - Troballes ecogràfiques associades suggeridores d'hepatopatia estructural crònicament establerta / hipertensió portal.
+";
+                if (lang === 'en') reportText += " - Associated ultrasound findings suggestive of structural chronic liver disease / portal hypertension.
+";
+            }
+
+            const outputBox = document.getElementById('report-output');
+            if (outputBox) {
+                // CORRECCIÓN CLAVE: Solo usar .value para no corromper el elemento
+                outputBox.value = reportText;
+            }
+        }
+
+        function copyToClipboard() {
+            const reportBox = document.getElementById('report-output');
+            if (!reportBox) return;
+
+            reportBox.select();
+            reportBox.setSelectionRange(0, 99999);
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(reportBox.value)
+                        .then(() => { showToast(); })
+                        .catch(() => { fallbackCopy(reportBox); });
+                } else {
+                    fallbackCopy(reportBox);
+                }
+            } catch (err) {
+                fallbackCopy(reportBox);
+            }
+        }
+
+        function fallbackCopy(element) {
+            try {
+                element.select();
+                const successful = document.execCommand('copy');
+                if (successful) showToast();
+            } catch (err) {
+                console.error('Error al copiar al portapapeles', err);
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            const lang = document.getElementById('lang-selector').value;
+            toast.innerText = translations[lang].toastTxt;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        function resetForm() {
+            document.getElementById('patient-id').value = '';
+            document.getElementById('operator').value = '';
+            document.getElementById('swe-median').value = '';
+            document.getElementById('swe-iqrm').value = '';
+            document.getElementById('swe-aq').value = '5';
+            document.getElementById('ati-median').value = '';
+            document.getElementById('ati-r2').value = '';
+            document.getElementById('bmode-morph').value = 'normal';
+            document.getElementById('bmode-portal').value = 'normal';
+            
+            updateReport();
+        }
+
+        window.onload = function() {
+            changeLanguage();
+        };
+    </script>
+</body>
+</html>
