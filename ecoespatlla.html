@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Ecografia Espatlla</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --warn: #f0883e;
+    --danger: #f85149;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #484f58;
+    --selected-bg: #0d2644;
+    --pill-normal: #1a3a2a;
+    --pill-normal-text: #3fb950;
+    --pill-path: #3a1a1a;
+    --pill-path-text: #f85149;
+    --pill-neutral: #1e2430;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
+  .header-title { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; color:var(--accent); letter-spacing:.05em; }
+  .header-subtitle { font-size:11px; color:var(--text-muted); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  
+  .toggle-switch { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .toggle-btn { background: transparent; color: var(--text-muted); border: none; padding: 4px 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .toggle-btn.active { background: var(--selected-bg); color: var(--accent); }
+  .toggle-btn:hover:not(.active) { color: var(--text); }
+
+  .lateral-bar { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+  .lateral-label { font-size:12px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.1em; }
+  .lateral-btn { padding: 6px 20px; border-radius:4px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:13px; font-weight:600; cursor:pointer; font-family:'IBM Plex Sans',sans-serif; transition:all .15s; letter-spacing:.05em; }
+  .lateral-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .lateral-btn.active-l { background:#0d2644; border-color:var(--accent); color:var(--accent); }
+  .lateral-btn.active-r { background:#1a2d0d; border-color:var(--accent2); color:var(--accent2); }
+  .lateral-sep { width:1px; height:20px; background:var(--border); margin:0 8px; }
+  
+  .main { display:grid; grid-template-columns:200px 1fr 340px; flex:1; height:calc(100vh - 56px - 49px); }
+  .nav { background:var(--surface); border-right:1px solid var(--border); overflow-y:auto; padding:12px 0; }
+  .nav-section-label { font-size:10px; font-family:'IBM Plex Mono',monospace; color:var(--text-dim); text-transform:uppercase; letter-spacing:.15em; padding:8px 16px 4px; }
+  .nav-item { padding:8px 16px; font-size:12px; color:var(--text-muted); cursor:pointer; border-left:2px solid transparent; transition:all .1s; }
+  .nav-item:hover { color:var(--text); background:var(--surface2); }
+  .nav-item.active { color:var(--accent); border-left-color:var(--accent); background:var(--selected-bg); }
+  .nav-item.has-findings { color:var(--text); }
+  .nav-item.has-findings::after { content:'●'; float:right; font-size:8px; color:var(--accent2); line-height:16px; }
+  
+  .form-area { overflow-y:auto; padding:24px; background:var(--bg); }
+  .section-panel { display:none; }
+  .section-panel.visible { display:block; }
+  .section-header { margin-bottom:20px; }
+  .section-title { font-size:18px; font-weight:600; color:var(--text); margin-bottom:4px; }
+  .section-subtitle { font-size:12px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; }
+  .field-group { margin-bottom:20px; background:var(--surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .field-group-header { padding:10px 14px; background:var(--surface2); border-bottom:1px solid var(--border); font-size:11px; font-weight:600; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
+  .field-group-body { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+  .pill-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .pill-label { font-size:11px; color:var(--text-muted); min-width:120px; flex-shrink:0; }
+  .pill { padding:4px 12px; border-radius:20px; border:1px solid var(--border); background:var(--pill-neutral); color:var(--text-muted); font-size:12px; cursor:pointer; transition:all .12s; font-family:'IBM Plex Sans',sans-serif; user-select:none; white-space:nowrap; }
+  .pill:hover { border-color:var(--accent); color:var(--text); }
+  .pill.normal.selected { background:var(--pill-normal); border-color:var(--pill-normal-text); color:var(--pill-normal-text); }
+  .pill.patho.selected  { background:var(--pill-path); border-color:var(--pill-path-text); color:var(--pill-path-text); }
+  .pill.warn.selected   { background:#3a2e0d; border-color:var(--warn); color:var(--warn); }
+  .pill.info.selected   { background:var(--selected-bg); border-color:var(--accent); color:var(--accent); }
+  .num-input-row { display:flex; align-items:center; gap:8px; }
+  .num-input-label { font-size:11px; color:var(--text-muted); min-width:120px; flex-shrink:0; }
+  .num-input { width:70px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--text); padding:4px 8px; font-size:13px; font-family:'IBM Plex Mono',monospace; outline:none; }
+  .num-input:focus { border-color:var(--accent); }
+  .num-unit { font-size:11px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; }
+  
+  .report-panel { background:var(--surface); border-left:1px solid var(--border); display:flex; flex-direction:column; }
+  .report-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .report-title { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.1em; }
+  .btn-copy { padding:4px 12px; background:transparent; border:1px solid var(--border); border-radius:4px; color:var(--text-muted); font-size:11px; cursor:pointer; font-family:'IBM Plex Mono',monospace; transition:all .12s; }
+  .btn-copy:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-copy.copied { border-color:var(--accent2); color:var(--accent2); }
+  .report-body { flex:1; overflow-y:auto; padding:16px; }
+  
+  #report-text { 
+    font-family:'IBM Plex Mono',monospace; 
+    font-size:12px; 
+    line-height:1.6; 
+    color:var(--text); 
+    white-space:pre-wrap; 
+    min-height:200px; 
+  }
+  
+  .report-placeholder { color:var(--text-dim); font-style:italic; font-family:'IBM Plex Mono',monospace; font-size:12px; }
+  .report-line-normal { color:var(--accent2); }
+  .report-line-patho  { color:#f85149; }
+  .report-line-warn   { color:var(--warn); }
+  .report-line-header { color:var(--accent); font-weight:600; }
+  
+  .btn-reset { padding:4px 10px; background:transparent; border:1px solid #3a1a1a; border-radius:4px; color:#f85149; font-size:11px; cursor:pointer; font-family:'IBM Plex Mono',monospace; transition:all .12s; }
+  .btn-reset:hover { background:#1a0909; }
+  .conclusion-area { border-top:1px solid var(--border); padding:12px 16px; }
+  .conclusion-label { font-size:10px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+  .conclusion-text { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--warn); line-height:1.8; white-space:pre-wrap; }
+  .progress-bar { height:3px; background:var(--border); }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .3s ease; width:0%; }
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-title" data-ca="ECO ESPATLLA // INFORME ESTRUCTURAT" data-es="ECO HOMBRO // INFORME ESTRUCTURADO">ECO ESPATLLA // INFORME ESTRUCTURAT</div>
+    <div class="header-subtitle">v2.0 · Estructures dinàmiques + SAP Compacte</div>
+  </div>
+  <div class="header-actions">
+    <div class="toggle-switch">
+      <button class="toggle-btn active" id="btn-style-det" onclick="setStyle('detallat')" data-ca="Detallat" data-es="Detallado">Detallat</button>
+      <button class="toggle-btn" id="btn-style-breu" onclick="setStyle('breu')" data-ca="Breu" data-es="Breve">Breu</button>
+    </div>
+    <div class="toggle-switch">
+      <button class="toggle-btn active" id="btn-lang-ca" onclick="setLang('ca')">CAT</button>
+      <button class="toggle-btn" id="btn-lang-es" onclick="setLang('es')">ESP</button>
+    </div>
+    <button class="btn-reset" onclick="resetAll()" data-ca="↺ REINICIAR" data-es="↺ REINICIAR">↺ REINICIAR</button>
+    <button class="btn-copy" id="btn-copy" onclick="copyReport()" data-ca="⎘ COPIAR" data-es="⎘ COPIAR">⎘ COPIAR</button>
+  </div>
+</header>
+
+<div class="lateral-bar">
+  <span class="lateral-label" data-ca="Lateralitat:" data-es="Lateralidad:">Lateralitat:</span>
+  <button class="lateral-btn" id="btn-l" onclick="setLateral('L')" data-ca="◈ ESPATLLA ESQUERRA" data-es="◈ HOMBRO IZQUIERDO">◈ ESPATLLA ESQUERRA</button>
+  <button class="lateral-btn" id="btn-r" onclick="setLateral('R')" data-ca="◈ ESPATLLA DRETA" data-es="◈ HOMBRO DERECHO">◈ ESPATLLA DRETA</button>
+  <div class="lateral-sep"></div>
+  <span style="font-size:12px;color:var(--text-muted);" id="lateral-status" data-ca="⚠ Selecciona lateralitat" data-es="⚠ Selecciona lateralidad">⚠ Selecciona lateralitat</span>
+  <div style="margin-left:auto;">
+    <div class="progress-bar" style="width:200px;border-radius:2px;">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div style="font-size:10px;color:var(--text-dim);text-align:right;margin-top:2px;font-family:'IBM Plex Mono',monospace;" id="progress-text">0 / 6</div>
+  </div>
+</div>
+
+<div class="main">
+  <nav class="nav">
+    <div class="nav-section-label" data-ca="Estructures" data-es="Estructuras">Estructures</div>
+    <div class="nav-item active" id="nav-biceps"  onclick="showSection('biceps')" data-ca="T. Porció llarga bíceps" data-es="T. Porción larga bíceps">T. Porció llarga bíceps</div>
+    <div class="nav-item"        id="nav-subscap" onclick="showSection('subscap')" data-ca="T. Subescapular" data-es="T. Subescapular">T. Subescapular</div>
+    <div class="nav-item"        id="nav-suprasp" onclick="showSection('suprasp')" data-ca="T. Supraespinós" data-es="T. Supraespinoso">T. Supraespinós</div>
+    <div class="nav-item"        id="nav-infrasp" onclick="showSection('infrasp')" data-ca="T. Infraespinós" data-es="T. Infraespinoso">T. Infraespinós</div>
+    <div class="nav-item"        id="nav-bursa"   onclick="showSection('bursa')" data-ca="Bossa subacromial" data-es="Bolsa subacromial">Bossa subacromial</div>
+    <div class="nav-item"        id="nav-acj"     onclick="showSection('acj')" data-ca="Art. acromioclav." data-es="Art. acromioclavicular">Art. acromioclav.</div>
+  </nav>
+
+  <div class="form-area">
+
+    <div class="section-panel visible" id="sec-biceps">
+      <div class="section-header">
+        <div class="section-title" data-ca="Tendó de la porció llarga del bíceps" data-es="Tendón de la porción larga del bíceps">Tendó de la porció llarga del bíceps</div>
+        <div class="section-subtitle" data-ca="Corredora bicipital · Unió musculotendinosa" data-es="Corredera bicipital · Unión musculotendinosa">Corredora bicipital · Unió musculotendinosa</div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Valoració general" data-es="Valoración general">Valoració general</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Aspecte:" data-es="Aspecto:">Aspecte:</span>
+            <span class="pill normal" data-key="lhb_aspecto" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill patho"  data-key="lhb_aspecto" data-val="tendinopatia" data-ca="Tendinopatia" data-es="Tendinopatía" onclick="togglePill(this)">Tendinopatia</span>
+            <span class="pill patho"  data-key="lhb_aspecto" data-val="rotura_parcial" data-ca="Ruptura parcial" data-es="Rotura parcial" onclick="togglePill(this)">Ruptura parcial</span>
+            <span class="pill patho"  data-key="lhb_aspecto" data-val="rotura_completa" data-ca="Ruptura completa" data-es="Rotura completa" onclick="togglePill(this)">Ruptura completa</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Calibre / Gruix:" data-es="Calibre / Grosor:">Calibre / Gruix:</span>
+            <span class="pill info"  data-key="lhb_tamaño" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill warn"  data-key="lhb_tamaño" data-val="engruixit" data-ca="Engruixit" data-es="Engrosado" onclick="togglePill(this)">Engruixit</span>
+            <span class="pill patho" data-key="lhb_tamaño" data-val="adelgazado" data-ca="Aprimat" data-es="Adelgazado" onclick="togglePill(this)">Aprimat</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Posició a la corredora" data-es="Posición en corredera">Posició a la corredora</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Localització:" data-es="Localización:">Localització:</span>
+            <span class="pill normal" data-key="lhb_pos" data-val="centrado" data-ca="Centrat" data-es="Centrado" onclick="togglePill(this)">Centrat</span>
+            <span class="pill patho"  data-key="lhb_pos" data-val="subluxacion" data-ca="Subluxació" data-es="Subluxación" onclick="togglePill(this)">Subluxació</span>
+            <span class="pill patho"  data-key="lhb_pos" data-val="luxacion" data-ca="Luxació" data-es="Luxación" onclick="togglePill(this)">Luxació</span>
+            <span class="pill patho"  data-key="lhb_pos" data-val="ausente" data-ca="Absent" data-es="Ausente" onclick="togglePill(this)">Absent</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Beina tendinosa" data-es="Vaina tendinosa">Beina tendinosa</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Vessament:" data-es="Derrame:">Vessament:</span>
+            <span class="pill normal" data-key="lhb_vaina" data-val="sin_derrame" data-ca="Sense vessament" data-es="Sin derrame" onclick="togglePill(this)">Sense vessament</span>
+            <span class="pill warn"   data-key="lhb_vaina" data-val="minimo" data-ca="Mínim" data-es="Mínimo" onclick="togglePill(this)">Mínim</span>
+            <span class="pill patho"  data-key="lhb_vaina" data-val="moderado" data-ca="Moderat" data-es="Moderado" onclick="togglePill(this)">Moderat</span>
+            <span class="pill patho"  data-key="lhb_vaina" data-val="abundante" data-ca="Abundant" data-es="Abundante" onclick="togglePill(this)">Abundant</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Tenosinovitis:" data-es="Tenosinovitis:">Tenosinovitis:</span>
+            <span class="pill normal" data-key="lhb_tenosinovitis" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill patho"  data-key="lhb_tenosinovitis" data-val="si" data-ca="Sí" data-es="Sí" onclick="togglePill(this)">Sí</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Calcificacions" data-es="Calcificaciones">Calcificacions</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Calcificació:" data-es="Calcificación:">Calcificació:</span>
+            <span class="pill normal" data-key="lhb_calc" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill warn"   data-key="lhb_calc" data-val="si" data-ca="Sí" data-es="Sí" onclick="togglePill(this)">Sí</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-panel" id="sec-subscap">
+      <div class="section-header">
+        <div class="section-title" data-ca="Tendó del múscul subescapular" data-es="Tendón del músculo subescapular">Tendó del múscul subescapular</div>
+        <div class="section-subtitle" data-ca="Troquín (Tubercle menor) · Cara anterior" data-es="Troquín (Tubérculo menor) · Cara anterior">Troquín (Tubercle menor) · Cara anterior</div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Morfologia / Ecoestructura" data-es="Morfología / Ecoestructura">Morfologia / Ecoestructura</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Aspecte:" data-es="Aspecto:">Aspecte:</span>
+            <span class="pill normal" data-key="ssc_asp" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill warn"   data-key="ssc_asp" data-val="tendinopatia" data-ca="Tendinopatia" data-es="Tendinopatía" onclick="togglePill(this)">Tendinopatia</span>
+            <span class="pill patho"  data-key="ssc_asp" data-val="rotura_parcial" data-ca="Ruptura parcial" data-es="Rotura parcial" onclick="togglePill(this)">Ruptura parcial</span>
+            <span class="pill patho"  data-key="ssc_asp" data-val="rotura_completa" data-ca="Ruptura completa" data-es="Rotura completa" onclick="togglePill(this)">Ruptura completa</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Gruix:" data-es="Grosor:">Gruix:</span>
+            <span class="pill normal" data-key="ssc_grosor" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill warn"   data-key="ssc_grosor" data-val="engruixit" data-ca="Engruixit" data-es="Engrosado" onclick="togglePill(this)">Engruixit</span>
+            <span class="pill patho"  data-key="ssc_grosor" data-val="adelgazado" data-ca="Aprimat" data-es="Adelgazado" onclick="togglePill(this)">Aprimat</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Ruptura parcial:" data-es="Rotura parcial:">Ruptura parcial:</span>
+            <span class="pill warn" data-key="ssc_rp_loc" data-val="articular" data-ca="Articular" data-es="Articular" onclick="togglePill(this)">Articular</span>
+            <span class="pill warn" data-key="ssc_rp_loc" data-val="bursal" data-ca="Bursal" data-es="Bursal" onclick="togglePill(this)">Bursal</span>
+            <span class="pill warn" data-key="ssc_rp_loc" data-val="intratend" data-ca="Intratendinosa" data-es="Intratendinosa" onclick="togglePill(this)">Intratendinosa</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Calcificacions" data-es="Calcificaciones">Calcificacions</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Calcificació:" data-es="Calcificación:">Calcificació:</span>
+            <span class="pill normal" data-key="ssc_calc" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill warn"   data-key="ssc_calc" data-val="calcificacion" data-ca="Sí (calcificant)" data-es="Sí (calcificante)" onclick="togglePill(this)">Sí (calcificant)</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Dinàmica subcoracoïdal" data-es="Dinámica subcoracoidea">Dinàmica subcoracoïdal</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Lliscament:" data-es="Deslizamiento:">Lliscament:</span>
+            <span class="pill normal" data-key="ssc_din" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill patho"  data-key="ssc_din" data-val="impingement" data-ca="Pinçament" data-es="Impingement" onclick="togglePill(this)">Pinçament</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-panel" id="sec-suprasp">
+      <div class="section-header">
+        <div class="section-title" data-ca="Tendó del múscul supraespinós" data-es="Tendón del músculo supraespinoso">Tendó del múscul supraespinós</div>
+        <div class="section-subtitle" data-ca="Troquíter (Tubercle major) · Cara superior" data-es="Troquíter (Tubérculo mayor) · Cara superior">Troquíter (Tubercle major) · Cara superior</div>
+      </div>
+      
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Morfologia de base" data-es="Morfología de base">Morfologia de base</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Aspecte:" data-es="Aspecto:">Aspecte:</span>
+            <span class="pill normal" data-key="ssp_asp" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill warn"   data-key="ssp_asp" data-val="tendinopatia" data-ca="Tendinopatia" data-es="Tendinopatía" onclick="togglePill(this)">Tendinopatia</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Gruix:" data-es="Grosor:">Gruix:</span>
+            <span class="pill normal" data-key="ssp_grosor" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill warn"   data-key="ssp_grosor" data-val="engruixit" data-ca="Engruixit" data-es="Engrosado" onclick="togglePill(this)">Engruixit</span>
+            <span class="pill patho"  data-key="ssp_grosor" data-val="adelgazado" data-ca="Aprimat" data-es="Adelgazado" onclick="togglePill(this)">Aprimat</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Delaminació:" data-es="Delaminación:">Delaminació:</span>
+            <span class="pill normal" data-key="ssp_delam" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill patho" data-key="ssp_delam" data-val="si" data-ca="Sí" data-es="Sí" onclick="togglePill(this)">Sí</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group" style="background: transparent; border: none; padding: 0;">
+        <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;" data-ca="Afegir Troballa (Opcional):" data-es="Añadir Hallazgo (Opcional):">Afegir Troballa (Opcional):</span>
+        <div style="display: flex; gap: 8px;">
+          <button class="lateral-btn" style="padding: 4px 10px; font-size: 11px; flex: 1;" onclick="addTr('rp')" data-ca="+ Ruptura Parcial" data-es="+ Rotura Parcial">+ Ruptura Parcial</button>
+          <button class="lateral-btn" style="padding: 4px 10px; font-size: 11px; flex: 1;" onclick="addTr('rc')" data-ca="+ Ruptura Completa" data-es="+ Rotura Completa">+ Ruptura Completa</button>
+          <button class="lateral-btn" style="padding: 4px 10px; font-size: 11px; flex: 1;" onclick="addTr('calc')" data-ca="+ Calcificació" data-es="+ Calcificación">+ Calcificació</button>
+        </div>
+      </div>
+
+      <div id="ssp-troballes-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
+
+    </div>
+
+    <div class="section-panel" id="sec-infrasp">
+      <div class="section-header">
+        <div class="section-title" data-ca="Tendó del múscul infraespinós" data-es="Tendón del músculo infraespinoso">Tendó del múscul infraespinós</div>
+        <div class="section-subtitle" data-ca="Troquíter · Cara posterior" data-es="Troquíter · Cara posterior">Troquíter · Cara posterior</div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Morfologia / Ecoestructura" data-es="Morfología / Ecoestructura">Morfologia / Ecoestructura</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Aspecte:" data-es="Aspecto:">Aspecte:</span>
+            <span class="pill normal" data-key="isp_asp" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill warn"   data-key="isp_asp" data-val="tendinopatia" data-ca="Tendinopatia" data-es="Tendinopatía" onclick="togglePill(this)">Tendinopatia</span>
+            <span class="pill patho"  data-key="isp_asp" data-val="rotura_parcial" data-ca="Ruptura parcial" data-es="Rotura parcial" onclick="togglePill(this)">Ruptura parcial</span>
+            <span class="pill patho"  data-key="isp_asp" data-val="rotura_completa" data-ca="Ruptura completa" data-es="Rotura completa" onclick="togglePill(this)">Ruptura completa</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Ruptura parcial:" data-es="Rotura parcial:">Ruptura parcial:</span>
+            <span class="pill warn" data-key="isp_rp_tipo" data-val="articular" data-ca="Articular" data-es="Articular" onclick="togglePill(this)">Articular</span>
+            <span class="pill warn" data-key="isp_rp_tipo" data-val="bursal" data-ca="Bursal" data-es="Bursal" onclick="togglePill(this)">Bursal</span>
+            <span class="pill warn" data-key="isp_rp_tipo" data-val="intratendinosa" data-ca="Intratendinosa" data-es="Intratendinosa" onclick="togglePill(this)">Intratendinosa</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Calcificacions" data-es="Calcificaciones">Calcificacions</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Calcificació:" data-es="Calcificación:">Calcificació:</span>
+            <span class="pill normal" data-key="isp_calc" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill warn"   data-key="isp_calc" data-val="si" data-ca="Sí" data-es="Sí" onclick="togglePill(this)">Sí</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Escotadura espinoglenoidal" data-es="Escotadura espinoglenoidea">Escotadura espinoglenoidal</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Quist ganglionar:" data-es="Quiste ganglionar:">Quist ganglionar:</span>
+            <span class="pill normal" data-key="isp_quiste" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill patho"  data-key="isp_quiste" data-val="si" data-ca="Sí" data-es="Sí" onclick="togglePill(this)">Sí</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-panel" id="sec-bursa">
+      <div class="section-header">
+        <div class="section-title" data-ca="Bossa serosa subacromiodeltoidal" data-es="Bolsa serosa subacromiosubdeltoidea">Bossa serosa subacromiodeltoidal</div>
+        <div class="section-subtitle" data-ca="Espai subacromial · Bursitis" data-es="Espacio subacromial · Bursitis">Espai subacromial · Bursitis</div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Valoració bursitis" data-es="Valoración bursitis">Valoració bursitis</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Vessament bursal:" data-es="Derrame bursal:">Vessament bursal:</span>
+            <span class="pill normal" data-key="bursa_derrame" data-val="no" data-ca="No / Normal" data-es="No / Normal" onclick="togglePill(this)">No / Normal</span>
+            <span class="pill warn"   data-key="bursa_derrame" data-val="minimo" data-ca="Mínim" data-es="Mínimo" onclick="togglePill(this)">Mínim</span>
+            <span class="pill patho"  data-key="bursa_derrame" data-val="moderado" data-ca="Moderat" data-es="Moderado" onclick="togglePill(this)">Moderat</span>
+            <span class="pill patho"  data-key="bursa_derrame" data-val="abundante" data-ca="Abundant" data-es="Abundante" onclick="togglePill(this)">Abundant</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Sinovitis bursal:" data-es="Sinovitis bursal:">Sinovitis bursal:</span>
+            <span class="pill normal" data-key="bursa_sinovitis" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill patho"  data-key="bursa_sinovitis" data-val="si" data-ca="Sí (engruiximent)" data-es="Sí (engrosamiento)" onclick="togglePill(this)">Sí (engruiximent)</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Cossos lliures:" data-es="Cuerpos libres:">Cossos lliures:</span>
+            <span class="pill normal" data-key="bursa_cuerpos" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill patho"  data-key="bursa_cuerpos" data-val="si" data-ca="Sí" data-es="Sí" onclick="togglePill(this)">Sí</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Gruix de la paret" data-es="Grosor de la pared">Gruix de la paret</div>
+        <div class="field-group-body">
+          <div class="num-input-row">
+            <span class="num-input-label" data-ca="Gruix màx.:" data-es="Grosor máx.:">Gruix màx.:</span>
+            <input class="num-input" type="number" id="bursa_grosor" min="0" max="20" step="0.5" placeholder="—" oninput="updateReport()">
+            <span class="num-unit">mm</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Espai subacromial" data-es="Espacio subacromial">Espai subacromial</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Espai:" data-es="Espacio:">Espai:</span>
+            <span class="pill normal" data-key="subacr_esp" data-val="conservado" data-ca="Conservat" data-es="Conservado" onclick="togglePill(this)">Conservat</span>
+            <span class="pill patho"  data-key="subacr_esp" data-val="disminuido" data-ca="Disminuït" data-es="Disminuido" onclick="togglePill(this)">Disminuït</span>
+            <span class="pill warn"   data-key="subacr_esp" data-val="aumentado" data-ca="Augmentat" data-es="Aumentado" onclick="togglePill(this)">Augmentat</span>
+          </div>
+          <div class="num-input-row">
+            <span class="num-input-label" data-ca="Mida:" data-es="Medida:">Mida:</span>
+            <input class="num-input" type="number" id="subacr_medida" min="0" max="20" step="0.5" placeholder="—" oninput="updateReport()">
+            <span class="num-unit">mm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-panel" id="sec-acj">
+      <div class="section-header">
+        <div class="section-title" data-ca="Articulació acromioclavicular" data-es="Articulación acromioclavicular">Articulació acromioclavicular</div>
+        <div class="section-subtitle" data-ca="Espai articular · Osteòfits · Vessament" data-es="Espacio articular · Osteofitos · Derrame">Espai articular · Osteòfits · Vessament</div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Valoració articular" data-es="Valoración articular">Valoració articular</div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Aspecte:" data-es="Aspecto:">Aspecte:</span>
+            <span class="pill normal" data-key="acj_asp" data-val="normal" data-ca="Normal" data-es="Normal" onclick="togglePill(this)">Normal</span>
+            <span class="pill warn"   data-key="acj_asp" data-val="arthrosis" data-ca="Artrosi" data-es="Artrosis" onclick="togglePill(this)">Artrosi</span>
+            <span class="pill patho"  data-key="acj_asp" data-val="artritis" data-ca="Artritis" data-es="Artritis" onclick="togglePill(this)">Artritis</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Osteòfits:" data-es="Osteofitos:">Osteòfits:</span>
+            <span class="pill normal" data-key="acj_osteo" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill warn"   data-key="acj_osteo" data-val="leves" data-ca="Lleus" data-es="Leves" onclick="togglePill(this)">Lleus</span>
+            <span class="pill patho"  data-key="acj_osteo" data-val="marcados" data-ca="Marcats" data-es="Marcados" onclick="togglePill(this)">Marcats</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Vessament articular:" data-es="Derrame articular:">Vessament articular:</span>
+            <span class="pill normal" data-key="acj_derrame" data-val="no" data-ca="No" data-es="No" onclick="togglePill(this)">No</span>
+            <span class="pill warn"   data-key="acj_derrame" data-val="minimo" data-ca="Mínim" data-es="Mínimo" onclick="togglePill(this)">Mínim</span>
+            <span class="pill patho"  data-key="acj_derrame" data-val="moderado" data-ca="Moderat" data-es="Moderado" onclick="togglePill(this)">Moderat</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-header" data-ca="Espai articular" data-es="Espacio articular">Espai articular</div>
+        <div class="field-group-body">
+          <div class="num-input-row">
+            <span class="num-input-label" data-ca="Amplada esp.:" data-es="Anchura esp.:">Amplada esp.:</span>
+            <input class="num-input" type="number" id="acj_espacio" min="0" max="15" step="0.5" placeholder="—" oninput="updateReport()">
+            <span class="num-unit">mm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><div class="report-panel">
+    <div class="report-header">
+      <span class="report-title" data-ca="// Informe generat" data-es="// Informe generado">// Informe generat</span>
+      <button class="btn-copy" id="btn-copy2" onclick="copyReport()" data-ca="⎘ COPIAR" data-es="⎘ COPIAR">⎘ COPIAR</button>
+    </div>
+    <div class="report-body">
+      <div id="report-text">
+        <span class="report-placeholder" id="txt-placeholder" data-ca="Selecciona la lateralitat i comença a emplenar les seccions per generar l'informe..." data-es="Selecciona la lateralidad y comienza a rellenar las secciones para generar el informe...">Selecciona la lateralitat i comença a emplenar les seccions per generar l'informe...</span>
+      </div>
+    </div>
+    <div class="conclusion-area">
+      <div class="conclusion-label" data-ca="// Conclusió" data-es="// Conclusión">// Conclusió</div>
+      <div class="conclusion-text" id="conclusion-text">—</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// STATE
+let lateral = ''; // 'L' or 'R'
+let lang = 'ca'; // 'ca' or 'es'
+let normStyle = 'detallat'; // 'breu' or 'detallat'
+let selections = {};
+let nextTrId = 1;
+
+const sectionOrder = ['biceps','subscap','suprasp','infrasp','bursa','acj'];
+const sectionKeys = {
+  biceps:  ['lhb_aspecto','lhb_tamaño','lhb_pos','lhb_vaina','lhb_tenosinovitis','lhb_calc'],
+  subscap: ['ssc_asp','ssc_grosor','ssc_rp_loc','ssc_calc','ssc_din'],
+  suprasp: ['ssp_asp','ssp_grosor','ssp_delam'], // Més les troballes dinàmiques
+  infrasp: ['isp_asp','isp_rp_tipo','isp_calc','isp_quiste'],
+  bursa:   ['bursa_derrame','bursa_sinovitis','bursa_cuerpos','subacr_esp'],
+  acj:     ['acj_asp','acj_osteo','acj_derrame'],
+};
+
+// TRANSLATION HELPER
+const t = (ca, es) => lang === 'ca' ? ca : es;
+
+// DEFAULT VALUES
+const DEFAULTS = {
+  lhb_aspecto:        'normal',
+  lhb_tamaño:         'normal',
+  lhb_pos:            'centrado',
+  lhb_vaina:          'sin_derrame',
+  ssc_asp:            'normal',
+  ssc_grosor:         'normal',
+  ssp_asp:            'normal',
+  ssp_grosor:         'normal',
+  ssp_delam:          'no',
+  isp_asp:            'normal',
+  bursa_derrame:      'no',
+  subacr_esp:         'conservado',
+  acj_asp:            'normal',
+};
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-lang-ca').className = 'toggle-btn' + (l === 'ca' ? ' active' : '');
+  document.getElementById('btn-lang-es').className = 'toggle-btn' + (l === 'es' ? ' active' : '');
+  updateLangUI();
+  if (lateral) setLateral(lateral);
+  updateNav();
+  renderTrs();
+  updateReport();
+}
+
+function updateLangUI() {
+  document.querySelectorAll('[data-ca]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+}
+
+function setStyle(st) {
+  normStyle = st;
+  document.getElementById('btn-style-det').className = 'toggle-btn' + (st === 'detallat' ? ' active' : '');
+  document.getElementById('btn-style-breu').className = 'toggle-btn' + (st === 'breu' ? ' active' : '');
+  updateReport();
+}
+
+function applyDefaults() {
+  selections.ssp_troballes = [];
+  Object.entries(DEFAULTS).forEach(([key, val]) => {
+    selections[key] = val;
+    const el = document.querySelector(`.pill[data-key="${key}"][data-val="${val}"]`);
+    if (el) el.classList.add('selected');
+  });
+}
+
+function setLateral(side) {
+  lateral = side;
+  document.getElementById('btn-l').className = 'lateral-btn' + (side==='L' ? ' active-l' : '');
+  document.getElementById('btn-r').className = 'lateral-btn' + (side==='R' ? ' active-r' : '');
+  const statusEl = document.getElementById('lateral-status');
+  if (side === 'L') {
+    statusEl.textContent = t('✓ Espatlla esquerra', '✓ Hombro izquierdo');
+    statusEl.style.color = 'var(--accent)';
+  } else {
+    statusEl.textContent = t('✓ Espatlla dreta', '✓ Hombro derecho');
+    statusEl.style.color = 'var(--accent2)';
+  }
+  updateReport();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('visible'));
+  document.getElementById('sec-'+id).classList.add('visible');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-'+id).classList.add('active');
+}
+
+function togglePill(el) {
+  const key = el.dataset.key, val = el.dataset.val;
+  document.querySelectorAll(`.pill[data-key="${key}"]`).forEach(p => p.classList.remove('selected'));
+  if (selections[key] === val) { delete selections[key]; }
+  else { selections[key] = val; el.classList.add('selected'); }
+  updateReport();
+  updateNav();
+}
+
+function updateNav() {
+  let filled = 0;
+  sectionOrder.forEach(sec => {
+    let has = sectionKeys[sec].some(k => selections[k] && selections[k] !== 'normal' && selections[k] !== 'no' && selections[k] !== 'centrado' && selections[k] !== 'sin_derrame' && selections[k] !== 'conservado');
+    if (sec === 'suprasp' && selections.ssp_troballes && selections.ssp_troballes.length > 0) has = true;
+    if (has) { document.getElementById('nav-'+sec).classList.add('has-findings'); filled++; } 
+    else { document.getElementById('nav-'+sec).classList.remove('has-findings'); }
+  });
+  document.getElementById('progress-fill').style.width = (filled/6*100)+'%';
+  document.getElementById('progress-text').textContent = filled + t(' / 6 seccions', ' / 6 secciones');
+}
+
+const s = k => selections[k];
+const n = id => { const e=document.getElementById(id); return e&&e.value ? e.value : null; };
+
+// ---- LÒGICA DINÀMICA SUPRAESPINÓS ----
+function addTr(type) {
+  if (!selections.ssp_troballes) selections.ssp_troballes = [];
+  let tr = { id: nextTrId++, type: type };
+  if (type === 'rp') { tr.tipo = ''; tr.fibras = ''; tr.espesor = ''; tr.ap = ''; tr.ml = ''; }
+  if (type === 'rc') { tr.loc = ''; tr.ap = ''; tr.ml = ''; tr.retr = 'no'; tr.atrofia = 'no'; }
+  if (type === 'calc') { tr.gartner = ''; tr.tam = ''; }
+  selections.ssp_troballes.push(tr);
+  renderTrs();
+  updateReport();
+  updateNav();
+}
+
+function removeTr(id) {
+  selections.ssp_troballes = selections.ssp_troballes.filter(t => t.id !== id);
+  renderTrs();
+  updateReport();
+  updateNav();
+}
+
+function updateTrPill(id, key, val) {
+  const tr = selections.ssp_troballes.find(t => t.id === id);
+  if (tr) {
+    tr[key] = (tr[key] === val) ? '' : val;
+    renderTrs();
+    updateReport();
+  }
+}
+
+function updateTrInput(id, key, val) {
+  const tr = selections.ssp_troballes.find(t => t.id === id);
+  if (tr) {
+    tr[key] = val;
+    updateReport();
+  }
+}
+
+function makePill(trId, key, val, ca, es, colorCls, currentVal) {
+  const sel = currentVal === val ? 'selected' : '';
+  return `<span class="pill ${colorCls} ${sel}" onclick="updateTrPill(${trId}, '${key}', '${val}')" data-ca="${ca}" data-es="${es}">${lang==='ca'?ca:es}</span>`;
+}
+
+function renderTrs() {
+  const container = document.getElementById('ssp-troballes-container');
+  if (!selections.ssp_troballes || selections.ssp_troballes.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  let html = '';
+  selections.ssp_troballes.forEach((tr, i) => {
+    if (tr.type === 'rp') {
+      html += `
+      <div class="field-group" style="border-left: 3px solid var(--warn);">
+        <div class="field-group-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <span data-ca="Ruptura Parcial #${i+1}" data-es="Rotura Parcial #${i+1}">Ruptura Parcial #${i+1}</span>
+          <button onclick="removeTr(${tr.id})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:14px; padding:0 4px;">✕</button>
+        </div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Localització:" data-es="Localización:">Localització:</span>
+            ${makePill(tr.id, 'tipo', 'articular', 'Articular', 'Articular', 'warn', tr.tipo)}
+            ${makePill(tr.id, 'tipo', 'bursal', 'Bursal', 'Bursal', 'warn', tr.tipo)}
+            ${makePill(tr.id, 'tipo', 'intratendinosa', 'Intratend.', 'Intratend.', 'warn', tr.tipo)}
+            ${makePill(tr.id, 'tipo', 'rim_rent', 'Rim-rent', 'Rim-rent', 'warn', tr.tipo)}
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Fibres:" data-es="Fibras:">Fibres:</span>
+            ${makePill(tr.id, 'fibras', 'anteriores', 'Anteriors', 'Anteriores', 'warn', tr.fibras)}
+            ${makePill(tr.id, 'fibras', 'medias', 'Mitjanes', 'Medias', 'warn', tr.fibras)}
+            ${makePill(tr.id, 'fibras', 'posteriores', 'Posteriors', 'Posteriores', 'warn', tr.fibras)}
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Gruix:" data-es="Grosor:">Gruix:</span>
+            ${makePill(tr.id, 'espesor', 'menos50', '< 50%', '< 50%', 'warn', tr.espesor)}
+            ${makePill(tr.id, 'espesor', 'mas50', '> 50%', '> 50%', 'patho', tr.espesor)}
+          </div>
+          <div style="display:flex; gap:16px;">
+            <div class="num-input-row">
+              <span class="num-input-label" style="min-width:60px;" data-ca="AP:" data-es="AP:">AP:</span>
+              <input class="num-input" type="number" oninput="updateTrInput(${tr.id}, 'ap', this.value)" value="${tr.ap}">
+              <span class="num-unit">mm</span>
+            </div>
+            <div class="num-input-row">
+              <span class="num-input-label" style="min-width:40px;" data-ca="ML:" data-es="ML:">ML:</span>
+              <input class="num-input" type="number" oninput="updateTrInput(${tr.id}, 'ml', this.value)" value="${tr.ml}">
+              <span class="num-unit">mm</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+    else if (tr.type === 'rc') {
+      html += `
+      <div class="field-group" style="border-left: 3px solid var(--danger);">
+        <div class="field-group-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <span data-ca="Ruptura Completa #${i+1}" data-es="Rotura Completa #${i+1}">Ruptura Completa #${i+1}</span>
+          <button onclick="removeTr(${tr.id})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:14px; padding:0 4px;">✕</button>
+        </div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Localització:" data-es="Localización:">Localització:</span>
+            ${makePill(tr.id, 'loc', 'anterior', 'Anterior', 'Anterior', 'patho', tr.loc)}
+            ${makePill(tr.id, 'loc', 'media', 'Mitjana', 'Media', 'patho', tr.loc)}
+            ${makePill(tr.id, 'loc', 'posterior', 'Posterior', 'Posterior', 'patho', tr.loc)}
+          </div>
+          <div style="display:flex; gap:16px;">
+            <div class="num-input-row">
+              <span class="num-input-label" style="min-width:60px;" data-ca="AP:" data-es="AP:">AP:</span>
+              <input class="num-input" type="number" oninput="updateTrInput(${tr.id}, 'ap', this.value)" value="${tr.ap}">
+              <span class="num-unit">mm</span>
+            </div>
+            <div class="num-input-row">
+              <span class="num-input-label" style="min-width:40px;" data-ca="ML:" data-es="ML:">ML:</span>
+              <input class="num-input" type="number" oninput="updateTrInput(${tr.id}, 'ml', this.value)" value="${tr.ml}">
+              <span class="num-unit">mm</span>
+            </div>
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Retracció:" data-es="Retracción:">Retracció:</span>
+            ${makePill(tr.id, 'retr', 'no', 'No', 'No', 'info', tr.retr)}
+            ${makePill(tr.id, 'retr', 'leve', 'Lleu', 'Leve', 'warn', tr.retr)}
+            ${makePill(tr.id, 'retr', 'moderada', 'Moderada', 'Moderada', 'patho', tr.retr)}
+            ${makePill(tr.id, 'retr', 'grave', 'Greu', 'Grave', 'patho', tr.retr)}
+          </div>
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Atròfia:" data-es="Atrofia:">Atròfia:</span>
+            ${makePill(tr.id, 'atrofia', 'no', 'No', 'No', 'info', tr.atrofia)}
+            ${makePill(tr.id, 'atrofia', 'leve', 'Lleu', 'Leve', 'warn', tr.atrofia)}
+            ${makePill(tr.id, 'atrofia', 'moderada', 'Moderada', 'Moderada', 'patho', tr.atrofia)}
+            ${makePill(tr.id, 'atrofia', 'grave', 'Greu', 'Grave', 'patho', tr.atrofia)}
+          </div>
+        </div>
+      </div>`;
+    }
+    else if (tr.type === 'calc') {
+      html += `
+      <div class="field-group" style="border-left: 3px solid var(--warn);">
+        <div class="field-group-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <span data-ca="Calcificació #${i+1}" data-es="Calcificación #${i+1}">Calcificació #${i+1}</span>
+          <button onclick="removeTr(${tr.id})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:14px; padding:0 4px;">✕</button>
+        </div>
+        <div class="field-group-body">
+          <div class="pill-row">
+            <span class="pill-label" data-ca="Tipus Gärtner:" data-es="Tipo Gärtner:">Tipus Gärtner:</span>
+            ${makePill(tr.id, 'gartner', 'I', 'I (dura)', 'I (dura)', 'info', tr.gartner)}
+            ${makePill(tr.id, 'gartner', 'II', 'II (mixta)', 'II (mixta)', 'info', tr.gartner)}
+            ${makePill(tr.id, 'gartner', 'III', 'III (tova)', 'III (blanda)', 'warn', tr.gartner)}
+          </div>
+          <div class="num-input-row">
+            <span class="num-input-label" data-ca="Mida:" data-es="Tamaño:">Mida:</span>
+            <input class="num-input" type="number" oninput="updateTrInput(${tr.id}, 'tam', this.value)" value="${tr.tam}">
+            <span class="num-unit">mm</span>
+          </div>
+        </div>
+      </div>`;
+    }
+  });
+  container.innerHTML = html;
+  updateLangUI();
+}
+
+function updateReport() {
+  if (!lateral) {
+    document.getElementById('report-text').innerHTML = `<span class="report-placeholder">${t("⚠ Selecciona primer la lateralitat de l'espatlla explorada.", "⚠ Selecciona primero la lateralidad del hombro explorado.")}</span>`;
+    document.getElementById('conclusion-text').textContent = '—';
+    return;
+  }
+
+  const titleStr = t("ECOGRAFIA D'ESPATLLA", "ECOGRAFÍA DE HOMBRO");
+  const sideStr = lateral === 'L' ? t("ESQUERRA", "IZQUIERDA") : t("DRETA", "DERECHA");
+  
+  const blocks = [];
+  const findings = [];
+
+  // Helper per afegir frases, sempre amb l'estructura en negreta a l'inici.
+  const buildLine = (title, partsArray) => `<b>${title}:</b> ${partsArray.join(', ').replace(/, \(/g, ' (')} .`;
+
+  // 1. BÍCEPS
+  let bParts = [];
+  if (s('lhb_aspecto')==='normal' && s('lhb_tamaño')==='normal' && s('lhb_pos')==='centrado' && s('lhb_vaina')==='sin_derrame' && (!s('lhb_tenosinovitis') || s('lhb_tenosinovitis')==='no') && (!s('lhb_calc') || s('lhb_calc')==='no')) {
+    bParts.push(normStyle === 'breu' ? t('sense alteracions', 'sin alteraciones') : t('aspecte normal, sense alteracions ecoestructurals, centrat a la corredora bicipital, sense vessament a la beina', 'aspecto normal, sin alteraciones ecoestructurales, centrado en la corredera bicipital, sin derrame en la vaina'));
+  } else {
+    if (s('lhb_aspecto')==='normal') {
+      bParts.push(t('aspecte normal', 'aspecto normal'));
+    } else {
+      const m = { tendinopatia: t('tendinopatia', 'tendinopatía'), rotura_parcial: t('ruptura parcial', 'rotura parcial'), rotura_completa: t('ruptura completa', 'rotura completa') };
+      bParts.push(`<span class="report-line-patho">${m[s('lhb_aspecto')]}</span>`);
+      findings.push(`${t('Alteració del tendó bicipital', 'Alteración del tendón bicipital')} (${m[s('lhb_aspecto')]})`);
+    }
+    if (s('lhb_tamaño') !== 'normal') bParts.push(`<span class="report-line-warn">${t('calibre', 'calibre')} ${s('lhb_tamaño')==='engruixit' ? t('engruixit','engrosado') : t('aprimat','adelgazado')}</span>`);
+    if (s('lhb_pos') === 'centrado') { bParts.push(t('centrat a la corredora', 'centrado en la corredera')); } 
+    else {
+      const pm = { subluxacion: t('subluxació medial', 'subluxación medial'), luxacion: t('luxació', 'luxación'), ausente: t('absent', 'ausente') };
+      bParts.push(`<span class="report-line-patho">${pm[s('lhb_pos')]}</span>`);
+      findings.push(t('Alteració de la posició bicipital', 'Alteración de la posición bicipital'));
+    }
+    if (s('lhb_vaina') === 'sin_derrame') { bParts.push(t('sense vessament a la beina', 'sin derrame en la vaina')); } 
+    else {
+      const vm = { minimo: t('mínim vessament', 'mínimo derrame'), moderado: t('vessament moderat', 'derrame moderado'), abundante: t('vessament abundant', 'derrame abundante') };
+      bParts.push(`<span class="report-line-patho">${vm[s('lhb_vaina')]}</span>`);
+      findings.push(t('Vessament a la beina bicipital', 'Derrame en la vaina bicipital'));
+    }
+    if (s('lhb_tenosinovitis') === 'si') { bParts.push(`<span class="report-line-patho">${t('amb tenosinovitis', 'con tenosinovitis')}</span>`); findings.push(t('Tenosinovitis bicipital', 'Tenosinovitis bicipital')); }
+    if (s('lhb_calc') === 'si') { bParts.push(`<span class="report-line-warn">${t('amb calcificació', 'con calcificación')}</span>`); findings.push(t('Calcificació al tendó bicipital', 'Calcificación en el tendón bicipital')); }
+  }
+  blocks.push(buildLine(t('Tendó de la porció llarga del bíceps', 'Tendón de la porción larga del bíceps'), bParts));
+
+  // 2. SUBESCAPULAR
+  let sscParts = [];
+  if (s('ssc_asp')==='normal' && s('ssc_grosor')==='normal' && !s('ssc_rp_loc') && (!s('ssc_calc') || s('ssc_calc')==='no') && (!s('ssc_din') || s('ssc_din')==='normal')) {
+    sscParts.push(normStyle === 'breu' ? t('sense alteracions', 'sin alteraciones') : t('sense alteracions, ecoestructura fibril·lar conservada i gruix normal', 'sin alteraciones, ecoestructura fibrilar conservada y grosor normal'));
+  } else {
+    if (s('ssc_asp') === 'normal') { sscParts.push(t('sense alteracions', 'sin alteraciones')); } 
+    else {
+      const m = { tendinopatia: t('tendinopatia', 'tendinopatía'), rotura_parcial: t('ruptura parcial', 'rotura parcial'), rotura_completa: t('ruptura completa', 'rotura completa') };
+      sscParts.push(`<span class="report-line-patho">${m[s('ssc_asp')]}</span>`);
+      findings.push(`${t('Lesió del subescapular', 'Lesión del subescapular')} (${m[s('ssc_asp')]})`);
+    }
+    if (s('ssc_grosor') !== 'normal') sscParts.push(`<span class="report-line-warn">${t('gruix', 'grosor')} ${s('ssc_grosor')==='engruixit' ? t('engruixit','engrosado') : t('aprimat','adelgazado')}</span>`);
+    if (s('ssc_rp_loc')) sscParts.push(`<span class="report-line-warn">${t('ruptura a cara', 'rotura en cara')} ${s('ssc_rp_loc')}</span>`);
+    if (s('ssc_calc') === 'calcificacion') { sscParts.push(`<span class="report-line-warn">${t('calcificació', 'calcificación')}</span>`); findings.push(t('Tendinopatia calcificant subescapular', 'Tendinopatía calcificante subescapular')); }
+    if (s('ssc_din') === 'impingement') { sscParts.push(`<span class="report-line-patho">${t('pinçament subcoracoïdal', 'pinzamiento subcoracoideo')}</span>`); findings.push(t('Pinçament subcoracoïdal', 'Pinzamiento subcoracoideo')); }
+  }
+  blocks.push(buildLine(t('Tendó subescapular', 'Tendón subescapular'), sscParts));
+
+  // 3. SUPRAESPINÓS (AMB ESTRUCTURA DINÀMICA)
+  let sspParts = [];
+  const trobs = selections.ssp_troballes || [];
+  if (s('ssp_asp')==='normal' && s('ssp_grosor')==='normal' && s('ssp_delam')==='no' && trobs.length===0) {
+    sspParts.push(normStyle === 'breu' ? t('sense alteracions', 'sin alteraciones') : t('sense alteracions, ecoestructura fibril·lar conservada i gruix normal', 'sin alteraciones, ecoestructura fibrilar conservada y grosor normal'));
+  } else {
+    // Base
+    if (s('ssp_asp') === 'normal') { sspParts.push(t('morfologia conservada', 'morfología conservada')); } 
+    else { sspParts.push(`<span class="report-line-warn">${t('tendinopatia', 'tendinopatía')}</span>`); }
+    
+    if (s('ssp_grosor') !== 'normal') sspParts.push(`<span class="report-line-warn">${t('gruix', 'grosor')} ${s('ssp_grosor')==='engruixit'?t('engruixit','engrosado'):t('aprimat','adelgazado')}</span>`);
+    if (s('ssp_delam') === 'si') { sspParts.push(`<span class="report-line-patho">${t('delaminació', 'delaminación')}</span>`); findings.push(t('Delaminació del supraespinós', 'Delaminación del supraespinoso')); }
+    
+    // Troballes Dinàmiques afegides a la mateixa frase
+    trobs.forEach(tr => {
+      if (tr.type === 'rp') {
+        let desc = t('s\'aprecia ruptura parcial', 'se aprecia rotura parcial');
+        if (tr.tipo) desc += ' ' + {articular:t('articular','articular'),bursal:t('bursal','bursal'),intratendinosa:t('intratendinosa','intratendinosa'),rim_rent:'rim-rent'}[tr.tipo];
+        if (tr.fibras) desc += ' ' + t('a fibres','en fibras') + ' ' + {anteriores:t('anteriors','anteriores'),medias:t('mitjanes','medias'),posteriores:t('posteriors','posteriores')}[tr.fibras];
+        if (tr.espesor) desc += ' (' + (tr.espesor==='menos50'?t('<50% del gruix','<50% del grosor'):t('>50% del gruix','>50% del grosor')) + ')';
+        if (tr.ap || tr.ml) desc += ` de ${tr.ap||'?'}x${tr.ml||'?'}mm`;
+        sspParts.push(`<span class="${tr.espesor==='mas50'?'report-line-patho':'report-line-warn'}">${desc}</span>`);
+        findings.push(t('Ruptura parcial del supraespinós', 'Rotura parcial del supraespinoso'));
+      }
+      else if (tr.type === 'rc') {
+        let desc = t('s\'aprecia ruptura completa', 'se aprecia rotura completa');
+        if (tr.loc) desc += ' ' + t('a porció','en porción') + ' ' + {anterior:'anterior',media:t('mitjana','media'),posterior:'posterior'}[tr.loc];
+        if (tr.ap || tr.ml) desc += ` de ${tr.ap||'?'}x${tr.ml||'?'}mm`;
+        if (tr.retr && tr.retr!=='no') desc += ' ' + t('amb retracció','con retracción') + ' ' + tr.retr;
+        if (tr.atrofia && tr.atrofia!=='no') desc += ' ' + t('i atròfia','y atrofia') + ' ' + tr.atrofia;
+        sspParts.push(`<span class="report-line-patho">${desc}</span>`);
+        findings.push(t('Ruptura completa del supraespinós', 'Rotura completa del supraespinoso'));
+      }
+      else if (tr.type === 'calc') {
+        let desc = t('s\'aprecia calcificació', 'se aprecia calcificación');
+        if (tr.gartner) desc += ' Gärtner ' + tr.gartner;
+        if (tr.tam) desc += ` de ${tr.tam}mm`;
+        sspParts.push(`<span class="report-line-warn">${desc}</span>`);
+        findings.push(t('Tendinopatia calcificant del supraespinós', 'Tendinopatía calcificante del supraespinoso'));
+      }
+    });
+  }
+  // Remove trailing dots from buildLine since we might have dynamic punctuation, so we'll clean it via regex
+  blocks.push(buildLine(t('Tendó supraespinós', 'Tendón supraespinoso'), sspParts));
+
+  // 4. INFRAESPINÓS
+  let ispParts = [];
+  if (s('isp_asp')==='normal' && !s('isp_rp_tipo') && (!s('isp_calc') || s('isp_calc')==='no') && (!s('isp_quiste') || s('isp_quiste')==='no')) {
+    ispParts.push(normStyle === 'breu' ? t('sense alteracions', 'sin alteraciones') : t("sense alteracions, escotadura espinoglenoidal lliure de quists", "sin alteraciones, escotadura espinoglenoidea libre de quistes"));
+  } else {
+    if (s('isp_asp') === 'normal') { ispParts.push(t('sense alteracions', 'sin alteraciones')); } 
+    else {
+      const m = { tendinopatia: t('tendinopatia', 'tendinopatía'), rotura_parcial: t('ruptura parcial', 'rotura parcial'), rotura_completa: t('ruptura completa', 'rotura completa') };
+      ispParts.push(`<span class="${s('isp_asp')==='tendinopatia'?'report-line-warn':'report-line-patho'}">${m[s('isp_asp')]}</span>`);
+      findings.push(`${t('Lesió de l\'infraespinós', 'Lesión del infraespinoso')} (${m[s('isp_asp')]})`);
+    }
+    if (s('isp_rp_tipo')) {
+      const tm={articular:t('articular','articular'),bursal:t('bursal','bursal'),intratendinosa:'intratendinosa'};
+      ispParts.push(`<span class="report-line-warn">${t('ruptura parcial cara', 'rotura parcial cara')} ${tm[s('isp_rp_tipo')]}</span>`);
+    }
+    if (s('isp_calc') === 'si') { ispParts.push(`<span class="report-line-warn">${t('calcificació', 'calcificación')}</span>`); findings.push(t('Tendinopatia calcificant de l\'infraespinós', 'Tendinopatía calcificante del infraespinoso')); }
+    if (s('isp_quiste') === 'si') { ispParts.push(`<span class="report-line-patho">${t('quist ganglionar', 'quiste ganglionar')}</span>`); findings.push(t('Quist ganglionar a l\'escotadura espinoglenoidal', 'Quiste ganglionar en la escotadura espinoglenoidea')); }
+  }
+  blocks.push(buildLine(t('Tendó infraespinós', 'Tendón infraespinoso'), ispParts));
+
+  // 5. BOSSA & ESPAI
+  let bursaParts = [];
+  if (s('bursa_derrame')==='no' && (!s('bursa_sinovitis') || s('bursa_sinovitis')==='no') && (!s('bursa_cuerpos') || s('bursa_cuerpos')==='no') && !n('bursa_grosor')) {
+    bursaParts.push(normStyle === 'breu' ? t('sense alteracions', 'sin alteraciones') : t('sense vessament, aspecte normal', 'sin derrame, aspecto normal'));
+  } else {
+    if (s('bursa_derrame') !== 'no') {
+      const vm = { minimo: t('mínim vessament', 'mínimo derrame'), moderado: t('vessament moderat', 'derrame moderado'), abundante: t('vessament abundant', 'derrame abundante') };
+      bursaParts.push(`<span class="report-line-patho">${vm[s('bursa_derrame')]}</span>`);
+      findings.push(t('Bursitis subacromiodeltoidal', 'Bursitis subacromiosubdeltoidea'));
+    } else {
+      bursaParts.push(t('sense vessament', 'sin derrame'));
+    }
+    if (s('bursa_sinovitis') === 'si') bursaParts.push(`<span class="report-line-patho">${t('engruiximent sinovial', 'engrosamiento sinovial')}</span>`);
+    if (s('bursa_cuerpos') === 'si') bursaParts.push(`<span class="report-line-patho">${t('cossos lliures', 'cuerpos libres')}</span>`);
+  }
+  const bg = n('bursa_grosor');
+  if (bg) bursaParts.push(`<span class="report-line-warn">${t('gruix màx.', 'grosor máx.')} ${bg}mm</span>`);
+  blocks.push(buildLine(t('Bossa subacromiodeltoidal', 'Bolsa subacromiosubdeltoidea'), bursaParts));
+
+  let espaiParts = [];
+  const espMap = { conservado: t('conservat', 'conservado'), disminuido: t('disminuït', 'disminuido'), aumentado: t('augmentat', 'aumentado') };
+  const espCls = s('subacr_esp')==='conservado'?'':'report-line-warn'; // Not highlighting Normal
+  const sm = n('subacr_medida');
+  if(s('subacr_esp')!=='conservado') findings.push(t('Alteració de l\'espai subacromial', 'Alteración del espacio subacromial'));
+  espaiParts.push(`<span class="${espCls}">${espMap[s('subacr_esp')]}${sm?' ('+sm+'mm)':''}</span>`);
+  blocks.push(buildLine(t('Espai subacromial', 'Espacio subacromial'), espaiParts));
+
+  // 6. ACJ
+  let acjParts = [];
+  if (s('acj_asp')==='normal' && (!s('acj_osteo') || s('acj_osteo')==='no') && (!s('acj_derrame') || s('acj_derrame')==='no') && !n('acj_espacio')) {
+    acjParts.push(normStyle === 'breu' ? t('sense alteracions', 'sin alteraciones') : t('normal, espai articular conservat', 'normal, espacio articular conservado'));
+  } else {
+    const amap = { normal: t('normal', 'normal'), arthrosis: t('artrosi', 'artrosis'), artritis: t('artritis', 'artritis') };
+    if (s('acj_asp')==='normal') { acjParts.push(t('normal','normal')); } 
+    else { acjParts.push(`<span class="${s('acj_asp')==='arthrosis'?'report-line-warn':'report-line-patho'}">${amap[s('acj_asp')]}</span>`); findings.push(`${t('Artropatia acromioclavicular', 'Artropatía acromioclavicular')} (${amap[s('acj_asp')]})`); }
+    
+    if (s('acj_osteo') !== 'no') {
+      const osmap = {leves:t('osteòfits lleus','osteofitos leves'), marcados:t('osteòfits marcats','osteofitos marcados')};
+      acjParts.push(`<span class="report-line-warn">${osmap[s('acj_osteo')]}</span>`);
+    }
+    if (s('acj_derrame') !== 'no') {
+      const dmap = {minimo:t('vessament mínim','derrame mínimo'), moderado:t('vessament moderat','derrame moderado')};
+      acjParts.push(`<span class="report-line-patho">${dmap[s('acj_derrame')]}</span>`);
+      findings.push(t('Vessament acromioclavicular', 'Derrame acromioclavicular'));
+    }
+    const ae = n('acj_espacio');
+    if (ae) acjParts.push(`<span class="report-line-info">${t('espai', 'espacio')} ${ae}mm</span>`);
+  }
+  blocks.push(buildLine(t('Articulació acromioclavicular', 'Articulación acromioclavicular'), acjParts));
+
+  // CONSTRUIR HTML amb UN SOL SALT (<br>) ENTRE LÍNIES
+  let html = `<div style="font-weight:600; color:var(--accent); font-size:14px; margin-bottom:4px;">${titleStr} ${sideStr}</div>`;
+  // Clean dots before comma (caused by replace)
+  html += blocks.map(b => b.replace(/\s\./g, '.')).join('<br>\n');
+
+  document.getElementById('report-text').innerHTML = html;
+
+  // CONCLUSIONS INTEL·LIGENTS Ocultes i Precises
+  let conc = '';
+  if (findings.length === 0) {
+    const lSide = lateral === 'L' ? t('esquerra', 'izquierdo') : t('dreta', 'derecho');
+    conc = t(`✓ Ecografia d'espatlla ${lSide} sense troballes patològiques significatives.`, `✓ Ecografía de hombro ${lSide} sin hallazgos patológicos significativos.`);
+  } else {
+    const uniqueFindings = [...new Set(findings)];
+    conc = uniqueFindings.map(f => '• ' + f).join('\n');
+  }
+  document.getElementById('conclusion-text').textContent = conc;
+}
+
+function copyReport() {
+  let plain = document.getElementById('report-text').innerText;
+  
+  // Limpiem per assegurar el format estricte
+  plain = plain.trim().replace(/\n{2,}/g, '\n');
+  plain += '\n\n' + t('CONCLUSIÓ:', 'CONCLUSIÓN:') + '\n' + document.getElementById('conclusion-text').textContent;
+
+  const ok = () => {
+    ['btn-copy','btn-copy2'].forEach(id => {
+      const b = document.getElementById(id);
+      b.textContent = t('✓ COPIAT', '✓ COPIADO');
+      b.classList.add('copied');
+      setTimeout(()=>{ b.textContent = t('⎘ COPIAR', '⎘ COPIAR'); b.classList.remove('copied'); }, 2000);
+    });
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(plain).then(ok).catch(()=>fallbackCopy(plain,ok));
+  } else {
+    fallbackCopy(plain, ok);
+  }
+}
+
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); cb(); }
+  catch(e) { alert(t('No s\'ha pogut copiar automàticament.', 'No se ha podido copiar automáticamente.')); }
+  document.body.removeChild(ta);
+}
+
+function resetAll() {
+  lateral = '';
+  document.getElementById('btn-l').className = 'lateral-btn';
+  document.getElementById('btn-r').className = 'lateral-btn';
+  
+  const statusEl = document.getElementById('lateral-status');
+  statusEl.textContent = t('⚠ Selecciona lateralitat', '⚠ Selecciona lateralidad');
+  statusEl.style.color = '';
+  
+  document.querySelectorAll('.pill.selected').forEach(p => p.classList.remove('selected'));
+  document.querySelectorAll('.num-input').forEach(i => i.value = '');
+  document.getElementById('report-text').innerHTML =
+    `<span class="report-placeholder">${t("Selecciona la lateralitat i comença a emplenar les seccions per generar l'informe...", "Selecciona la lateralidad y comienza a rellenar las secciones para generar el informe...")}</span>`;
+  document.getElementById('conclusion-text').textContent = '—';
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-text').textContent = '0 / 6 ' + t('seccions', 'secciones');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('has-findings'));
+  
+  applyDefaults();
+  renderTrs();
+  updateReport();
+  updateNav();
+  showSection('biceps');
+}
+
+setLang('ca');
+applyDefaults();
+</script>
+</body>
+</html>
