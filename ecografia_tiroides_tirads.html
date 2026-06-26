@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Estructurado de Ecografía de Tiroides y Calculadora TIRADS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --primary-light: #e0f2fe;
+            --border-color: #e2e8f0;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --badge-bg: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #090d16;
+            --bg-card: #111827;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --primary-light: #075985;
+            --border-color: #1f2937;
+            --badge-bg: #1f2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 24px;
+            line-height: 1.6;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 28px;
+        }
+
+        .header-title h1 {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .controls-top {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            font-family: var(--font-main);
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* Layout Grid */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1.1fr 0.9fr;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-subtitle {
+            font-family: var(--font-heading);
+            font-size: 15px;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+            color: var(--text-main);
+            border-left: 3px solid var(--primary);
+            padding-left: 8px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .form-row-2 { grid-template-columns: repeat(2, 1fr); }
+            .form-row-3 { grid-template-columns: repeat(3, 1fr); }
+            .form-row-4 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .input-unit {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-unit input {
+            padding-right: 36px;
+        }
+
+        .input-unit::after {
+            content: attr(data-unit);
+            position: absolute;
+            right: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Nodules Styling */
+        .nodules-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .nodule-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            background-color: var(--bg-body);
+            margin-bottom: 16px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nodule-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .nodule-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .btn-add {
+            background-color: var(--primary);
+            color: #ffffff;
+            font-weight: 500;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-add:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-remove {
+            background-color: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-remove:hover {
+            background-color: var(--danger);
+            color: #ffffff;
+        }
+
+        /* Checkbox list for echogenic foci */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        @media (min-width: 640px) {
+            .checkbox-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: var(--radius-sm);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-item input {
+            margin-top: 3px;
+        }
+
+        /* TIRADS badges */
+        .tirads-results-badge {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tirads-badge {
+            display: flex;
+            flex-direction: column;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 120px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tirads-badge span.val {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .badge-tr1 { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+        .badge-tr2 { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+        .badge-tr3 { background-color: #fffbeb; color: #92400e; border-color: #fde68a; }
+        .badge-tr4 { background-color: #fff7ed; color: #9a3412; border-color: #ffedd5; }
+        .badge-tr5 { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
+
+        /* Tables */
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+            background: var(--bg-card);
+        }
+
+        table.info-table th, table.info-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        table.info-table th {
+            background-color: var(--badge-bg);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .output-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        textarea.report-box {
+            width: 100%;
+            min-height: 200px;
+            resize: none;
+            overflow-y: hidden;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            padding: 16px;
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        button.btn-action {
+            font-family: var(--font-main);
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-action-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-action-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-action-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-action-secondary:hover {
+            background-color: var(--badge-bg);
+        }
+
+        .alert-toast {
+            display: none;
+            background-color: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        details.image-details {
+            margin-top: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+        }
+
+        details.image-details summary {
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .volume-display {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 4px;
+        }
+
+        /* Help guides UI */
+        .guide-section {
+            font-size: 13px;
+        }
+        .guide-section h3 {
+            margin: 16px 0 8px 0;
+            font-size: 14px;
+            color: var(--primary);
+        }
+        .guide-section ul {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .guide-section li {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1 id="main-title">Ecografía Tiroidea y Estadificación TIRADS</h1>
+            <p id="main-subtitle">Módulo de Informe Estructurado con cálculo automático ACR-TIRADS / EU-TIRADS</p>
+        </div>
+        <div class="controls-top">
+            <select id="lang-selector" style="width: 130px;" onchange="changeLanguage()">
+                <option value="es" selected>Castellano</option>
+                <option value="ca">Català</option>
+                <option value="en">English</option>
+            </select>
+            <select id="theme-selector" style="width: 130px;" onchange="changeTheme()">
+                <option value="light" selected>Modo Claro</option>
+                <option value="dark">Modo Oscuro</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- COLUMN LEFT: DATA INPUT -->
+        <div class="column-left">
+            
+
+
+            <!-- Thyroid Measurements -->
+            <div class="card">
+                <h2 class="card-title" id="sec-measurements-title">Dimensiones de la Glándula</h2>
+                
+                <div class="form-row form-row-3" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label id="lbl-gland-size" for="gland-size">Tamaño de la Glándula:</label>
+                        <select id="gland-size" onchange="updateReport()">
+                            <option value="normal" selected>Normal</option>
+                            <option value="decreased">Disminuido</option>
+                            <option value="increased">Aumentado (Bocio)</option>
+                            <option value="endothoracic">Con prolongación endotorácica</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-gland-echo" for="gland-echo">Ecoestructura:</label>
+                        <select id="gland-echo" onchange="updateReport()">
+                            <option value="normal" selected>Conservada / Homogénea</option>
+                            <option value="heterogeneous">Heterogénea</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-gland-doppler" for="gland-doppler">Estudio Doppler Color:</label>
+                        <select id="gland-doppler" onchange="updateReport()">
+                            <option value="normal" selected>Normal</option>
+                            <option value="increased">Aumentado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="card-subtitle" id="sub-ltd-title">Lóbulo Tiroideo Derecho (LTD)</h3>
+                <div class="form-row form-row-3">
+                    <div class="form-group">
+                        <label id="lbl-ltd-w" for="ltd-w">Ancho (Transversal):</label>
+                        <div class="input-unit" data-unit="mm">
+                            <input type="number" id="ltd-w" min="0" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-ltd-h" for="ltd-h">Grosor (Anteroposterior):</label>
+                        <div class="input-unit" data-unit="mm">
+                            <input type="number" id="ltd-h" min="0" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-ltd-l" for="ltd-l">Longitud (Longitudinal):</label>
+                        <div class="input-unit" data-unit="mm">
+                            <input type="number" id="ltd-l" min="0" oninput="updateReport()">
+                        </div>
+                    </div>
+                </div>
+                <div class="volume-display" id="ltd-vol-display">Volumen: 0.0 mL</div>
+
+                <h3 class="card-subtitle" id="sub-lti-title">Lóbulo Tiroideo Izquierdo (LTI)</h3>
+                <div class="form-row form-row-3">
+                    <div class="form-group">
+                        <label id="lbl-lti-w" for="lti-w">Ancho (Transversal):</label>
+                        <div class="input-unit" data-unit="mm">
+                            <input type="number" id="lti-w" min="0" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-lti-h" for="lti-h">Grosor (Anteroposterior):</label>
+                        <div class="input-unit" data-unit="mm">
+                            <input type="number" id="lti-h" min="0" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-lti-l" for="lti-l">Longitud (Longitudinal):</label>
+                        <div class="input-unit" data-unit="mm">
+                            <input type="number" id="lti-l" min="0" oninput="updateReport()">
+                        </div>
+                    </div>
+                </div>
+                <div class="volume-display" id="lti-vol-display">Volumen: 0.0 mL</div>
+
+                <h3 class="card-subtitle" id="sub-isthmus-title">Istmo</h3>
+                <div class="form-row form-row-2">
+                    <div class="form-group">
+                        <label id="lbl-isthmus-thick" for="isthmus-thick">Grosor:</label>
+                        <div class="input-unit" data-unit="mm">
+                            <input type="number" id="isthmus-thick" min="0" step="0.1" oninput="updateReport()">
+                        </div>
+                    </div>
+                    <div>&nbsp;</div>
+                </div>
+            </div>
+
+            <!-- Nodules Section -->
+            <div class="card">
+                <div class="nodules-header">
+                    <h2 class="card-title" id="sec-nodules-title" style="border:none; margin:0; padding:0;">Nódulos Detectados</h2>
+                    <button class="btn-add" id="btn-add-nodule" onclick="addNodule()">+ Añadir Nódulo</button>
+                </div>
+                
+                <div id="nodules-container">
+                    <!-- Nodules dynamically appended here -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COLUMN RIGHT: SUPPORT & CLINICAL GUIDES -->
+        <div class="column-right">
+            
+            <div class="card">
+                <h2 class="card-title" id="sec-guide-title">Guía de Referencia Clínica</h2>
+                
+                <div class="guide-section">
+                    <h3 id="g-acr-title">ACR TI-RADS (2017)</h3>
+                    <p id="g-acr-desc">Sistema de puntos de la ACR para estratificar el riesgo y guiar la indicación de PAAF.</p>
+                    <table class="info-table">
+                        <thead>
+                            <tr>
+                                <th id="g-th-cat">Categoría</th>
+                                <th id="g-th-pts">Puntos</th>
+                                <th id="g-th-risk">Risc</th>
+                                <th id="g-th-thresholds">PAAF / Seguimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>TR1</strong> (Benigno)</td>
+                                <td>0</td>
+                                <td>0.3%</td>
+                                <td id="g-tr1-t">No PAAF. No control.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TR2</strong> (No sospechoso)</td>
+                                <td>2</td>
+                                <td>1.5%</td>
+                                <td id="g-tr2-t">No PAAF. No control.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TR3</strong> (Leve sospecha)</td>
+                                <td>3</td>
+                                <td>4.8%</td>
+                                <td id="g-tr3-t">PAAF si &ge; 25 mm. Control si &ge; 15 mm.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TR4</strong> (Moderada sospecha)</td>
+                                <td>4 - 6</td>
+                                <td>9.1%</td>
+                                <td id="g-tr4-t">PAAF si &ge; 15 mm. Control si &ge; 10 mm.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TR5</strong> (Alta sospecha)</td>
+                                <td>&ge; 7</td>
+                                <td>35%</td>
+                                <td id="g-tr5-t">PAAF si &ge; 10 mm. Control si &ge; 5 mm.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 id="g-eu-title">EU-TIRADS (2017)</h3>
+                    <p id="g-eu-desc">Clasificación simplificada basada en patrones de la European Thyroid Association (ETA).</p>
+                    <table class="info-table">
+                        <thead>
+                            <tr>
+                                <th id="g-th-eucat">Categoría</th>
+                                <th id="g-th-euchar">Características</th>
+                                <th id="g-th-eurisk">Risc</th>
+                                <th id="g-th-eupaaf">Umbral PAAF</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>EU-TIRADS 2</strong></td>
+                                <td id="g-eu2-c">Quistes puros, nódulo completamente esponjiforme</td>
+                                <td>~0%</td>
+                                <td id="g-eu2-p">No PAAF (salvo terapéutica)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>EU-TIRADS 3</strong></td>
+                                <td id="g-eu3-c">Isocóico o hiperecóico, oval, bordes lisos, sin sospecha</td>
+                                <td>2 - 4%</td>
+                                <td id="g-eu3-p">&ge; 20 mm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>EU-TIRADS 4</strong></td>
+                                <td id="g-eu4-c">Levemente hipoecóico, oval, bordes lisos, sin sospecha</td>
+                                <td>6 - 17%</td>
+                                <td id="g-eu4-p">&ge; 15 mm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>EU-TIRADS 5</strong></td>
+                                <td id="g-eu5-c">Sólido con &ge; 1 signo de sospecha alta (calcif. puntiformes, bordes irregulares, más alto que ancho, muy hipoecóico)</td>
+                                <td>26 - 87%</td>
+                                <td id="g-eu5-p">&ge; 10 mm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="image-details" style="margin-top:20px;">
+                    <summary id="lbl-img-ref">▸ Guía Visual de Características Sospechosas</summary>
+                    <div style="font-size:12px; margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+                        <div><strong>1. Forma Taller-than-Wide (Más alto que ancho):</strong> Relación AP / Transversal > 1. Alta sospecha.</div>
+                        <div><strong>2. Focos Ecogénicos Puntiformes:</strong> Microcalcificaciones asociadas a carcinoma papilar.</div>
+                        <div><strong>3. Márgenes Lobulados o Irregulares:</strong> Sugiere invasión tisular local.</div>
+                        <div><strong>4. Hipoecogenicidad Marcada:</strong> Ecogenicidad del nódulo inferior a la de los músculos pretiroideos (strap muscles).</div>
+                    </div>
+                </details>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="output-section">
+        <h2 id="sec-report-title">Informe Estructurado Generado</h2>
+        <textarea id="report-output" class="report-box" oninput="autoResizeReportBox()" placeholder="Introduzca datos para generar el informe..."></textarea>
+        <div class="btn-container">
+            <button class="btn-action btn-action-secondary" id="btn-reset" onclick="resetForm()">Reiniciar Módulo</button>
+            <button class="btn-action btn-action-primary" id="btn-copy" onclick="copyToClipboard()">Copiar al Portapapeles</button>
+        </div>
+    </div>
+
+    <div id="toast" class="alert-toast">¡Informe copiado con éxito!</div>
+
+    <script>
+        // Language dictionaries
+        const t = {
+            es: {
+                mainTitle: "Ecografía Tiroidea y Estadificación TIRADS",
+                mainSubtitle: "Módulo de Informe Estructurado con cálculo automático ACR-TIRADS / EU-TIRADS",
+                secMeasurementsTitle: "Dimensiones de la Glándula",
+                lblGlandSize: "Tamaño de la Glándula:",
+                lblGlandEcho: "Ecoestructura:",
+                optSizeNormal: "Normal",
+                optSizeDecreased: "Disminuido",
+                optSizeIncreased: "Aumentado (Bocio)",
+                optSizeEndothoracic: "Con prolongación endotorácica",
+                optEchoNormal: "Conservada / Homogénea",
+                optEchoHeterogeneous: "Heterogénea",
+                lblGlandDoppler: "Estudio Doppler Color:",
+                optDopplerNormal: "Normal",
+                optDopplerIncreased: "Aumentado",
+                subLtdTitle: "Lóbulo Tiroideo Derecho (LTD)",
+                lblLtdW: "Ancho (Transversal):",
+                lblLtdH: "Grosor (Anteroposterior):",
+                lblLtdL: "Longitud (Longitudinal):",
+                subLtiTitle: "Lóbulo Tiroideo Izquierdo (LTI)",
+                lblLtiW: "Ancho (Transversal):",
+                lblLtiH: "Grosor (Anteroposterior):",
+                lblLtiL: "Longitud (Longitudinal):",
+                subIsthmusTitle: "Istmo",
+                lblIsthmusThick: "Grosor:",
+                secNodulesTitle: "Nódulos Detectados",
+                btnAddNodule: "+ Añadir Nódulo",
+                secGuideTitle: "Guía de Referencia Clínica",
+                gAcrTitle: "ACR TI-RADS (2017)",
+                gAcrDesc: "Sistema de puntos de la ACR para estratificar el riesgo y guiar la indicación de PAAF.",
+                gThCat: "Categoría",
+                gThPts: "Puntos",
+                gThRisk: "Riesgo",
+                gThThresholds: "PAAF / Seguimiento",
+                gTr1T: "No PAAF. No control.",
+                gTr2T: "No PAAF. No control.",
+                gTr3T: "PAAF si &ge; 25 mm. Control si &ge; 15 mm.",
+                gTr4T: "PAAF si &ge; 15 mm. Control si &ge; 10 mm.",
+                gTr5T: "PAAF si &ge; 10 mm. Control si &ge; 5 mm.",
+                gEuTitle: "EU-TIRADS (2017)",
+                gEuDesc: "Clasificación simplificada basada en patrones de la European Thyroid Association (ETA).",
+                gThEucat: "Categoría",
+                gThEuchar: "Características",
+                gThEurisk: "Riesgo",
+                gThEupaaf: "Umbral PAAF",
+                gEu2C: "Quistes puros, nódulo completamente esponjiforme",
+                gEu2P: "No PAAF (salvo terapéutica)",
+                gEu3C: "Isocóico o hiperecóico, oval, bordes lisos, sin sospecha",
+                gEu3P: "&ge; 20 mm",
+                gEu4C: "Levemente hipoecóico, oval, bordes lisos, sin sospecha",
+                gEu4P: "&ge; 15 mm",
+                gEu5C: "Sólido con &ge; 1 signo de sospecha alta (calcif. puntiformes, bordes irregulares, más alto que ancho, muy hipoecóico)",
+                gEu5P: "&ge; 10 mm",
+                lblImgRef: "▸ Guía Visual de Características Sospechosas",
+                secReportTitle: "Informe Estructurado Generado",
+                btnReset: "Reiniciar Módulo",
+                btnCopy: "Copiar al Portapapeles",
+                toastSuccess: "¡Informe copiado con éxito!",
+                noduleText: "Nódulo",
+                lblNoduleLoc: "Localización:",
+                lblNoduleSize: "Dimensiones (T x AP x L):",
+                lblNoduleComp: "Composición:",
+                lblNoduleEcho: "Ecogenicidad:",
+                lblNoduleShape: "Forma:",
+                lblNoduleMargin: "Márgenes:",
+                lblNoduleFoci: "Focos Ecogénicos (Marcar todos los que apliquen):",
+                btnDeleteNodule: "Eliminar",
+                optLtd: "Lóbulo Derecho (LTD)",
+                optLti: "Lóbulo Izquierdo (LTI)",
+                optIsthmus: "Istmo",
+                optCystic: "Quístico o casi quístico (0 pts)",
+                optSpongiform: "Esponjiforme (0 pts)",
+                optMixed: "Mixto quístico-sólido (1 pt)",
+                optSolid: "Sólido o casi completamente sólido (2 pts)",
+                optAnechoic: "Anecóico (0 pts)",
+                optIsoHyperechoic: "Isocóico o hiperecóico (1 pt)",
+                optHypoechoic: "Hipoecóico (2 pts)",
+                optVeryHypoechoic: "Muy hipoecóico (3 pts)",
+                optWider: "Más ancho que alto (0 pts)",
+                optTaller: "Más alto que ancho / Taller-than-wide (3 pts)",
+                optSmooth: "Liso (0 pts)",
+                optIllDefined: "Mal definido (0 pts)",
+                optLobulated: "Lobulado o irregular (2 pts)",
+                optExtraThyroidal: "Extensión extratiroidea (3 pts)",
+                chkFociNone: "Ninguno / Cola de cometa grande (0 pts)",
+                chkFociMacro: "Macrocalcificaciones (1 pt)",
+                chkFociRim: "Calcificaciones periféricas / en anillo (2 pts)",
+                chkFociPunctate: "Focos ecogénicos puntiformes / microcalcificaciones (3 pts)",
+                volText: "Volumen",
+                noNodulesText: "Sin nódulos significativos.",
+                cystColloidText: "Pequeño quiste coloide de {w} x {h} mm.",
+                normalEchoText: "Tiroides de tamaño y ecoestructura conservada. Presencia de aire traqueal sin efecto masa.",
+                vesselText: "Estructuras vasculares visualizadas permeables.",
+                vesselNormalText: "Estudio Doppler color con vascularización normal. Estructuras vasculares visualizadas permeables.",
+                vesselIncreasedText: "Estudio Doppler color con vascularización aumentada.",
+                lymphText: "Sin adenopatías laterocervicales sospechosas.",
+                glandsText: "Glándulas submaxilares sin alteraciones significativas.",
+                conclNoNodules: "Estudio de ecografía tiroidea dentro de la normalidad, sin nódulos clínicamente significativos.",
+                acrText: "ACR-TIRADS",
+                euText: "EU-TIRADS",
+                pointsText: "puntos",
+                recommendationFNA: "Se recomienda realizar PAAF por criterios de tamaño y TIRADS.",
+                recommendationFollowup: "Se recomienda control ecográfico periódico (generalmente en 6 meses o 1 año).",
+                recommendationNone: "No requiere seguimiento obligatorio por guías por tamaño. Se puede considerar control discrecional (ej: en 6-12 meses).",
+                conclNoduleSummary: "Pequeño nódulo tiroideo en {loc}, de aspecto adenomatoso. Aunque se considera no significativo por tamaño, por clasificación TIRADS se recomienda control en 6 meses - 1 año.",
+                conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomendación: {rec}."
+            },
+            ca: {
+                mainTitle: "Ecografia Tiroïdea i Estadificació TIRADS",
+                mainSubtitle: "Mòdul d'Informe Estructurat amb càlcul automàtic ACR-TIRADS / EU-TIRADS",
+                secMeasurementsTitle: "Dimensions de la Glàndula",
+                lblGlandSize: "Mida de la Glàndula:",
+                lblGlandEcho: "Ecoestructura:",
+                optSizeNormal: "Normal",
+                optSizeDecreased: "Disminuït",
+                optSizeIncreased: "Augmentat (Boci)",
+                optSizeEndothoracic: "Amb prolongació endotoràcica",
+                optEchoNormal: "Conservada / Homogènia",
+                optEchoHeterogeneous: "Heterogènia",
+                lblGlandDoppler: "Estudi Doppler Color:",
+                optDopplerNormal: "Normal",
+                optDopplerIncreased: "Augmentat",
+                subLtdTitle: "Lòbul Tiroïdal Dret (LTD)",
+                lblLtdW: "Amplada (Transversal):",
+                lblLtdH: "Gruix (Anteroposterior):",
+                lblLtdL: "Longitud (Longitudinal):",
+                subLtiTitle: "Lòbul Tiroïdal Esquerre (LTI)",
+                lblLtiW: "Amplada (Transversal):",
+                lblLtiH: "Gruix (Anteroposterior):",
+                lblLtiL: "Longitud (Longitudinal):",
+                subIsthmusTitle: "Istme",
+                lblIsthmusThick: "Gruix:",
+                secNodulesTitle: "Nòduls Detectats",
+                btnAddNodule: "+ Afegir Nòdul",
+                secGuideTitle: "Guia de Referència Clínica",
+                gAcrTitle: "ACR TI-RADS (2017)",
+                gAcrDesc: "Sistema de punts de l'ACR per a estratificar el risc i guiar la indicació de PAAF.",
+                gThCat: "Categoria",
+                gThPts: "Punts",
+                gThRisk: "Risc",
+                gThThresholds: "PAAF / Seguiment",
+                gTr1T: "No PAAF. No control.",
+                gTr2T: "No PAAF. No control.",
+                gTr3T: "PAAF si &ge; 25 mm. Control si &ge; 15 mm.",
+                gTr4T: "PAAF si &ge; 15 mm. Control si &ge; 10 mm.",
+                gTr5T: "PAAF si &ge; 10 mm. Control si &ge; 5 mm.",
+                gEuTitle: "EU-TIRADS (2017)",
+                gEuDesc: "Clasificació simplificada basada en patrons de la European Thyroid Association (ETA).",
+                gThEucat: "Categoria",
+                gThEuchar: "Característiques",
+                gThEurisk: "Risc",
+                gThEupaaf: "Llindar PAAF",
+                gEu2C: "Quists purs, nòdul completament espongiforme",
+                gEu2P: "No PAAF (excepte terapèutica)",
+                gEu3C: "Isocoic o hiperecoic, oval, vores llises, sense sospita",
+                gEu3P: "&ge; 20 mm",
+                gEu4C: "Lleument hipocoic, oval, vores llises, sense sospita",
+                gEu4P: "&ge; 15 mm",
+                gEu5C: "Sòlid amb &ge; 1 signe de sospita alta (calcif. puntiformes, vores irregulars, més alt que ample, molt hipocoic)",
+                gEu5P: "&ge; 10 mm",
+                lblImgRef: "▸ Guia Visual de Característiques Sospitoses",
+                secReportTitle: "Informe Estructurat Generat",
+                btnReset: "Reiniciar Mòdul",
+                btnCopy: "Copiar al Portapapers",
+                toastSuccess: "Informe copiat amb èxit!",
+                noduleText: "Nòdul",
+                lblNoduleLoc: "Localització:",
+                lblNoduleSize: "Dimensions (T x AP x L):",
+                lblNoduleComp: "Composició:",
+                lblNoduleEcho: "Ecogenicitat:",
+                lblNoduleShape: "Forma:",
+                lblNoduleMargin: "Margs:",
+                lblNoduleFoci: "Focs Ecogènics (Marcar tots els aplicables):",
+                btnDeleteNodule: "Eliminar",
+                optLtd: "Lòbul Dret (LTD)",
+                optLti: "Lòbul Esquerre (LTI)",
+                optIsthmus: "Istme",
+                optCystic: "Quístic o gairebé quístic (0 pts)",
+                optSpongiform: "Espongiforme (0 pts)",
+                optMixed: "Mixt quístic-sòlid (1 pt)",
+                optSolid: "Sòlid o gairebé completament sòlid (2 pts)",
+                optAnechoic: "Anecoic (0 pts)",
+                optIsoHyperechoic: "Isocoic o hiperecoic (1 pt)",
+                optHypoechoic: "Hipocoic (2 pts)",
+                optVeryHypoechoic: "Molt hipocoic (3 pts)",
+                optWider: "Més ample que alt (0 pts)",
+                optTaller: "Més alt que ample / Taller-than-wide (3 pts)",
+                optSmooth: "Llis (0 pts)",
+                optIllDefined: "Mal definit (0 pts)",
+                optLobulated: "Lobulat o irregular (2 pts)",
+                optExtraThyroidal: "Extensió extratiroïdal (3 pts)",
+                chkFociNone: "Cap / Cua de cometa gran (0 pts)",
+                chkFociMacro: "Macrocalcificacions (1 pt)",
+                chkFociRim: "Calcificacions perifèriques / en anell (2 pts)",
+                chkFociPunctate: "Focs ecogènics puntiformes / microcalcificacions (3 pts)",
+                volText: "Volum",
+                noNodulesText: "Sense nòduls significatius.",
+                cystColloidText: "Petit quist col·loide de {w} x {h} mm.",
+                normalEchoText: "Tiroide de mida i ecoestructura conservada. Presència d'aire traqueal sense efecte massa.",
+                vesselText: "Estructures vasculars visualitzades permeables.",
+                vesselNormalText: "Estudi Doppler color amb vascularització normal. Estructures vasculars visualitzades permeables.",
+                vesselIncreasedText: "Estudi Doppler color amb vascularització augmentada.",
+                lymphText: "Sense adenopaties laterocervicals sospitoses.",
+                glandsText: "Glàndules submaxil·lars sense alteracions significatives.",
+                conclNoNodules: "Estudi d'ecografia tiroïdea dins de la normalitat, sense nòduls clínicament significatius.",
+                acrText: "ACR-TIRADS",
+                euText: "EU-TIRADS",
+                pointsText: "punts",
+                recommendationFNA: "Es recomana realitzar PAAF per criteris de mida i TIRADS.",
+                recommendationFollowup: "Es recomana control ecogràfic periòdic (generalment en 6 mesos o 1 any).",
+                recommendationNone: "No requereix seguiment obligatori per guies per mida. Es pot considerar control discrecional (ex: en 6-12 mesos).",
+                conclNoduleSummary: "Petit nòdul tiroïdal a {loc}, d'aspecte adenomatós. Tot i que es considera no significatiu per mida, per classificació TIRADS es recomana control en 6 mesos - 1 any.",
+                conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomanació: {rec}."
+            },
+            en: {
+                mainTitle: "Thyroid Ultrasound & TIRADS Staging",
+                mainSubtitle: "Structured Reporting Module with automatic ACR-TIRADS / EU-TIRADS calculation",
+                secMeasurementsTitle: "Gland Dimensions",
+                lblGlandSize: "Gland Size:",
+                lblGlandEcho: "Ecostructure:",
+                optSizeNormal: "Normal",
+                optSizeDecreased: "Decreased",
+                optSizeIncreased: "Increased (Goiter)",
+                optSizeEndothoracic: "With endothoracic extension",
+                optEchoNormal: "Preserved / Homogeneous",
+                optEchoHeterogeneous: "Heterogeneous",
+                lblGlandDoppler: "Color Doppler Study:",
+                optDopplerNormal: "Normal",
+                optDopplerIncreased: "Increased",
+                subLtdTitle: "Right Thyroid Lobe (RTL)",
+                lblLtdW: "Width (Transverse):",
+                lblLtdH: "Thickness (Anteroposterior):",
+                lblLtdL: "Length (Longitudinal):",
+                subLtiTitle: "Left Thyroid Lobe (LTL)",
+                lblLtiW: "Width (Transverse):",
+                lblLtiH: "Thickness (Anteroposterior):",
+                lblLtiL: "Length (Longitudinal):",
+                subIsthmusTitle: "Isthmus",
+                lblIsthmusThick: "Thickness:",
+                secNodulesTitle: "Detected Nodules",
+                btnAddNodule: "+ Add Nodule",
+                secGuideTitle: "Clinical Reference Guide",
+                gAcrTitle: "ACR TI-RADS (2017)",
+                gAcrDesc: "ACR points system to stratify risk and guide fine needle aspiration (FNA) decisions.",
+                gThCat: "Category",
+                gThPts: "Points",
+                gThRisk: "Risk",
+                gThThresholds: "FNA / Follow-up",
+                gTr1T: "No FNA. No follow-up.",
+                gTr2T: "No FNA. No follow-up.",
+                gTr3T: "FNA if &ge; 25 mm. Follow-up if &ge; 15 mm.",
+                gTr4T: "FNA if &ge; 15 mm. Follow-up if &ge; 10 mm.",
+                gTr5T: "FNA if &ge; 10 mm. Follow-up if &ge; 5 mm.",
+                gEuTitle: "EU-TIRADS (2017)",
+                gEuDesc: "ETA simplified pattern-based classification.",
+                gThEucat: "Category",
+                gThEuchar: "Features",
+                gThEurisk: "Risk",
+                gThEupaaf: "FNA Threshold",
+                gEu2C: "Pure cysts, entirely spongiform nodule",
+                gEu2P: "No FNA (except clinical therapeutic)",
+                gEu3C: "Isoechoic or hyperechoic, oval, smooth margins, no suspicion",
+                gEu3P: "&ge; 20 mm",
+                gEu4C: "Mildly hypoechoic, oval, smooth margins, no suspicion",
+                gEu4P: "&ge; 15 mm",
+                gEu5C: "Solid with &ge; 1 high suspicion features (punctate foci, irregular margins, taller-than-wide, very hypoechoic)",
+                gEu5P: "&ge; 10 mm",
+                lblImgRef: "▸ Suspicious Features Visual Guide",
+                secReportTitle: "Generated Structured Report",
+                btnReset: "Reset Module",
+                btnCopy: "Copy to Clipboard",
+                toastSuccess: "Report copied to clipboard!",
+                noduleText: "Nodule",
+                lblNoduleLoc: "Location:",
+                lblNoduleSize: "Dimensions (T x AP x L):",
+                lblNoduleComp: "Composition:",
+                lblNoduleEcho: "Echogenicity:",
+                lblNoduleShape: "Shape:",
+                lblNoduleMargin: "Margins:",
+                lblNoduleFoci: "Echogenic Foci (Check all that apply):",
+                btnDeleteNodule: "Remove",
+                optLtd: "Right Lobe (RTL)",
+                optLti: "Left Lobe (LTL)",
+                optIsthmus: "Isthmus",
+                optCystic: "Cystic or almost completely cystic (0 pts)",
+                optSpongiform: "Spongiform (0 pts)",
+                optMixed: "Mixed cystic and solid (1 pt)",
+                optSolid: "Solid or almost completely solid (2 pts)",
+                optAnechoic: "Anechoic (0 pts)",
+                optIsoHyperechoic: "Isoechoic or hyperechoic (1 pt)",
+                optHypoechoic: "Hypoechoic (2 pts)",
+                optVeryHypoechoic: "Very hypoechoic (3 pts)",
+                optWider: "Wider than tall (0 pts)",
+                optTaller: "Taller than wide (3 pts)",
+                optSmooth: "Smooth (0 pts)",
+                optIllDefined: "Ill-defined (0 pts)",
+                optLobulated: "Lobulated or irregular (2 pts)",
+                optExtraThyroidal: "Extra-thyroidal extension (3 pts)",
+                chkFociNone: "None / Large comet-tail (0 pts)",
+                chkFociMacro: "Macrocalcifications (1 pt)",
+                chkFociRim: "Peripheral (rim) calcifications (2 pts)",
+                chkFociPunctate: "Punctate echogenic foci / microcalcifications (3 pts)",
+                volText: "Volume",
+                noNodulesText: "No significant nodules.",
+                cystColloidText: "Small colloid cyst of {w} x {h} mm.",
+                normalEchoText: "Thyroid gland of normal size and echoarchitecture. Presence of tracheal air without mass effect.",
+                vesselText: "Visualized vascular structures are patent.",
+                vesselNormalText: "Color Doppler study shows normal vascularity. Visualized vascular structures are patent.",
+                vesselIncreasedText: "Color Doppler study shows increased vascularity.",
+                lymphText: "No suspicious laterocervical lymphadenopathy.",
+                glandsText: "Submaxillary glands without significant alterations.",
+                conclNoNodules: "Thyroid ultrasound study within normal limits, with no clinically significant nodules.",
+                acrText: "ACR-TIRADS",
+                euText: "EU-TIRADS",
+                pointsText: "points",
+                recommendationFNA: "FNA is recommended based on size and TIRADS criteria.",
+                recommendationFollowup: "Periodic ultrasound follow-up is recommended (typically 6 months - 1 year).",
+                recommendationNone: "No routine follow-up required by guidelines due to size. Discretionary control can be considered (e.g., in 6-12 months).",
+                conclNoduleSummary: "Small thyroid nodule in {loc}, adenomatous appearance. Although considered insignificant by size, control is recommended in 6 months - 1 year by TIRADS classification.",
+                conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recommendation: {rec}."
+            }
+        };
+
+        let noduleCounter = 0;
+        let nodules = [];
+
+        function changeTheme() {
+            const theme = document.getElementById('theme-selector').value;
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById('lang-selector').value;
+            const dict = t[lang];
+
+            // Core Page Titles
+            document.getElementById('main-title').innerText = dict.mainTitle;
+            document.getElementById('main-subtitle').innerText = dict.mainSubtitle;
+            document.getElementById('sec-measurements-title').innerText = dict.secMeasurementsTitle;
+            document.getElementById('sub-ltd-title').innerText = dict.subLtdTitle;
+            document.getElementById('lbl-ltd-w').innerText = dict.lblLtdW;
+            document.getElementById('lbl-ltd-h').innerText = dict.lblLtdH;
+            document.getElementById('lbl-ltd-l').innerText = dict.lblLtdL;
+            document.getElementById('sub-lti-title').innerText = dict.subLtiTitle;
+            document.getElementById('lbl-lti-w').innerText = dict.lblLtiW;
+            document.getElementById('lbl-lti-h').innerText = dict.lblLtiH;
+            document.getElementById('lbl-lti-l').innerText = dict.lblLtiL;
+            document.getElementById('sub-isthmus-title').innerText = dict.subIsthmusTitle;
+            document.getElementById('lbl-isthmus-thick').innerText = dict.lblIsthmusThick;
+
+            // Gland Size and Ecoestructura labels
+            document.getElementById('lbl-gland-size').innerText = dict.lblGlandSize;
+            document.getElementById('lbl-gland-echo').innerText = dict.lblGlandEcho;
+
+            // Gland Size selector options
+            const selSize = document.getElementById('gland-size');
+            selSize.options[0].text = dict.optSizeNormal;
+            selSize.options[1].text = dict.optSizeDecreased;
+            selSize.options[2].text = dict.optSizeIncreased;
+            selSize.options[3].text = dict.optSizeEndothoracic;
+
+            // Gland Echo selector options
+            const selEchoGland = document.getElementById('gland-echo');
+            selEchoGland.options[0].text = dict.optEchoNormal;
+            selEchoGland.options[1].text = dict.optEchoHeterogeneous;
+
+            document.getElementById('lbl-gland-doppler').innerText = dict.lblGlandDoppler;
+            const selDoppler = document.getElementById('gland-doppler');
+            selDoppler.options[0].text = dict.optDopplerNormal;
+            selDoppler.options[1].text = dict.optDopplerIncreased;
+
+            document.getElementById('sec-nodules-title').innerText = dict.secNodulesTitle;
+            document.getElementById('btn-add-nodule').innerText = dict.btnAddNodule;
+            document.getElementById('sec-guide-title').innerText = dict.secGuideTitle;
+            document.getElementById('g-acr-title').innerText = dict.gAcrTitle;
+            document.getElementById('g-acr-desc').innerText = dict.gAcrDesc;
+            document.getElementById('g-th-cat').innerText = dict.gThCat;
+            document.getElementById('g-th-pts').innerText = dict.gThPts;
+            document.getElementById('g-th-risk').innerText = dict.gThRisk;
+            document.getElementById('g-th-thresholds').innerText = dict.gThThresholds;
+            document.getElementById('g-tr1-t').innerHTML = dict.gTr1T;
+            document.getElementById('g-tr2-t').innerHTML = dict.gTr2T;
+            document.getElementById('g-tr3-t').innerHTML = dict.gTr3T;
+            document.getElementById('g-tr4-t').innerHTML = dict.gTr4T;
+            document.getElementById('g-tr5-t').innerHTML = dict.gTr5T;
+            document.getElementById('g-eu-title').innerText = dict.gEuTitle;
+            document.getElementById('g-eu-desc').innerText = dict.gEuDesc;
+            document.getElementById('g-th-eucat').innerText = dict.gThEucat;
+            document.getElementById('g-th-euchar').innerText = dict.gThEuchar;
+            document.getElementById('g-th-eurisk').innerText = dict.gThEurisk;
+            document.getElementById('g-th-eupaaf').innerText = dict.gThEupaaf;
+            document.getElementById('g-eu2-c').innerText = dict.gEu2C;
+            document.getElementById('g-eu2-p').innerText = dict.gEu2P;
+            document.getElementById('g-eu3-c').innerText = dict.gEu3C;
+            document.getElementById('g-eu3-p').innerText = dict.gEu3P;
+            document.getElementById('g-eu4-c').innerText = dict.gEu4C;
+            document.getElementById('g-eu4-p').innerText = dict.gEu4P;
+            document.getElementById('g-eu5-c').innerText = dict.gEu5C;
+            document.getElementById('g-eu5-p').innerText = dict.gEu5P;
+            document.getElementById('lbl-img-ref').innerText = dict.lblImgRef;
+            document.getElementById('sec-report-title').innerText = dict.secReportTitle;
+            document.getElementById('btn-reset').innerText = dict.btnReset;
+            document.getElementById('btn-copy').innerText = dict.btnCopy;
+
+            // Update translations of dynamically added nodules
+            nodules.forEach(nodule => {
+                translateNoduleUI(nodule.id, dict);
+            });
+
+            updateReport();
+        }
+
+        function translateNoduleUI(id, dict) {
+            const container = document.getElementById(`nodule-${id}`);
+            if (!container) return;
+
+            container.querySelector(`.nodule-num-title`).innerText = `${dict.noduleText} #${id}`;
+            container.querySelector(`.btn-remove`).innerText = dict.btnDeleteNodule;
+            container.querySelector(`.lbl-loc`).innerText = dict.lblNoduleLoc;
+            container.querySelector(`.lbl-size`).innerText = dict.lblNoduleSize;
+            container.querySelector(`.lbl-comp`).innerText = dict.lblNoduleComp;
+            container.querySelector(`.lbl-echo`).innerText = dict.lblNoduleEcho;
+            container.querySelector(`.lbl-shape`).innerText = dict.lblNoduleShape;
+            container.querySelector(`.lbl-margin`).innerText = dict.lblNoduleMargin;
+            container.querySelector(`.lbl-foci`).innerText = dict.lblNoduleFoci;
+
+            // Dropdown options
+            const selLoc = document.getElementById(`nodule-${id}-loc`);
+            selLoc.options[0].text = dict.optLtd;
+            selLoc.options[1].text = dict.optLti;
+            selLoc.options[2].text = dict.optIsthmus;
+
+            const selComp = document.getElementById(`nodule-${id}-comp`);
+            selComp.options[0].text = dict.optCystic;
+            selComp.options[1].text = dict.optSpongiform;
+            selComp.options[2].text = dict.optMixed;
+            selComp.options[3].text = dict.optSolid;
+
+            const selEcho = document.getElementById(`nodule-${id}-echo`);
+            selEcho.options[0].text = dict.optAnechoic;
+            selEcho.options[1].text = dict.optIsoHyperechoic;
+            selEcho.options[2].text = dict.optHypoechoic;
+            selEcho.options[3].text = dict.optVeryHypoechoic;
+
+            const selShape = document.getElementById(`nodule-${id}-shape`);
+            selShape.options[0].text = dict.optWider;
+            selShape.options[1].text = dict.optTaller;
+
+            const selMargin = document.getElementById(`nodule-${id}-margin`);
+            selMargin.options[0].text = dict.optSmooth;
+            selMargin.options[1].text = dict.optIllDefined;
+            selMargin.options[2].text = dict.optLobulated;
+            selMargin.options[3].text = dict.optExtraThyroidal;
+
+            // Checkboxes
+            container.querySelector(`.chk-foci-none`).innerText = dict.chkFociNone;
+            container.querySelector(`.chk-foci-macro`).innerText = dict.chkFociMacro;
+            container.querySelector(`.chk-foci-rim`).innerText = dict.chkFociRim;
+            container.querySelector(`.chk-foci-punctate`).innerText = dict.chkFociPunctate;
+        }
+
+        function addNodule(initialData = null) {
+            noduleCounter++;
+            const id = noduleCounter;
+            nodules.push({ id: id });
+
+            const lang = document.getElementById('lang-selector').value;
+            const dict = t[lang];
+
+            const html = `
+            <div class="nodule-card" id="nodule-${id}">
+                <div class="nodule-card-header">
+                    <span class="nodule-num-title">${dict.noduleText} #${id}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="nodule-tag" id="nodule-${id}-summary-tag">TR4 / EU4</span>
+                        <button class="btn-remove" onclick="removeNodule(${id})">${dict.btnDeleteNodule}</button>
+                    </div>
+                </div>
+
+                <div class="form-row form-row-2">
+                    <div class="form-group">
+                        <label class="lbl-loc" for="nodule-${id}-loc">${dict.lblNoduleLoc}</label>
+                        <select id="nodule-${id}-loc" onchange="updateReport()">
+                            <option value="LTD">${dict.optLtd}</option>
+                            <option value="LTI">${dict.optLti}</option>
+                            <option value="Istmo">${dict.optIsthmus}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl-size">${dict.lblNoduleSize}</label>
+                        <div style="display:flex; gap:6px;">
+                            <div class="input-unit" data-unit="T" style="width:33%;">
+                                <input type="number" id="nodule-${id}-w" value="4" min="0" oninput="updateReport()">
+                            </div>
+                            <div class="input-unit" data-unit="AP" style="width:33%;">
+                                <input type="number" id="nodule-${id}-h" value="2" min="0" oninput="updateReport()">
+                            </div>
+                            <div class="input-unit" data-unit="L" style="width:34%;">
+                                <input type="number" id="nodule-${id}-l" value="3" min="0" oninput="updateReport()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row form-row-2">
+                    <div class="form-group">
+                        <label class="lbl-comp" for="nodule-${id}-comp">${dict.lblNoduleComp}</label>
+                        <select id="nodule-${id}-comp" onchange="onCompositionChange(${id})">
+                            <option value="cystic">${dict.optCystic}</option>
+                            <option value="spongiform">${dict.optSpongiform}</option>
+                            <option value="mixed">${dict.optMixed}</option>
+                            <option value="solid" selected>${dict.optSolid}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl-echo" for="nodule-${id}-echo">${dict.lblNoduleEcho}</label>
+                        <select id="nodule-${id}-echo" onchange="updateReport()">
+                            <option value="anechoic">${dict.optAnechoic}</option>
+                            <option value="iso-hyper">${dict.optIsoHyperechoic}</option>
+                            <option value="hypo" selected>${dict.optHypoechoic}</option>
+                            <option value="very-hypo">${dict.optVeryHypoechoic}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row form-row-2">
+                    <div class="form-group">
+                        <label class="lbl-shape" for="nodule-${id}-shape">${dict.lblNoduleShape}</label>
+                        <select id="nodule-${id}-shape" onchange="updateReport()">
+                            <option value="wider" selected>${dict.optWider}</option>
+                            <option value="taller">${dict.optTaller}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="lbl-margin" for="nodule-${id}-margin">${dict.lblNoduleMargin}</label>
+                        <select id="nodule-${id}-margin" onchange="updateReport()">
+                            <option value="smooth" selected>${dict.optSmooth}</option>
+                            <option value="ill-defined">${dict.optIllDefined}</option>
+                            <option value="lobulated">${dict.optLobulated}</option>
+                            <option value="extra-thyroidal">${dict.optExtraThyroidal}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="lbl-foci">${dict.lblNoduleFoci}</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="nodule-${id}-foci-none" value="none" checked onchange="onFociChange(${id}, 'none')">
+                            <span class="chk-foci-none">${dict.chkFociNone}</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="nodule-${id}-foci-macro" value="macro" onchange="onFociChange(${id}, 'macro')">
+                            <span class="chk-foci-macro">${dict.chkFociMacro}</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="nodule-${id}-foci-rim" value="rim" onchange="onFociChange(${id}, 'rim')">
+                            <span class="chk-foci-rim">${dict.chkFociRim}</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="nodule-${id}-foci-punctate" value="punctate" onchange="onFociChange(${id}, 'punctate')">
+                            <span class="chk-foci-punctate">${dict.chkFociPunctate}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="tirads-results-badge">
+                    <div class="tirads-badge" id="nodule-${id}-acr-badge">
+                        <span>ACR TI-RADS</span>
+                        <span class="val" id="nodule-${id}-acr-val">TR4</span>
+                    </div>
+                    <div class="tirads-badge" id="nodule-${id}-eu-badge">
+                        <span>EU-TIRADS</span>
+                        <span class="val" id="nodule-${id}-eu-val">EU-TIRADS 4</span>
+                    </div>
+                </div>
+            </div>`;
+
+            document.getElementById('nodules-container').insertAdjacentHTML('beforeend', html);
+
+            if (initialData) {
+                // Populate custom default values if provided
+                document.getElementById(`nodule-${id}-loc`).value = initialData.loc || 'LTD';
+                document.getElementById(`nodule-${id}-w`).value = initialData.w || 4;
+                document.getElementById(`nodule-${id}-h`).value = initialData.h || 2;
+                document.getElementById(`nodule-${id}-l`).value = initialData.l || 3;
+                document.getElementById(`nodule-${id}-comp`).value = initialData.comp || 'solid';
+                document.getElementById(`nodule-${id}-echo`).value = initialData.echo || 'hypo';
+                document.getElementById(`nodule-${id}-shape`).value = initialData.shape || 'wider';
+                document.getElementById(`nodule-${id}-margin`).value = initialData.margin || 'smooth';
+                
+                if (initialData.foci && initialData.foci.length > 0) {
+                    document.getElementById(`nodule-${id}-foci-none`).checked = false;
+                    initialData.foci.forEach(f => {
+                        document.getElementById(`nodule-${id}-foci-${f}`).checked = true;
+                    });
+                }
+            }
+
+            updateReport();
+        }
+
+        function removeNodule(id) {
+            const element = document.getElementById(`nodule-${id}`);
+            if (element) element.remove();
+            nodules = nodules.filter(n => n.id !== id);
+            updateReport();
+        }
+
+        function onCompositionChange(id) {
+            const comp = document.getElementById(`nodule-${id}-comp`).value;
+            const echoSelect = document.getElementById(`nodule-${id}-echo`);
+            
+            if (comp === 'cystic') {
+                // Force anechoic echogenicity
+                echoSelect.value = 'anechoic';
+            } else if (comp === 'spongiform') {
+                // Typically isoechoic
+                echoSelect.value = 'iso-hyper';
+            }
+            updateReport();
+        }
+
+        function onFociChange(id, type) {
+            const chkNone = document.getElementById(`nodule-${id}-foci-none`);
+            const chkMacro = document.getElementById(`nodule-${id}-foci-macro`);
+            const chkRim = document.getElementById(`nodule-${id}-foci-rim`);
+            const chkPunctate = document.getElementById(`nodule-${id}-foci-punctate`);
+
+            if (type === 'none' && chkNone.checked) {
+                chkMacro.checked = false;
+                chkRim.checked = false;
+                chkPunctate.checked = false;
+            } else if (type !== 'none' && (chkMacro.checked || chkRim.checked || chkPunctate.checked)) {
+                chkNone.checked = false;
+            } else if (!chkMacro.checked && !chkRim.checked && !chkPunctate.checked) {
+                chkNone.checked = true;
+            }
+            updateReport();
+        }
+
+        function calculateNoduleTIRADS(id) {
+            const comp = document.getElementById(`nodule-${id}-comp`).value;
+            const echo = document.getElementById(`nodule-${id}-echo`).value;
+            const shape = document.getElementById(`nodule-${id}-shape`).value;
+            const margin = document.getElementById(`nodule-${id}-margin`).value;
+
+            const fMacro = document.getElementById(`nodule-${id}-foci-macro`).checked;
+            const fRim = document.getElementById(`nodule-${id}-foci-rim`).checked;
+            const fPunctate = document.getElementById(`nodule-${id}-foci-punctate`).checked;
+
+            // 1. Calculate ACR TI-RADS
+            let acrPoints = 0;
+            let acrLevel = 1;
+
+            if (comp === 'cystic' || comp === 'spongiform') {
+                // Override: Cystic/Spongiform are always TR1 (0 points)
+                acrPoints = 0;
+                acrLevel = 1;
+            } else {
+                // Composition
+                if (comp === 'mixed') acrPoints += 1;
+                else if (comp === 'solid') acrPoints += 2;
+
+                // Echogenicity
+                if (echo === 'anechoic') acrPoints += 0;
+                else if (echo === 'iso-hyper') acrPoints += 1;
+                else if (echo === 'hypo') acrPoints += 2;
+                else if (echo === 'very-hypo') acrPoints += 3;
+
+                // Shape
+                if (shape === 'taller') acrPoints += 3;
+
+                // Margins
+                if (margin === 'lobulated') acrPoints += 2;
+                else if (margin === 'extra-thyroidal') acrPoints += 3;
+
+                // Echogenic Foci
+                if (fMacro) acrPoints += 1;
+                if (fRim) acrPoints += 2;
+                if (fPunctate) acrPoints += 3;
+
+                // Assign TR Category
+                if (acrPoints === 0) acrLevel = 1;
+                else if (acrPoints <= 2) acrLevel = 2;
+                else if (acrPoints === 3) acrLevel = 3;
+                else if (acrPoints <= 6) acrLevel = 4;
+                else acrLevel = 5;
+            }
+
+            // 2. Calculate EU-TIRADS
+            let euLevel = 2; // Default is benign/low
+
+            // Check high suspicion features
+            const hasHighSuspicion = 
+                shape === 'taller' || 
+                margin === 'lobulated' || 
+                margin === 'extra-thyroidal' || 
+                fPunctate || 
+                echo === 'very-hypo';
+
+            if ((comp === 'solid' || comp === 'mixed') && hasHighSuspicion) {
+                euLevel = 5;
+            } else if (comp === 'cystic' || comp === 'spongiform' || echo === 'anechoic') {
+                euLevel = 2;
+            } else {
+                // Solid/mixed and no high-risk features
+                if (echo === 'iso-hyper') {
+                    euLevel = 3;
+                } else if (echo === 'hypo') {
+                    euLevel = 4;
+                } else {
+                    // Fallback
+                    euLevel = 3;
+                }
+            }
+
+            return {
+                points: acrPoints,
+                acr: acrLevel,
+                eu: euLevel
+            };
+        }
+
+        function getGlandDescription(size, echo, lang) {
+            if (lang === 'es') {
+                let sizeStr = '';
+                if (size === 'normal') sizeStr = 'tamaño conservado';
+                else if (size === 'decreased') sizeStr = 'tamaño disminuido';
+                else if (size === 'increased') sizeStr = 'tamaño aumentado (bocio)';
+                else if (size === 'endothoracic') sizeStr = 'prolongación endotorácica';
+
+                let echoStr = '';
+                if (echo === 'normal') echoStr = 'ecoestructura conservada';
+                else echoStr = 'ecoestructura heterogénea';
+
+                if (size === 'normal' && echo === 'normal') {
+                    return "Tiroides de tamaño y ecoestructura conservada.";
+                } else if (size === 'endothoracic') {
+                    return `Tiroides con prolongación endotorácica y ${echoStr}.`;
+                } else {
+                    return `Tiroides de ${sizeStr} y ${echoStr}.`;
+                }
+            } else if (lang === 'ca') {
+                let sizeStr = '';
+                if (size === 'normal') sizeStr = 'mida conservada';
+                else if (size === 'decreased') sizeStr = 'mida disminuïda';
+                else if (size === 'increased') sizeStr = 'mida augmentada (boci)';
+                else if (size === 'endothoracic') sizeStr = 'prolongació endotoràcica';
+
+                let echoStr = '';
+                if (echo === 'normal') echoStr = 'ecoestructura conservada';
+                else echoStr = 'ecoestructura heterogènia';
+
+                if (size === 'normal' && echo === 'normal') {
+                    return "Tiroide de mida i ecoestructura conservada.";
+                } else if (size === 'endothoracic') {
+                    return `Tiroide amb prolongació endotoràcica i ${echoStr}.`;
+                } else {
+                    return `Tiroide de ${sizeStr} i ${echoStr}.`;
+                }
+            } else { // EN
+                let sizeStr = '';
+                if (size === 'normal') sizeStr = 'normal size';
+                else if (size === 'decreased') sizeStr = 'decreased size';
+                else if (size === 'increased') sizeStr = 'increased size (goiter)';
+                else if (size === 'endothoracic') sizeStr = 'endothoracic extension';
+
+                let echoStr = '';
+                if (echo === 'normal') echoStr = 'preserved ecoarchitecture';
+                else echoStr = 'heterogeneous ecoarchitecture';
+
+                if (size === 'normal' && echo === 'normal') {
+                    return "Thyroid gland of normal size and preserved ecoarchitecture.";
+                } else if (size === 'endothoracic') {
+                    return `Thyroid gland with endothoracic extension and ${echoStr}.`;
+                } else {
+                    return `Thyroid gland of ${sizeStr} and ${echoStr}.`;
+                }
+            }
+        }
+
+        function updateReport() {
+            const lang = document.getElementById('lang-selector').value;
+            const dict = t[lang];
+
+            const glandSize = document.getElementById('gland-size').value;
+            const glandEcho = document.getElementById('gland-echo').value;
+            const glandDoppler = document.getElementById('gland-doppler').value;
+
+            // 1. Calculate Lobes Volumes
+            const ltdWVal = document.getElementById('ltd-w').value;
+            const ltdHVal = document.getElementById('ltd-h').value;
+            const ltdLVal = document.getElementById('ltd-l').value;
+            const ltdW = parseFloat(ltdWVal) || 0;
+            const ltdH = parseFloat(ltdHVal) || 0;
+            const ltdL = parseFloat(ltdLVal) || 0;
+            const ltdVol = (ltdW * ltdH * ltdL * 0.524 / 1000).toFixed(1);
+            document.getElementById('ltd-vol-display').innerText = `${dict.volText}: ${ltdWVal && ltdHVal && ltdLVal ? ltdVol : '0.0'} mL`;
+
+            const ltiWVal = document.getElementById('lti-w').value;
+            const ltiHVal = document.getElementById('lti-h').value;
+            const ltiLVal = document.getElementById('lti-l').value;
+            const ltiW = parseFloat(ltiWVal) || 0;
+            const ltiH = parseFloat(ltiHVal) || 0;
+            const ltiL = parseFloat(ltiLVal) || 0;
+            const ltiVol = (ltiW * ltiH * ltiL * 0.524 / 1000).toFixed(1);
+            document.getElementById('lti-vol-display').innerText = `${dict.volText}: ${ltiWVal && ltiHVal && ltiLVal ? ltiVol : '0.0'} mL`;
+
+            const isthmusVal = document.getElementById('isthmus-thick').value;
+            const isthmus = parseFloat(isthmusVal) || 0;
+
+            // 2. Loop through nodules and update their GUI badges
+            let ltdNodules = [];
+            let ltiNodules = [];
+            let isthmusNodules = [];
+
+            nodules.forEach(nodule => {
+                const results = calculateNoduleTIRADS(nodule.id);
+                
+                // Save calculated variables to the nodule object
+                nodule.points = results.points;
+                nodule.acr = results.acr;
+                nodule.eu = results.eu;
+                nodule.loc = document.getElementById(`nodule-${nodule.id}-loc`).value;
+                nodule.w = parseFloat(document.getElementById(`nodule-${nodule.id}-w`).value) || 0;
+                nodule.h = parseFloat(document.getElementById(`nodule-${nodule.id}-h`).value) || 0;
+                nodule.l = parseFloat(document.getElementById(`nodule-${nodule.id}-l`).value) || 0;
+                
+                // Calculate max size
+                nodule.maxSize = Math.max(nodule.w, nodule.h, nodule.l);
+
+                // Update dynamic badge UI
+                const acrVal = document.getElementById(`nodule-${nodule.id}-acr-val`);
+                const euVal = document.getElementById(`nodule-${nodule.id}-eu-val`);
+                const summaryTag = document.getElementById(`nodule-${nodule.id}-summary-tag`);
+
+                acrVal.innerText = `TR${results.acr}`;
+                euVal.innerText = `EU-TIRADS ${results.eu}`;
+                summaryTag.innerText = `TR${results.acr} / EU${results.eu}`;
+
+                // Color classes
+                const acrBadge = document.getElementById(`nodule-${nodule.id}-acr-badge`);
+                const euBadge = document.getElementById(`nodule-${nodule.id}-eu-badge`);
+
+                // Reset classes
+                acrBadge.className = 'tirads-badge';
+                euBadge.className = 'tirads-badge';
+
+                acrBadge.classList.add(`badge-tr${results.acr}`);
+                euBadge.classList.add(`badge-tr${results.eu}`);
+
+                // Group by location
+                if (nodule.loc === 'LTD') ltdNodules.push(nodule);
+                else if (nodule.loc === 'LTI') ltiNodules.push(nodule);
+                else isthmusNodules.push(nodule);
+            });
+
+            // 3. Generate Report Text
+            let report = '';
+            
+            if (lang === 'es') {
+                report += `INFORME DE ECOGRAFÍA DE TIROIDES\n`;
+                report += `================================\n`;
+                report += `\nTÉCNICA: Estudio con transductor lineal de alta frecuencia.\n\n`;
+                report += `HALLAZGOS:\n`;
+                report += `${getGlandDescription(glandSize, glandEcho, 'es')}\n`;
+            } else if (lang === 'ca') {
+                report += `INFORME D'ECOGRAFIA DE TIROIDE\n`;
+                report += `==============================\n`;
+                report += `\nTÈCNICA: Estudi amb transductor lineal d'alta freqüència.\n\n`;
+                report += `TROBALLES:\n`;
+                report += `${getGlandDescription(glandSize, glandEcho, 'ca')}\n`;
+            } else {
+                report += `THYROID ULTRASOUND REPORT\n`;
+                report += `=========================\n`;
+                report += `\nTECHNIQUE: Real-time examination performed with a high-frequency linear transducer.\n\n`;
+                report += `FINDINGS:\n`;
+                report += `${getGlandDescription(glandSize, glandEcho, 'en')}\n`;
+            }
+
+            // LTD Text
+            let ltdDesc = '';
+            if (ltdNodules.length === 0) {
+                ltdDesc = dict.noNodulesText;
+            } else {
+                ltdDesc = ltdNodules.map((n, idx) => {
+                    return describeNoduleSpanishTemplate(n, idx + 1, lang);
+                }).join(' ');
+            }
+            let ltdStr = ltdWVal && ltdHVal && ltdLVal ? `${ltdWVal} x ${ltdHVal} x ${ltdLVal} mm (${dict.volText}: ${ltdVol} mL)` : `__ x __ x __ mm (${dict.volText}: __ mL)`;
+            report += `- LTD: ${ltdStr}. ${ltdDesc}\n`;
+
+            // LTI Text
+            let ltiDesc = '';
+            if (ltiNodules.length === 0) {
+                ltiDesc = dict.noNodulesText;
+            } else {
+                ltiDesc = ltiNodules.map((n, idx) => {
+                    return describeNoduleSpanishTemplate(n, idx + 1, lang);
+                }).join(' ');
+            }
+            let ltiStr = ltiWVal && ltiHVal && ltiLVal ? `${ltiWVal} x ${ltiHVal} x ${ltiLVal} mm (${dict.volText}: ${ltiVol} mL)` : `__ x __ x __ mm (${dict.volText}: __ mL)`;
+            report += `- LTI: ${ltiStr}. ${ltiDesc}\n`;
+
+            // Isthmus Text
+            let isthmusDesc = '';
+            if (isthmusNodules.length > 0) {
+                isthmusDesc = ' ' + isthmusNodules.map((n, idx) => {
+                    return describeNoduleSpanishTemplate(n, idx + 1, lang);
+                }).join(' ');
+            }
+            let isthmusStr = isthmusVal ? `${isthmusVal} mm` : `__ mm`;
+            report += `- Istmo: ${isthmusStr}.${isthmusDesc}\n`;
+
+            // Standard structures
+            let dopplerText = glandDoppler === 'normal' ? dict.vesselNormalText : dict.vesselIncreasedText;
+            report += `${dopplerText}\n`;
+            report += `${dict.lymphText}\n`;
+            report += `${dict.glandsText}\n\n`;
+
+            // Conclusion Section
+            if (lang === 'es') {
+                report += `Conclusión:\n`;
+            } else if (lang === 'ca') {
+                report += `Conclusió:\n`;
+            } else {
+                report += `Conclusion:\n`;
+            }
+
+            // Build the conclusion list
+            let concls = [];
+
+            // 1. Gland findings in conclusion
+            if (glandSize === 'increased') {
+                if (lang === 'es') concls.push("Bocio tiroideo.");
+                else if (lang === 'ca') concls.push("Boci tiroïdal.");
+                else concls.push("Thyroid goiter.");
+            } else if (glandSize === 'endothoracic') {
+                if (lang === 'es') concls.push("Bocio endotorácico.");
+                else if (lang === 'ca') concls.push("Boci endotoràcic.");
+                else concls.push("Endothoracic goiter.");
+            }
+
+            if (glandEcho === 'heterogeneous') {
+                if (lang === 'es') concls.push("Ecoestructura heterogénea sugestiva de tiroiditis.");
+                else if (lang === 'ca') concls.push("Ecoestructura heterogènia suggestiva de tiroiditis.");
+                else concls.push("Heterogeneous thyroid ecoarchitecture suggestive of thyroiditis.");
+            }
+
+            if (glandDoppler === 'increased') {
+                if (lang === 'es') concls.push("Vascularización aumentada en estudio Doppler color, pudiendo sugerir tiroiditis aguda.");
+                else if (lang === 'ca') concls.push("Vascularització augmentada en l'estudi Doppler color, podent suggerir tiroiditis aguda.");
+                else concls.push("Increased vascularity on color Doppler study, which may suggest acute thyroiditis.");
+            }
+
+            // 2. Nodules findings in conclusion
+            if (nodules.length > 0) {
+                // Check if default template state
+                const hasTemplateState = (nodules.length === 2 &&
+                                          nodules.some(n => n.loc === 'LTI' && n.w === 4 && n.h === 2 && n.acr === 4) &&
+                                          nodules.some(n => n.loc === 'LTD' && n.comp === 'cystic')) ||
+                                         (nodules.length === 1 &&
+                                          nodules[0].loc === 'LTI' &&
+                                          nodules[0].w === 4 &&
+                                          nodules[0].h === 2 &&
+                                          nodules[0].acr === 4);
+
+                if (hasTemplateState) {
+                    let locText = lang === 'es' ? 'izquierdo' : (lang === 'ca' ? 'esquerre' : 'left');
+                    concls.push(dict.conclNoduleSummary.replace('{loc}', locText));
+                } else {
+                    nodules.forEach((n, idx) => {
+                        let rec = getClinicalRecommendation(n.acr, n.eu, n.maxSize, dict);
+                        let locStr = n.loc === 'LTD' ? (lang === 'es' ? 'lóbulo derecho' : (lang === 'ca' ? 'lòbul dret' : 'right lobe')) : 
+                                     n.loc === 'LTI' ? (lang === 'es' ? 'lóbulo izquierdo' : (lang === 'ca' ? 'lòbul esquerre' : 'left lobe')) :
+                                     (lang === 'es' ? 'istmo' : (lang === 'ca' ? 'istme' : 'isthmus'));
+
+                        let line = dict.conclNoduleGeneral
+                            .replace('{loc}', locStr)
+                            .replace('{w}', n.w)
+                            .replace('{h}', n.h)
+                            .replace('{l}', n.l)
+                            .replace('{acr}', dict.acrText)
+                            .replace('{tr}', `TR${n.acr}`)
+                            .replace('{pts}', n.points)
+                            .replace('{eu}', dict.euText)
+                            .replace('{eutr}', `EU-TIRADS ${n.eu}`)
+                            .replace('{rec}', rec);
+                        concls.push(line);
+                    });
+                }
+            }
+
+            // 3. Write them down in report
+            if (concls.length === 0) {
+                report += `${dict.conclNoNodules}\n`;
+            } else if (concls.length === 1) {
+                report += `${concls[0]}\n`;
+            } else {
+                concls.forEach(c => {
+                    report += `- ${c}\n`;
+                });
+            }
+
+            document.getElementById('report-output').value = report;
+            autoResizeReportBox();
+        }
+
+        // Help formulate medical description
+        function describeNoduleSpanishTemplate(n, num, lang) {
+            const dict = t[lang];
+
+            const compVal = document.getElementById(`nodule-${n.id}-comp`).value;
+            const echoVal = document.getElementById(`nodule-${n.id}-echo`).value;
+            const shapeVal = document.getElementById(`nodule-${n.id}-shape`).value;
+            const marginVal = document.getElementById(`nodule-${n.id}-margin`).value;
+
+            const fMacro = document.getElementById(`nodule-${n.id}-foci-macro`).checked;
+            const fRim = document.getElementById(`nodule-${n.id}-foci-rim`).checked;
+            const fPunctate = document.getElementById(`nodule-${n.id}-foci-punctate`).checked;
+
+            // Specifically detect if this is a benign colloid cyst
+            if (compVal === 'cystic' && n.w <= 5 && n.h <= 5) {
+                return dict.cystColloidText.replace('{w}', n.w).replace('{h}', n.h);
+            }
+
+            // Constructing descriptive medical terms based on selections
+            let compText = '', echoText = '', shapeText = '', marginText = '', fociText = '';
+
+            if (lang === 'es') {
+                if (echoVal === 'very-hypo') echoText = 'marcadamente hipoecoico';
+                else if (echoVal === 'hypo') echoText = 'hipoecoico';
+                else if (echoVal === 'iso-hyper') echoText = 'isocóico/hiperecogénico';
+                else echoText = 'anecoico';
+
+                if (marginVal === 'smooth') marginText = 'bien delimitados';
+                else if (marginVal === 'ill-defined') marginText = 'mal definidos';
+                else if (marginVal === 'lobulated') marginText = 'lobulados o irregulares';
+                else marginText = 'con signos de extensión extratiroidea';
+
+                // Foci
+                let fociList = [];
+                if (fMacro) fociList.push('macrocalcificaciones');
+                if (fRim) fociList.push('calcificación periférica en anillo');
+                if (fPunctate) fociList.push('focos ecogénicos puntiformes (microcalcificaciones)');
+                
+                if (fociList.length === 0) fociText = 'sin calcificaciones';
+                else fociText = 'asociando ' + fociList.join(' y ');
+
+                if (compVal === 'cystic') {
+                    return `Nódulo quístico anecoico de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
+                } else if (compVal === 'spongiform') {
+                    return `Nódulo esponjiforme de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
+                } else if (compVal === 'mixed') {
+                    return `Nódulo mixto sólido-quístico, con componente sólido ${echoText}, de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
+                } else {
+                    return `Nódulo ${echoText} de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
+                }
+
+            } else if (lang === 'ca') {
+                if (echoVal === 'very-hypo') echoText = 'marcadament hipocoic';
+                else if (echoVal === 'hypo') echoText = 'hipocoic';
+                else if (echoVal === 'iso-hyper') echoText = 'isocoic/hiperecoic';
+                else echoText = 'anecoic';
+
+                if (marginVal === 'smooth') marginText = 'ben delimitats';
+                else if (marginVal === 'ill-defined') marginText = 'mal definits';
+                else if (marginVal === 'lobulated') marginText = 'lobulats o irregulars';
+                else marginText = 'amb signes d\'extensió extratiroïdal';
+
+                let fociList = [];
+                if (fMacro) fociList.push('macrocalcificacions');
+                if (fRim) fociList.push('calcificació perifèrica en anell');
+                if (fPunctate) fociList.push('focs ecogènics puntiformes (microcalcificacions)');
+                
+                if (fociList.length === 0) fociText = 'sense calcificacions';
+                else fociText = 'associant ' + fociList.join(' i ');
+
+                if (compVal === 'cystic') {
+                    return `Nòdul quístic anecoic de ${n.w} x ${n.h} mm (T x AP), de contorns ${marginText} i ${fociText}.`;
+                } else if (compVal === 'spongiform') {
+                    return `Nòdul espongiforme de ${n.w} x ${n.h} mm (T x AP), de contorns ${marginText} i ${fociText}.`;
+                } else if (compVal === 'mixed') {
+                    return `Nòdul mixt sòlid-quístic, amb component sòlid ${echoText}, de ${n.w} x ${n.h} mm (T x AP), de contorns ${marginText} i ${fociText}.`;
+                } else {
+                    return `Nòdul ${echoText} de ${n.w} x ${n.h} mm (T x AP), de contorns ${marginText} i ${fociText}.`;
+                }
+
+            } else { // EN
+                if (echoVal === 'very-hypo') echoText = 'markedly hypoechoic';
+                else if (echoVal === 'hypo') echoText = 'hypoechoic';
+                else if (echoVal === 'iso-hyper') echoText = 'isoechoic/hyperechoic';
+                else echoText = 'anechoic';
+
+                if (marginVal === 'smooth') marginText = 'smooth margins';
+                else if (marginVal === 'ill-defined') marginText = 'ill-defined margins';
+                else if (marginVal === 'lobulated') marginText = 'lobulated or irregular margins';
+                else marginText = 'extra-thyroidal extension';
+
+                let fociList = [];
+                if (fMacro) fociList.push('macrocalcifications');
+                if (fRim) fociList.push('peripheral ring calcifications');
+                if (fPunctate) fociList.push('punctate echogenic foci (microcalcifications)');
+                
+                if (fociList.length === 0) fociText = 'no calcifications';
+                else fociText = 'with ' + fociList.join(' and ');
+
+                if (compVal === 'cystic') {
+                    return `Cystic anechoic nodule of ${n.w} x ${n.h} mm (T x AP), with ${marginText} and ${fociText}.`;
+                } else if (compVal === 'spongiform') {
+                    return `Spongiform nodule of ${n.w} x ${n.h} mm (T x AP), with ${marginText} and ${fociText}.`;
+                } else if (compVal === 'mixed') {
+                    return `Mixed solid-cystic nodule, with a ${echoText} solid component, of ${n.w} x ${n.h} mm (T x AP), with ${marginText} and ${fociText}.`;
+                } else {
+                    return `${echoText.charAt(0).toUpperCase() + echoText.slice(1)} nodule of ${n.w} x ${n.h} mm (T x AP), with ${marginText} and ${fociText}.`;
+                }
+            }
+        }
+
+        function getClinicalRecommendation(acr, eu, maxSize, dict) {
+            // Evaluates size thresholds for both ACR-TIRADS and EU-TIRADS
+            
+            // Check ACR thresholds
+            let acrNeedsFNA = false;
+            let acrNeedsFollowup = false;
+
+            if (acr === 3) {
+                if (maxSize >= 25) acrNeedsFNA = true;
+                else if (maxSize >= 15) acrNeedsFollowup = true;
+            } else if (acr === 4) {
+                if (maxSize >= 15) acrNeedsFNA = true;
+                else if (maxSize >= 10) acrNeedsFollowup = true;
+            } else if (acr === 5) {
+                if (maxSize >= 10) acrNeedsFNA = true;
+                else if (maxSize >= 5) acrNeedsFollowup = true;
+            }
+
+            // Check EU thresholds
+            let euNeedsFNA = false;
+            if (eu === 3 && maxSize >= 20) euNeedsFNA = true;
+            if (eu === 4 && maxSize >= 15) euNeedsFNA = true;
+            if (eu === 5 && maxSize >= 10) euNeedsFNA = true;
+
+            if (acrNeedsFNA || euNeedsFNA) {
+                return dict.recommendationFNA;
+            } else if (acrNeedsFollowup) {
+                return dict.recommendationFollowup;
+            } else {
+                return dict.recommendationNone;
+            }
+        }
+
+        function autoResizeReportBox() {
+            const reportBox = document.getElementById('report-output');
+            reportBox.style.height = 'auto';
+            reportBox.style.height = reportBox.scrollHeight + 'px';
+        }
+
+        function resetForm() {
+            document.getElementById('ltd-w').value = '';
+            document.getElementById('ltd-h').value = '';
+            document.getElementById('ltd-l').value = '';
+            document.getElementById('lti-w').value = '';
+            document.getElementById('lti-h').value = '';
+            document.getElementById('lti-l').value = '';
+            document.getElementById('isthmus-thick').value = '';
+            
+            document.getElementById('gland-size').value = 'normal';
+            document.getElementById('gland-echo').value = 'normal';
+            document.getElementById('gland-doppler').value = 'normal';
+            
+            // Clear nodules
+            document.getElementById('nodules-container').innerHTML = '';
+            nodules = [];
+            noduleCounter = 0;
+
+            updateReport();
+        }
+
+        function copyToClipboard() {
+            const reportText = document.getElementById('report-output');
+            reportText.select();
+            reportText.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                navigator.clipboard.writeText(reportText.value);
+                showToast();
+            } catch (err) {
+                // Fallback
+                document.execCommand('copy');
+                showToast();
+            }
+        }
+
+        // Show feedback notification
+        function showToast() {
+            const lang = document.getElementById('lang-selector').value;
+            const toast = document.getElementById('toast');
+            toast.innerText = t[lang].toastSuccess;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        // Initialize template defaults on load
+        window.onload = function() {
+            resetForm();
+        }
+    </script>
+</body>
+</html>
