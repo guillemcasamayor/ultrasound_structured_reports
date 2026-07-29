@@ -1886,7 +1886,7 @@
                 return dict.recommendationFNA;
             } else if (acrNeedsFollowup) {
                 return dict.recommendationFollowup;
-            } else if (acr <= 2) {
+            } else if (acr === 1) {
                 return dict.recommendationNone;
             } else {
                 return dict.recommendationDiscretionary;
