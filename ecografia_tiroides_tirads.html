@@ -669,7 +669,7 @@
                         <tbody>
                             <tr>
                                 <td><strong>EU-TIRADS 2</strong></td>
-                                <td id="g-eu2-c">Quistes puros, nódulo completamente esponjiforme</td>
+                                <td id="g-eu2-c">Quistes puros, nódulo completamente espongiforme</td>
                                 <td>~0%</td>
                                 <td id="g-eu2-p">No PAAF (salvo terapéutica)</td>
                             </tr>
@@ -769,7 +769,7 @@
                 gThEuchar: "Características",
                 gThEurisk: "Riesgo",
                 gThEupaaf: "Umbral PAAF",
-                gEu2C: "Quistes puros, nódulo completamente esponjiforme",
+                gEu2C: "Quistes puros, nódulo completamente espongiforme",
                 gEu2P: "No PAAF (salvo terapéutica)",
                 gEu3C: "Isocóico o hiperecóico, oval, bordes lisos, sin sospecha",
                 gEu3P: "&ge; 20 mm",
@@ -795,7 +795,7 @@
                 optLti: "Lóbulo Izquierdo (LTI)",
                 optIsthmus: "Istmo",
                 optCystic: "Quístico o casi quístico (0 pts)",
-                optSpongiform: "Esponjiforme (0 pts)",
+                optSpongiform: "Espongiforme (0 pts)",
                 optMixed: "Mixto quístico-sólido (1 pt)",
                 optSolid: "Sólido o casi completamente sólido (2 pts)",
                 optAnechoic: "Anecóico (0 pts)",
@@ -827,9 +827,9 @@
                 pointsText: "puntos",
                 recommendationFNA: "Se recomienda realizar PAAF por criterios de tamaño y TIRADS.",
                 recommendationFollowup: "Se recomienda control ecográfico periódico (generalmente en 6 meses o 1 año).",
-                recommendationNone: "No requiere seguimiento obligatorio por guías por tamaño. Se puede considerar control discrecional (ej: en 6-12 meses).",
+                recommendationNone: "No requiere seguimiento.",
                 conclNoduleSummary: "Pequeño nódulo tiroideo en {loc}, de aspecto adenomatoso. Aunque se considera no significativo por tamaño, por clasificación TIRADS se recomienda control en 6 meses - 1 año.",
-                conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomendación: {rec}."
+                conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomendación: {rec}"
             },
             ca: {
                 mainTitle: "Ecografia Tiroïdea i Estadificació TIRADS",
@@ -934,9 +934,9 @@
                 pointsText: "punts",
                 recommendationFNA: "Es recomana realitzar PAAF per criteris de mida i TIRADS.",
                 recommendationFollowup: "Es recomana control ecogràfic periòdic (generalment en 6 mesos o 1 any).",
-                recommendationNone: "No requereix seguiment obligatori per guies per mida. Es pot considerar control discrecional (ex: en 6-12 mesos).",
+                recommendationNone: "No requereix seguiment.",
                 conclNoduleSummary: "Petit nòdul tiroïdal a {loc}, d'aspecte adenomatós. Tot i que es considera no significatiu per mida, per classificació TIRADS es recomana control en 6 mesos - 1 any.",
-                conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomanació: {rec}."
+                conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomanació: {rec}"
             },
             en: {
                 mainTitle: "Thyroid Ultrasound & TIRADS Staging",
@@ -1041,9 +1041,9 @@
                 pointsText: "points",
                 recommendationFNA: "FNA is recommended based on size and TIRADS criteria.",
                 recommendationFollowup: "Periodic ultrasound follow-up is recommended (typically 6 months - 1 year).",
-                recommendationNone: "No routine follow-up required by guidelines due to size. Discretionary control can be considered (e.g., in 6-12 months).",
+                recommendationNone: "No follow-up required.",
                 conclNoduleSummary: "Small thyroid nodule in {loc}, adenomatous appearance. Although considered insignificant by size, control is recommended in 6 months - 1 year by TIRADS classification.",
-                conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recommendation: {rec}."
+                conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recommendation: {rec}"
             }
         };
 
@@ -1737,6 +1737,13 @@
             autoResizeReportBox();
         }
 
+        function formatListWithConjunction(arr, conjunction) {
+            if (!arr || arr.length === 0) return '';
+            if (arr.length === 1) return arr[0];
+            if (arr.length === 2) return `${arr[0]} ${conjunction} ${arr[1]}`;
+            return `${arr.slice(0, -1).join(', ')} ${conjunction} ${arr[arr.length - 1]}`;
+        }
+
         // Help formulate medical description
         function describeNoduleSpanishTemplate(n, num, lang) {
             const dict = t[lang];
@@ -1776,12 +1783,12 @@
                 if (fPunctate) fociList.push('focos ecogénicos puntiformes (microcalcificaciones)');
                 
                 if (fociList.length === 0) fociText = 'sin calcificaciones';
-                else fociText = 'asociando ' + fociList.join(' y ');
+                else fociText = 'asociando ' + formatListWithConjunction(fociList, 'y');
 
                 if (compVal === 'cystic') {
                     return `Nódulo quístico anecoico de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
                 } else if (compVal === 'spongiform') {
-                    return `Nódulo esponjiforme de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
+                    return `Nódulo espongiforme de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
                 } else if (compVal === 'mixed') {
                     return `Nódulo mixto sólido-quístico, con componente sólido ${echoText}, de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
                 } else {
@@ -1805,7 +1812,7 @@
                 if (fPunctate) fociList.push('focs ecogènics puntiformes (microcalcificacions)');
                 
                 if (fociList.length === 0) fociText = 'sense calcificacions';
-                else fociText = 'associant ' + fociList.join(' i ');
+                else fociText = 'associant ' + formatListWithConjunction(fociList, 'i');
 
                 if (compVal === 'cystic') {
                     return `Nòdul quístic anecoic de ${n.w} x ${n.h} mm (T x AP), de contorns ${marginText} i ${fociText}.`;
@@ -1834,7 +1841,7 @@
                 if (fPunctate) fociList.push('punctate echogenic foci (microcalcifications)');
                 
                 if (fociList.length === 0) fociText = 'no calcifications';
-                else fociText = 'with ' + fociList.join(' and ');
+                else fociText = 'with ' + formatListWithConjunction(fociList, 'and');
 
                 if (compVal === 'cystic') {
                     return `Cystic anechoic nodule of ${n.w} x ${n.h} mm (T x AP), with ${marginText} and ${fociText}.`;
