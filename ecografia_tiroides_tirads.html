@@ -828,6 +828,7 @@
                 recommendationFNA: "Se recomienda realizar PAAF por criterios de tamaño y TIRADS.",
                 recommendationFollowup: "Se recomienda control ecográfico periódico (generalmente en 6 meses o 1 año).",
                 recommendationNone: "No requiere seguimiento.",
+                recommendationDiscretionary: "No requiere seguimiento obligatorio por guías por tamaño. Se puede considerar control discrecional (ej: en 6-12 meses).",
                 conclNoduleSummary: "Pequeño nódulo tiroideo en {loc}, de aspecto adenomatoso. Aunque se considera no significativo por tamaño, por clasificación TIRADS se recomienda control en 6 meses - 1 año.",
                 conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomendación: {rec}"
             },
@@ -935,6 +936,7 @@
                 recommendationFNA: "Es recomana realitzar PAAF per criteris de mida i TIRADS.",
                 recommendationFollowup: "Es recomana control ecogràfic periòdic (generalment en 6 mesos o 1 any).",
                 recommendationNone: "No requereix seguiment.",
+                recommendationDiscretionary: "No requereix seguiment obligatori per guies per mida. Es pot considerar control discrecional (ex: en 6-12 mesos).",
                 conclNoduleSummary: "Petit nòdul tiroïdal a {loc}, d'aspecte adenomatós. Tot i que es considera no significatiu per mida, per classificació TIRADS es recomana control en 6 mesos - 1 any.",
                 conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomanació: {rec}"
             },
@@ -1042,6 +1044,7 @@
                 recommendationFNA: "FNA is recommended based on size and TIRADS criteria.",
                 recommendationFollowup: "Periodic ultrasound follow-up is recommended (typically 6 months - 1 year).",
                 recommendationNone: "No follow-up required.",
+                recommendationDiscretionary: "No routine follow-up required by guidelines due to size. Discretionary control can be considered (e.g., in 6-12 months).",
                 conclNoduleSummary: "Small thyroid nodule in {loc}, adenomatous appearance. Although considered insignificant by size, control is recommended in 6 months - 1 year by TIRADS classification.",
                 conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recommendation: {rec}"
             }
@@ -1715,7 +1718,7 @@
                             .replace('{tr}', `TR${n.acr}`)
                             .replace('{pts}', n.points)
                             .replace('{eu}', dict.euText)
-                            .replace('{eutr}', `EU-TIRADS ${n.eu}`)
+                            .replace('{eutr}', `EU${n.eu}`)
                             .replace('{rec}', rec);
                         concls.push(line);
                     });
@@ -1883,8 +1886,10 @@
                 return dict.recommendationFNA;
             } else if (acrNeedsFollowup) {
                 return dict.recommendationFollowup;
-            } else {
+            } else if (acr <= 2) {
                 return dict.recommendationNone;
+            } else {
+                return dict.recommendationDiscretionary;
             }
         }
 
