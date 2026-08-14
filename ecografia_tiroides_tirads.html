@@ -825,11 +825,12 @@
                 acrText: "ACR-TIRADS",
                 euText: "EU-TIRADS",
                 pointsText: "puntos",
-                recommendationFNA: "Se recomienda realizar PAAF por criterios de tamaño y TIRADS.",
+                recommendationFNA: "Se recomienda PAAF.",
                 recommendationFollowup: "Se recomienda control ecográfico periódico (generalmente en 6 meses o 1 año).",
+                recommendationStrictFollowup: "Se recomienda control ecográfico estricto (en 6 meses).",
                 recommendationNone: "Se puede considerar control discrecional en 6-12 meses.",
                 conclNoduleSummary: "Pequeño nódulo tiroideo en {loc}, de aspecto adenomatoso. Aunque se considera no significativo por tamaño, por clasificación TIRADS se recomienda control en 6 meses - 1 año.",
-                conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. Recomendación: {rec}"
+                conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. {rec}"
             },
             ca: {
                 mainTitle: "Ecografia Tiroïdea i Estadificació TIRADS",
@@ -932,11 +933,12 @@
                 acrText: "ACR-TIRADS",
                 euText: "EU-TIRADS",
                 pointsText: "punts",
-                recommendationFNA: "Es recomana realitzar PAAF per criteris de mida i TIRADS.",
+                recommendationFNA: "Es recomana PAAF.",
                 recommendationFollowup: "Es recomana control ecogràfic periòdic (generalment en 6 mesos o 1 any).",
+                recommendationStrictFollowup: "Es recomana control ecogràfic estricte (als 6 mesos).",
                 recommendationNone: "Es pot considerar control discrecional en 6-12 mesos.",
                 conclNoduleSummary: "Petit nòdul tiroïdal a {loc}, d'aspecte adenomatós. Tot i que es considera no significatiu per mida, per classificació TIRADS es recomana control en 6 mesos - 1 any.",
-                conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. Recomanació: {rec}"
+                conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. {rec}"
             },
             en: {
                 mainTitle: "Thyroid Ultrasound & TIRADS Staging",
@@ -1039,11 +1041,12 @@
                 acrText: "ACR-TIRADS",
                 euText: "EU-TIRADS",
                 pointsText: "points",
-                recommendationFNA: "FNA is recommended based on size and TIRADS criteria.",
+                recommendationFNA: "FNA is recommended.",
                 recommendationFollowup: "Periodic ultrasound follow-up is recommended (typically 6 months - 1 year).",
+                recommendationStrictFollowup: "Strict ultrasound follow-up is recommended (at 6 months).",
                 recommendationNone: "Discretionary control can be considered in 6-12 months.",
                 conclNoduleSummary: "Small thyroid nodule in {loc}, adenomatous appearance. Although considered insignificant by size, control is recommended in 6 months - 1 year by TIRADS classification.",
-                conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. Recommendation: {rec}"
+                conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. {rec}"
             }
         };
 
@@ -1880,6 +1883,8 @@
 
             if (acrNeedsFNA || euNeedsFNA) {
                 return dict.recommendationFNA;
+            } else if (acrNeedsFollowup && (acr === 4 || acr === 5)) {
+                return dict.recommendationStrictFollowup;
             } else if (acrNeedsFollowup) {
                 return dict.recommendationFollowup;
             } else {
