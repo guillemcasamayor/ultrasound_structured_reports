@@ -669,7 +669,7 @@
                         <tbody>
                             <tr>
                                 <td><strong>EU-TIRADS 2</strong></td>
-                                <td id="g-eu2-c">Quistes puros, nódulo completamente esponjiforme</td>
+                                <td id="g-eu2-c">Quistes puros, nódulo completamente espongiforme</td>
                                 <td>~0%</td>
                                 <td id="g-eu2-p">No PAAF (salvo terapéutica)</td>
                             </tr>
@@ -769,7 +769,7 @@
                 gThEuchar: "Características",
                 gThEurisk: "Riesgo",
                 gThEupaaf: "Umbral PAAF",
-                gEu2C: "Quistes puros, nódulo completamente esponjiforme",
+                gEu2C: "Quistes puros, nódulo completamente espongiforme",
                 gEu2P: "No PAAF (salvo terapéutica)",
                 gEu3C: "Isocóico o hiperecóico, oval, bordes lisos, sin sospecha",
                 gEu3P: "&ge; 20 mm",
@@ -795,7 +795,7 @@
                 optLti: "Lóbulo Izquierdo (LTI)",
                 optIsthmus: "Istmo",
                 optCystic: "Quístico o casi quístico (0 pts)",
-                optSpongiform: "Esponjiforme (0 pts)",
+                optSpongiform: "Espongiforme (0 pts)",
                 optMixed: "Mixto quístico-sólido (1 pt)",
                 optSolid: "Sólido o casi completamente sólido (2 pts)",
                 optAnechoic: "Anecóico (0 pts)",
@@ -829,7 +829,7 @@
                 recommendationFollowup: "Se recomienda control ecográfico periódico (generalmente en 6 meses o 1 año).",
                 recommendationNone: "Se puede considerar control discrecional en 6-12 meses.",
                 conclNoduleSummary: "Pequeño nódulo tiroideo en {loc}, de aspecto adenomatoso. Aunque se considera no significativo por tamaño, por clasificación TIRADS se recomienda control en 6 meses - 1 año.",
-                conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomendación: {rec}"
+                conclNoduleGeneral: "Nódulo en {loc} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. Recomendación: {rec}"
             },
             ca: {
                 mainTitle: "Ecografia Tiroïdea i Estadificació TIRADS",
@@ -936,7 +936,7 @@
                 recommendationFollowup: "Es recomana control ecogràfic periòdic (generalment en 6 mesos o 1 any).",
                 recommendationNone: "Es pot considerar control discrecional en 6-12 mesos.",
                 conclNoduleSummary: "Petit nòdul tiroïdal a {loc}, d'aspecte adenomatós. Tot i que es considera no significatiu per mida, per classificació TIRADS es recomana control en 6 mesos - 1 any.",
-                conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recomanació: {rec}"
+                conclNoduleGeneral: "Nòdul a {loc} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. Recomanació: {rec}"
             },
             en: {
                 mainTitle: "Thyroid Ultrasound & TIRADS Staging",
@@ -1043,7 +1043,7 @@
                 recommendationFollowup: "Periodic ultrasound follow-up is recommended (typically 6 months - 1 year).",
                 recommendationNone: "Discretionary control can be considered in 6-12 months.",
                 conclNoduleSummary: "Small thyroid nodule in {loc}, adenomatous appearance. Although considered insignificant by size, control is recommended in 6 months - 1 year by TIRADS classification.",
-                conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr} ({pts} pts), {eu} {eutr}. Recommendation: {rec}"
+                conclNoduleGeneral: "Nodule in {loc} measuring {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. Recommendation: {rec}"
             }
         };
 
@@ -1713,7 +1713,6 @@
                             .replace('{l}', n.l)
                             .replace('{acr}', dict.acrText)
                             .replace('{tr}', `${n.acr}`)
-                            .replace('{pts}', n.points)
                             .replace('{eu}', dict.euText)
                             .replace('{eutr}', `${n.eu}`)
                             .replace('{rec}', rec);
@@ -1788,7 +1787,7 @@
                 if (compVal === 'cystic') {
                     return `Nódulo quístico anecoico de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
                 } else if (compVal === 'spongiform') {
-                    return `Nódulo esponjiforme de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
+                    return `Nódulo espongiforme de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
                 } else if (compVal === 'mixed') {
                     return `Nódulo mixto sólido-quístico, con componente sólido ${echoText}, de ${n.w} x ${n.h} mm (T x AP), de contornos ${marginText} y ${fociText}.`;
                 } else {
