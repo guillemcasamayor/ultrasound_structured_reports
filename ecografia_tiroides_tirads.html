@@ -868,6 +868,7 @@
                 volText: "Volumen",
                 noNodulesText: "Sin nódulos significativos.",
                 cystColloidText: "Pequeño quiste coloide de {w} x {h} mm.",
+                cystSmallText: "Pequeño quiste de {w} x {h} mm.",
                 normalEchoText: "Tiroides de tamaño y ecoestructura conservada. Presencia de aire traqueal sin efecto masa.",
                 vesselText: "Estructuras vasculares visualizadas permeables.",
                 vesselNormalText: "Estudio Doppler color con vascularización normal. Estructuras vasculares visualizadas permeables.",
@@ -884,7 +885,7 @@
                 recommendationNone: "Se puede considerar control discrecional en 6-12 meses.",
                 recommendationSmallHighRisk: "Por su pequeño tamaño, se recomienda control ecográfico estricto y PAAF si supera los 10 mm.",
                 lblIncludeVol: "Incluir volumen de los lóbulos en el informe",
-                conclNoduleGeneral: "{head} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. {rec}"
+                conclNoduleGeneral: "{head}. {acr} {tr}, {eu} {eutr}. {rec}"
             },
             ca: {
                 mainTitle: "Ecografia Tiroïdal i Estadificació TIRADS",
@@ -999,6 +1000,7 @@
                 volText: "Volum",
                 noNodulesText: "Sense nòduls significatius.",
                 cystColloidText: "Petit quist col·loide de {w} x {h} mm.",
+                cystSmallText: "Petit quist de {w} x {h} mm.",
                 normalEchoText: "Tiroide de mida i ecoestructura conservada. Presència d'aire traqueal sense efecte massa.",
                 vesselText: "Estructures vasculars visualitzades permeables.",
                 vesselNormalText: "Estudi Doppler color amb vascularització normal. Estructures vasculars visualitzades permeables.",
@@ -1015,7 +1017,7 @@
                 recommendationNone: "Es pot considerar control discrecional en 6-12 mesos.",
                 recommendationSmallHighRisk: "Per la seva petita mida, es recomana control ecogràfic estricte i PAAF si supera els 10 mm.",
                 lblIncludeVol: "Incloure el volum dels lòbuls a l'informe",
-                conclNoduleGeneral: "{head} de {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. {rec}"
+                conclNoduleGeneral: "{head}. {acr} {tr}, {eu} {eutr}. {rec}"
             },
             en: {
                 mainTitle: "Thyroid Ultrasound & TIRADS Staging",
@@ -1130,6 +1132,7 @@
                 volText: "Volume",
                 noNodulesText: "No significant nodules.",
                 cystColloidText: "Small colloid cyst of {w} x {h} mm.",
+                cystSmallText: "Small cyst of {w} x {h} mm.",
                 normalEchoText: "Thyroid gland of normal size and echotexture. Presence of tracheal air without mass effect.",
                 vesselText: "Visualized vascular structures are patent.",
                 vesselNormalText: "Color Doppler study shows normal vascularity. Visualized vascular structures are patent.",
@@ -1146,7 +1149,7 @@
                 recommendationNone: "Discretionary control can be considered in 6-12 months.",
                 recommendationSmallHighRisk: "Given its small size, strict ultrasound follow-up is recommended, with FNA if it exceeds 10 mm.",
                 lblIncludeVol: "Include lobe volumes in the report",
-                conclNoduleGeneral: "{head} measuring {w}x{h}x{l} mm. {acr} {tr}, {eu} {eutr}. {rec}"
+                conclNoduleGeneral: "{head}. {acr} {tr}, {eu} {eutr}. {rec}"
             }
         };
 
@@ -1770,33 +1773,29 @@
                 LTD: pick('en el lóbulo derecho', 'al lòbul dret', 'in the right lobe'),
                 LTI: pick('en el lóbulo izquierdo', 'al lòbul esquerre', 'in the left lobe')
             };
-            // "Nódulo ístmico" for the isthmus; EU-TIRADS 2: cystic with comet-tail -> colloid type 1,
-            // spongiform -> colloid type 2, pure cystic (no comet-tail) -> "quístico"
+            // "Nódulo ístmico" for the isthmus; EU-TIRADS 2 cystic/spongiform -> "Quiste":
+            // pure cystic -> "Quiste" ("Pequeño quiste" if <= 5 mm), cystic with comet-tail -> "Quiste coloide tipo 1",
+            // spongiform -> "Quiste coloide tipo 2"
             const conclHead = (n) => {
                 const comp = document.getElementById(`nodule-${n.id}-comp`).value;
                 const comet = document.getElementById(`nodule-${n.id}-foci-comet`).checked;
-                const colloid = n.eu === 2 ? ({ cystic: comet ? 1 : undefined, spongiform: 2 })[comp] : undefined;
-                if (n.eu === 2 && comp === 'cystic' && !comet) {
-                    return n.loc === 'Istmo'
-                        ? pick('Nódulo quístico ístmico', 'Nòdul quístic ístmic', 'Isthmic cystic nodule')
-                        : pick(`Nódulo quístico ${locNames[n.loc]}`, `Nòdul quístic ${locNames[n.loc]}`, `Cystic nodule ${locNames[n.loc]}`);
+                const isthmus = n.loc === 'Istmo';
+                const where = isthmus ? '' : ` ${locNames[n.loc]}`;
+                if (n.eu === 2 && (comp === 'cystic' || comp === 'spongiform')) {
+                    const colloid = comp === 'spongiform' ? 2 : (comet ? 1 : undefined);
+                    const small = isSmallCyst(n, comp);
+                    const es = `${small ? 'Pequeño quiste' : 'Quiste'}${isthmus ? ' ístmico' : ''}${colloid ? ` coloide tipo ${colloid}` : ''}`;
+                    const ca = `${small ? 'Petit quist' : 'Quist'}${isthmus ? ' ístmic' : ''}${colloid ? ` col·loide tipus ${colloid}` : ''}`;
+                    const en = `${small ? 'Small ' : ''}${isthmus ? 'isthmic ' : ''}${colloid ? `type ${colloid} colloid ` : ''}cyst`;
+                    return pick(es, ca, en.charAt(0).toUpperCase() + en.slice(1)) + where;
                 }
-                const colloidEs = colloid ? ` coloide tipo ${colloid}` : '';
-                const colloidCa = colloid ? ` col·loide tipus ${colloid}` : '';
-                const colloidEn = colloid ? `type ${colloid} colloid ` : '';
-                if (n.loc === 'Istmo') {
-                    return pick(`Nódulo ístmico${colloidEs}`, `Nòdul ístmic${colloidCa}`, `Isthmic ${colloidEn}nodule`);
-                }
-                const enNoun = colloid ? `Type ${colloid} colloid nodule` : 'Nodule';
-                return pick(`Nódulo${colloidEs} ${locNames[n.loc]}`, `Nòdul${colloidCa} ${locNames[n.loc]}`, `${enNoun} ${locNames[n.loc]}`);
+                if (isthmus) return pick('Nódulo ístmico', 'Nòdul ístmic', 'Isthmic nodule');
+                return pick(`Nódulo${where}`, `Nòdul${where}`, `Nodule${where}`);
             };
             nodules.forEach(n => {
                 const rec = getClinicalRecommendation(n.acr, n.eu, n.maxSize, dict);
                 concls.push(dict.conclNoduleGeneral
                     .replace('{head}', conclHead(n))
-                    .replace('{w}', fmt(n.rawW))
-                    .replace('{h}', fmt(n.rawH))
-                    .replace('{l}', fmt(n.rawL))
                     .replace('{acr}', dict.acrText)
                     .replace('{tr}', `${n.acr}`)
                     .replace('{eu}', dict.euText)
@@ -1870,6 +1869,10 @@
             }
         };
 
+        function isSmallCyst(n, comp) {
+            return comp === 'cystic' && n.w > 0 && n.h > 0 && n.w <= 5 && n.h <= 5;
+        }
+
         function describeNodule(n, lang, fmt) {
             const dict = t[lang];
             const L = noduleLang[lang];
@@ -1877,9 +1880,10 @@
             const comp = val('comp'), echo = val('echo'), shape = val('shape'), margin = val('margin');
             const foci = ['comet', 'macro', 'rim', 'punctate'].filter(f => document.getElementById(`nodule-${n.id}-foci-${f}`).checked);
 
-            // Small cystic nodule: colloid cyst template
-            if (comp === 'cystic' && n.w > 0 && n.h > 0 && n.w <= 5 && n.h <= 5) {
-                return dict.cystColloidText.replace('{w}', fmt(n.rawW)).replace('{h}', fmt(n.rawH));
+            // Small cystic nodule: "Pequeño quiste", "coloide" only with comet-tail
+            if (isSmallCyst(n, comp)) {
+                const tpl = foci.includes('comet') ? dict.cystColloidText : dict.cystSmallText;
+                return tpl.replace('{w}', fmt(n.rawW)).replace('{h}', fmt(n.rawH));
             }
 
             const head = L.head[comp](L.echo[echo]);
