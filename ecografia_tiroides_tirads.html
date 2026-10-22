@@ -860,7 +860,8 @@
                 optIllDefined: "Mal definido (0 pts)",
                 optLobulated: "Lobulado o irregular (2 pts)",
                 optExtraThyroidal: "Extensión extratiroidea (3 pts)",
-                chkFociNone: "Ninguno / Cola de cometa grande (0 pts)",
+                chkFociNone: "Ninguno (0 pts)",
+                chkFociComet: "Cola de cometa grande (0 pts)",
                 chkFociMacro: "Macrocalcificaciones (1 pt)",
                 chkFociRim: "Calcificaciones periféricas / en anillo (2 pts)",
                 chkFociPunctate: "Focos ecogénicos puntiformes / microcalcificaciones (3 pts)",
@@ -990,7 +991,8 @@
                 optIllDefined: "Mal definit (0 pts)",
                 optLobulated: "Lobulat o irregular (2 pts)",
                 optExtraThyroidal: "Extensió extratiroïdal (3 pts)",
-                chkFociNone: "Cap / Cua de cometa gran (0 pts)",
+                chkFociNone: "Cap (0 pts)",
+                chkFociComet: "Cua de cometa gran (0 pts)",
                 chkFociMacro: "Macrocalcificacions (1 pt)",
                 chkFociRim: "Calcificacions perifèriques / en anell (2 pts)",
                 chkFociPunctate: "Focs ecogènics puntiformes / microcalcificacions (3 pts)",
@@ -1120,7 +1122,8 @@
                 optIllDefined: "Ill-defined (0 pts)",
                 optLobulated: "Lobulated or irregular (2 pts)",
                 optExtraThyroidal: "Extra-thyroidal extension (3 pts)",
-                chkFociNone: "None / Large comet-tail (0 pts)",
+                chkFociNone: "None (0 pts)",
+                chkFociComet: "Large comet-tail (0 pts)",
                 chkFociMacro: "Macrocalcifications (1 pt)",
                 chkFociRim: "Peripheral (rim) calcifications (2 pts)",
                 chkFociPunctate: "Punctate echogenic foci / microcalcifications (3 pts)",
@@ -1312,6 +1315,7 @@
 
             // Checkboxes
             container.querySelector(`.chk-foci-none`).innerText = dict.chkFociNone;
+            container.querySelector(`.chk-foci-comet`).innerText = dict.chkFociComet;
             container.querySelector(`.chk-foci-macro`).innerText = dict.chkFociMacro;
             container.querySelector(`.chk-foci-rim`).innerText = dict.chkFociRim;
             container.querySelector(`.chk-foci-punctate`).innerText = dict.chkFociPunctate;
@@ -1408,6 +1412,10 @@
                             <span class="chk-foci-none">${dict.chkFociNone}</span>
                         </label>
                         <label class="checkbox-item">
+                            <input type="checkbox" id="nodule-${id}-foci-comet" value="comet" onchange="onFociChange(${id}, 'comet')">
+                            <span class="chk-foci-comet">${dict.chkFociComet}</span>
+                        </label>
+                        <label class="checkbox-item">
                             <input type="checkbox" id="nodule-${id}-foci-macro" value="macro" onchange="onFociChange(${id}, 'macro')">
                             <span class="chk-foci-macro">${dict.chkFociMacro}</span>
                         </label>
@@ -1486,17 +1494,20 @@
 
         function onFociChange(id, type) {
             const chkNone = document.getElementById(`nodule-${id}-foci-none`);
+            const chkComet = document.getElementById(`nodule-${id}-foci-comet`);
             const chkMacro = document.getElementById(`nodule-${id}-foci-macro`);
             const chkRim = document.getElementById(`nodule-${id}-foci-rim`);
             const chkPunctate = document.getElementById(`nodule-${id}-foci-punctate`);
 
+            const anyFoci = chkComet.checked || chkMacro.checked || chkRim.checked || chkPunctate.checked;
             if (type === 'none' && chkNone.checked) {
+                chkComet.checked = false;
                 chkMacro.checked = false;
                 chkRim.checked = false;
                 chkPunctate.checked = false;
-            } else if (type !== 'none' && (chkMacro.checked || chkRim.checked || chkPunctate.checked)) {
+            } else if (type !== 'none' && anyFoci) {
                 chkNone.checked = false;
-            } else if (!chkMacro.checked && !chkRim.checked && !chkPunctate.checked) {
+            } else if (!anyFoci) {
                 chkNone.checked = true;
             }
             updateReport();
@@ -1759,10 +1770,17 @@
                 LTD: pick('en el lóbulo derecho', 'al lòbul dret', 'in the right lobe'),
                 LTI: pick('en el lóbulo izquierdo', 'al lòbul esquerre', 'in the left lobe')
             };
-            // "Nódulo ístmico" for the isthmus; EU-TIRADS 2 cystic/spongiform -> colloid type 1/2
+            // "Nódulo ístmico" for the isthmus; EU-TIRADS 2: cystic with comet-tail -> colloid type 1,
+            // spongiform -> colloid type 2, pure cystic (no comet-tail) -> "quístico"
             const conclHead = (n) => {
                 const comp = document.getElementById(`nodule-${n.id}-comp`).value;
-                const colloid = n.eu === 2 ? ({ cystic: 1, spongiform: 2 })[comp] : undefined;
+                const comet = document.getElementById(`nodule-${n.id}-foci-comet`).checked;
+                const colloid = n.eu === 2 ? ({ cystic: comet ? 1 : undefined, spongiform: 2 })[comp] : undefined;
+                if (n.eu === 2 && comp === 'cystic' && !comet) {
+                    return n.loc === 'Istmo'
+                        ? pick('Nódulo quístico ístmico', 'Nòdul quístic ístmic', 'Isthmic cystic nodule')
+                        : pick(`Nódulo quístico ${locNames[n.loc]}`, `Nòdul quístic ${locNames[n.loc]}`, `Cystic nodule ${locNames[n.loc]}`);
+                }
                 const colloidEs = colloid ? ` coloide tipo ${colloid}` : '';
                 const colloidCa = colloid ? ` col·loide tipus ${colloid}` : '';
                 const colloidEn = colloid ? `type ${colloid} colloid ` : '';
@@ -1820,7 +1838,7 @@
                 margin: { 'smooth': 'de márgenes lisos', 'ill-defined': 'de márgenes mal definidos', 'lobulated': 'de márgenes lobulados o irregulares', 'extra-thyroidal': 'con extensión extratiroidea' },
                 taller: 'más alto que ancho',
                 noFoci: 'sin calcificaciones', fociPrefix: 'con ',
-                foci: { macro: 'macrocalcificaciones', rim: 'calcificación periférica en anillo', punctate: 'focos ecogénicos puntiformes (microcalcificaciones)' }
+                foci: { comet: 'artefacto en cola de cometa', macro: 'macrocalcificaciones', rim: 'calcificación periférica en anillo', punctate: 'focos ecogénicos puntiformes (microcalcificaciones)' }
             },
             ca: {
                 conj: 'i', unit: 'de {dims} mm (T x AP x L)',
@@ -1834,7 +1852,7 @@
                 margin: { 'smooth': 'de marges llisos', 'ill-defined': 'de marges mal definits', 'lobulated': 'de marges lobulats o irregulars', 'extra-thyroidal': 'amb extensió extratiroïdal' },
                 taller: 'més alt que ample',
                 noFoci: 'sense calcificacions', fociPrefix: 'amb ',
-                foci: { macro: 'macrocalcificacions', rim: 'calcificació perifèrica en anell', punctate: 'focus ecogènics puntiformes (microcalcificacions)' }
+                foci: { comet: 'artefacte en cua de cometa', macro: 'macrocalcificacions', rim: 'calcificació perifèrica en anell', punctate: 'focus ecogènics puntiformes (microcalcificacions)' }
             },
             en: {
                 conj: 'and', unit: 'measuring {dims} mm (T x AP x L)',
@@ -1848,7 +1866,7 @@
                 margin: { 'smooth': 'smooth margins', 'ill-defined': 'ill-defined margins', 'lobulated': 'lobulated or irregular margins', 'extra-thyroidal': 'extrathyroidal extension' },
                 taller: 'taller-than-wide shape',
                 noFoci: 'no calcifications', fociPrefix: '',
-                foci: { macro: 'macrocalcifications', rim: 'peripheral rim calcification', punctate: 'punctate echogenic foci (microcalcifications)' }
+                foci: { comet: 'comet-tail artifact', macro: 'macrocalcifications', rim: 'peripheral rim calcification', punctate: 'punctate echogenic foci (microcalcifications)' }
             }
         };
 
@@ -1857,7 +1875,7 @@
             const L = noduleLang[lang];
             const val = (suffix) => document.getElementById(`nodule-${n.id}-${suffix}`).value;
             const comp = val('comp'), echo = val('echo'), shape = val('shape'), margin = val('margin');
-            const foci = ['macro', 'rim', 'punctate'].filter(f => document.getElementById(`nodule-${n.id}-foci-${f}`).checked);
+            const foci = ['comet', 'macro', 'rim', 'punctate'].filter(f => document.getElementById(`nodule-${n.id}-foci-${f}`).checked);
 
             // Small cystic nodule: colloid cyst template
             if (comp === 'cystic' && n.w > 0 && n.h > 0 && n.w <= 5 && n.h <= 5) {
